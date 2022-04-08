@@ -21,19 +21,6 @@ pub struct Config {
     pub activity_url: Option<String>,
 }
 
-impl Config {
-    pub fn activity(&self) -> Option<Activity> {
-        self.activity_name.clone().map(|activity_name| {
-            MinimalActivity {
-                kind: self.activity_type.unwrap_or(ActivityType::Playing),
-                name: activity_name,
-                url: CONFIG.activity_url.clone(),
-            }
-            .into()
-        })
-    }
-}
-
 lazy_static! {
     pub static ref CONFIG: Config = Figment::new()
         .merge(Env::raw())
