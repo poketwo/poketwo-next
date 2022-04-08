@@ -1,0 +1,46 @@
+use figment::{
+    providers::{Env, Format, Json, Toml, Yaml},
+    Figment,
+};
+use lazy_static::lazy_static;
+use serde::Deserialize;
+use twilight_gateway::Intents;
+use twilight_model::gateway::presence::{Activity, ActivityType, MinimalActivity, Status};
+
+#[derive(Deserialize)]
+pub struct Config {
+    pub token: String,
+    pub gateway_url: Option<String>,
+    pub shard_id: u32,
+    pub shard_total: u32,
+    pub intents: Intents,
+
+    pub status: Option<Status>,
+    pub activity_type: Option<ActivityType>,
+    pub activity_name: Option<String>,
+    pub activity_url: Option<String>,
+}
+
+impl Config {
+    pub fn activity(&self) -> Option<Activity> {
+        self.activity_name.clone().map(|activity_name| {
+            MinimalActivity {
+                kind: self.activity_type.unwrap_or(ActivityType::Playing),
+                name: activity_name,
+                url: CONFIG.activity_url.clone(),
+            }
+            .into()
+        })
+    }
+}
+
+lazy_static! {
+    pub static ref CONFIG: Config = Figment::new()
+        .merge(Env::raw())
+        .merge(Json::file("config.json"))
+        .merge(Toml::file("config.toml"))
+        .merge(Yaml::file("config.yaml"))
+        .merge(Yaml::file("config.yml"))
+        .extract()
+        .unwrap();
+}
