@@ -4,4 +4,4 @@ package poketwo.gateway.v1;
 
 import "poketwo/discord/v1/models.proto";
 
-message MessageCreate { Message message = 1; }
+message MessageCreate { discord.v1.Message message = 1; }

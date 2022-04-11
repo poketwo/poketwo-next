@@ -27,7 +27,7 @@ message Message {
   fixed64 channel_id = 2;
   string content = 3;
   google.protobuf.StringValue edited_timestamp = 4;
-  u64 flags = 5;
+  uint64 flags = 5;
   SnowflakeValue guild_id = 6;
   fixed64 id = 7;
   PartialMember member = 8;
