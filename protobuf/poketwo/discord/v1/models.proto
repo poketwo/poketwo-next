@@ -3,45 +3,58 @@ syntax = "proto3";
 package poketwo.discord.v1;
 
 import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
 
 message SnowflakeValue { fixed64 value = 1; }
 
 message User {
   google.protobuf.StringValue avatar = 1;
   bool bot = 2;
-  string discriminator = 3;
+  uint32 discriminator = 3;
   google.protobuf.StringValue email = 4;
   fixed64 id = 5;
   string name = 6;
 }
 
 message PartialMember {
-  bool deaf = 1;
-  google.protobuf.StringValue joined_at = 2;
-  bool mute = 3;
-  repeated fixed64 roles = 4;
+  google.protobuf.StringValue avatar = 1;
+  google.protobuf.Timestamp communication_disabled_until = 2;
+  bool deaf = 3;
+  google.protobuf.Timestamp joined_at = 4;
+  bool mute = 5;
+  google.protobuf.StringValue nick = 6;
+  google.protobuf.UInt64Value permissions = 7;
+  repeated fixed64 roles = 8;
 }
 
 message Message {
   User author = 1;
   fixed64 channel_id = 2;
   string content = 3;
-  google.protobuf.StringValue edited_timestamp = 4;
-  uint64 flags = 5;
-  SnowflakeValue guild_id = 6;
-  fixed64 id = 7;
-  PartialMember member = 8;
-  repeated ChannelMention mention_channels = 9;
-  bool mention_everyone = 10;
-  repeated fixed64 mention_roles = 11;
-  map<fixed64, User> mentions = 12;
-  bool pinned = 13;
-  string timestamp = 14;
-  bool tts = 15;
+  google.protobuf.Timestamp edited_timestamp = 4;
+  SnowflakeValue guild_id = 5;
+  fixed64 id = 6;
+  PartialMember member = 7;
+  repeated ChannelMention mention_channels = 8;
+  bool mention_everyone = 9;
+  repeated fixed64 mention_roles = 10;
+  repeated Mention mentions = 11;
+  bool pinned = 12;
+  google.protobuf.Timestamp timestamp = 13;
+  bool tts = 14;
 
   message ChannelMention {
     fixed64 guild_id = 1;
     fixed64 id = 2;
     string name = 3;
+  }
+
+  message Mention {
+    google.protobuf.StringValue avatar = 1;
+    bool bot = 2;
+    uint32 discriminator = 3;
+    fixed64 id = 4;
+    PartialMember member = 5;
+    string name = 6;
   }
 }
