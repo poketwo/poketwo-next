@@ -1,13 +1,19 @@
-#[path = ""]
+macro_rules! include_proto {
+    ($package: tt) => {
+        include!(concat!(env!("OUT_DIR"), concat!("/", $package, ".rs")));
+    };
+}
+
 pub mod poketwo {
-    #[path = ""]
     pub mod discord {
-        #[path = "stubs/poketwo.discord.v1.rs"]
-        pub mod v1;
+        pub mod v1 {
+            include_proto!("poketwo.discord.v1");
+        }
     }
-    #[path = ""]
+
     pub mod gateway {
-        #[path = "stubs/poketwo.gateway.v1.rs"]
-        pub mod v1;
+        pub mod v1 {
+            include_proto!("poketwo.gateway.v1");
+        }
     }
 }

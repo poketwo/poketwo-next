@@ -8,9 +8,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         })
         .collect();
 
-    tonic_build::configure()
-        .out_dir("./src/stubs")
-        .compile(paths.as_slice(), &["../protobuf".to_string()])?;
+    tonic_build::configure().compile(paths.as_slice(), &["../protobuf".to_string()])?;
 
     Ok(())
 }
