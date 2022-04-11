@@ -5,9 +5,9 @@ use figment::{
 use lazy_static::lazy_static;
 use serde::Deserialize;
 use twilight_gateway::Intents;
-use twilight_model::gateway::presence::{Activity, ActivityType, MinimalActivity, Status};
+use twilight_model::gateway::presence::{ActivityType, Status};
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct Config {
     pub token: String,
     pub gateway_url: Option<String>,
@@ -19,6 +19,9 @@ pub struct Config {
     pub activity_type: Option<ActivityType>,
     pub activity_name: Option<String>,
     pub activity_url: Option<String>,
+
+    pub amqp_url: String,
+    pub amqp_exchange: String,
 }
 
 lazy_static! {

@@ -1,5 +1,6 @@
+use anyhow::Result;
 use twilight_cache_inmemory::InMemoryCache;
-use twilight_gateway::{shard::Events, Shard};
+use twilight_gateway::{shard::Events, EventTypeFlags, Shard};
 use twilight_model::gateway::{
     payload::outgoing::update_presence::UpdatePresencePayload,
     presence::{ActivityType, MinimalActivity, Status},
@@ -8,13 +9,14 @@ use twilight_model::gateway::{
 use crate::config::Config;
 
 pub struct Gateway {
+    pub config: Config,
     pub shard: Shard,
     pub events: Events,
     pub cache: InMemoryCache,
 }
 
 impl Gateway {
-    pub fn new(config: &Config) -> Self {
+    pub async fn connect(config: &Config) -> Result<Self> {
         let activity = config.activity_name.clone().map(|activity_name| {
             MinimalActivity {
                 kind: config.activity_type.unwrap_or(ActivityType::Playing),
@@ -38,10 +40,13 @@ impl Gateway {
 
         let cache = InMemoryCache::builder().message_cache_size(0).build();
 
-        Self {
+        shard.start().await?;
+
+        Ok(Self {
+            config: config.clone(),
             shard,
             events,
             cache,
-        }
+        })
     }
 }
