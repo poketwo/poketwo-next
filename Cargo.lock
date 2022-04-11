@@ -1247,7 +1247,9 @@ version = "0.1.0"
 dependencies = [
  "glob",
  "prost",
+ "prost-types",
  "tonic-build",
+ "twilight-model",
 ]
 
 [[package]]
