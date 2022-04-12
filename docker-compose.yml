@@ -3,13 +3,22 @@ services:
     build:
       context: .
       target: gateway
+
     environment:
       - TOKEN
+      - GATEWAY_URL
       - SHARD_ID=0
       - SHARD_TOTAL=1
       - INTENTS=32509
+
+      - STATUS
+      - ACTIVITY_TYPE
+      - ACTIVITY_NAME
+      - ACTIVITY_URL
+
       - AMQP_URL=amqp://rabbitmq:5672
       - AMQP_EXCHANGE=gateway
+
     depends_on:
       rabbitmq:
         condition: service_healthy
