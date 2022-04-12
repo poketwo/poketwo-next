@@ -4,8 +4,8 @@ mod gateway;
 
 use anyhow::Result;
 use futures_util::StreamExt;
+use poketwo_protobuf_rust::poketwo::gateway::v1::MessageCreate;
 use prost::Message;
-use protobuf_rust::poketwo::gateway::v1::MessageCreate;
 use twilight_gateway::Event;
 
 use crate::amqp::Amqp;

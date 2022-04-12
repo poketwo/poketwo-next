@@ -1128,12 +1128,23 @@ dependencies = [
  "futures-util",
  "lapin",
  "lazy_static",
+ "poketwo-protobuf-rust",
  "prost",
- "protobuf-rust",
  "serde",
  "tokio",
  "twilight-cache-inmemory",
  "twilight-gateway",
+ "twilight-model",
+]
+
+[[package]]
+name = "poketwo-protobuf-rust"
+version = "0.1.0"
+dependencies = [
+ "glob",
+ "prost",
+ "prost-types",
+ "tonic-build",
  "twilight-model",
 ]
 
@@ -1241,17 +1252,6 @@ checksum = "926681c118ae6e512a3ccefd4abbe5521a14f4cc1e207356d4d00c0b7f2006fd"
 dependencies = [
  "bytes",
  "prost",
-]
-
-[[package]]
-name = "protobuf-rust"
-version = "0.1.0"
-dependencies = [
- "glob",
- "prost",
- "prost-types",
- "tonic-build",
- "twilight-model",
 ]
 
 [[package]]

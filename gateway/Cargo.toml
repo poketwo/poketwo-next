@@ -12,7 +12,7 @@ futures-util = "0.3.21"
 lapin = "2.1.1"
 lazy_static = "1.4.0"
 prost = "0.10.0"
-protobuf-rust = { path = "../protobuf-rust" }
+poketwo-protobuf-rust = { path = "../protobuf-rust" }
 serde = "1.0.136"
 tokio = { version = "1.17.0", features = ["macros", "rt-multi-thread"] }
 twilight-cache-inmemory = "0.10.1"
