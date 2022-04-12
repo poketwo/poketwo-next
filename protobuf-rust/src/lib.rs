@@ -46,9 +46,7 @@ fn convert_timestamp(timestamp: TwilightTimestamp) -> Timestamp {
 
 impl<T: Into<u64>> From<T> for SnowflakeValue {
     fn from(value: T) -> Self {
-        Self {
-            value: value.into(),
-        }
+        Self { value: value.into() }
     }
 }
 
@@ -84,11 +82,7 @@ impl From<TwilightPartialMember> for PartialMember {
 
 impl From<TwilightChannelMention> for ChannelMention {
     fn from(mention: TwilightChannelMention) -> Self {
-        Self {
-            guild_id: mention.guild_id.into(),
-            id: mention.id.into(),
-            name: mention.name,
-        }
+        Self { guild_id: mention.guild_id.into(), id: mention.id.into(), name: mention.name }
     }
 }
 
@@ -115,11 +109,7 @@ impl From<TwilightMessage> for Message {
             guild_id: message.guild_id.map(Into::into),
             id: message.id.into(),
             member: message.member.map(Into::into),
-            mention_channels: message
-                .mention_channels
-                .into_iter()
-                .map(Into::into)
-                .collect(),
+            mention_channels: message.mention_channels.into_iter().map(Into::into).collect(),
             mention_everyone: message.mention_everyone,
             mention_roles: message.mention_roles.into_iter().map(Into::into).collect(),
             mentions: message.mentions.into_iter().map(Into::into).collect(),
@@ -132,8 +122,6 @@ impl From<TwilightMessage> for Message {
 
 impl From<TwilightMessageCreate> for MessageCreate {
     fn from(event: TwilightMessageCreate) -> Self {
-        Self {
-            message: Some(event.0.into()),
-        }
+        Self { message: Some(event.0.into()) }
     }
 }

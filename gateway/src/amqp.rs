@@ -39,11 +39,7 @@ impl Amqp {
             )
             .await?;
 
-        Ok(Self {
-            config: config.clone(),
-            connection,
-            channel,
-        })
+        Ok(Self { config: config.clone(), connection, channel })
     }
 
     pub async fn publish(&self, payload: &[u8], routing_key: &str) -> Result<()> {

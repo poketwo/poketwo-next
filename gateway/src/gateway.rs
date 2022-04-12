@@ -42,11 +42,6 @@ impl Gateway {
 
         shard.start().await?;
 
-        Ok(Self {
-            config: config.clone(),
-            shard,
-            events,
-            cache,
-        })
+        Ok(Self { config: config.clone(), shard, events, cache })
     }
 }

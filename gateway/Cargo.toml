@@ -18,5 +18,7 @@ tokio = { version = "1.17.0", features = ["macros", "rt-multi-thread"] }
 twilight-cache-inmemory = "0.10.1"
 twilight-gateway = "0.10.1"
 twilight-model = "0.10.1"
+tracing = "0.1.33"
+tracing-subscriber = "0.3.11"
 
 [features]
