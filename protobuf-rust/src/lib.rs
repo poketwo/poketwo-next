@@ -77,7 +77,7 @@ impl From<TwilightPartialMember> for PartialMember {
             mute: member.mute,
             nick: member.nick,
             permissions: member.permissions.map(|x| x.bits()),
-            roles: member.roles.into_iter().map(|x| x.into()).collect(),
+            roles: member.roles.into_iter().map(Into::into).collect(),
         }
     }
 }
@@ -99,7 +99,7 @@ impl From<TwilightMention> for Mention {
             bot: mention.bot,
             discriminator: mention.discriminator as u32,
             id: mention.id.into(),
-            member: mention.member.map(|x| x.into()),
+            member: mention.member.map(Into::into),
             name: mention.name,
         }
     }
@@ -112,21 +112,17 @@ impl From<TwilightMessage> for Message {
             channel_id: message.channel_id.into(),
             content: message.content,
             edited_timestamp: message.edited_timestamp.map(convert_timestamp),
-            guild_id: message.guild_id.map(|x| x.into()),
+            guild_id: message.guild_id.map(Into::into),
             id: message.id.into(),
-            member: message.member.map(|x| x.into()),
+            member: message.member.map(Into::into),
             mention_channels: message
                 .mention_channels
                 .into_iter()
-                .map(|x| x.into())
+                .map(Into::into)
                 .collect(),
             mention_everyone: message.mention_everyone,
-            mention_roles: message
-                .mention_roles
-                .into_iter()
-                .map(|x| x.into())
-                .collect(),
-            mentions: message.mentions.into_iter().map(|x| x.into()).collect(),
+            mention_roles: message.mention_roles.into_iter().map(Into::into).collect(),
+            mentions: message.mentions.into_iter().map(Into::into).collect(),
             pinned: message.pinned,
             timestamp: Some(convert_timestamp(message.timestamp)),
             tts: message.tts,
