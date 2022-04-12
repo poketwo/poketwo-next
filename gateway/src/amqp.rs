@@ -1,7 +1,14 @@
+use std::io::Cursor;
+
 use anyhow::Result;
 use lapin::{
-    options::ExchangeDeclareOptions, types::FieldTable, Channel, Connection, ExchangeKind,
+    options::{BasicPublishOptions, ExchangeDeclareOptions},
+    protocol::basic::AMQPProperties,
+    publisher_confirm::PublisherConfirm,
+    types::FieldTable,
+    Channel, Connection, ExchangeKind,
 };
+use prost::Message;
 
 use crate::config::Config;
 
@@ -41,5 +48,18 @@ impl AMQP {
             connection,
             channel,
         })
+    }
+
+    pub async fn publish(&self, payload: &[u8], routing_key: &str) -> Result<()> {
+        self.channel
+            .basic_publish(
+                &self.config.amqp_exchange,
+                routing_key,
+                BasicPublishOptions::default(),
+                payload,
+                AMQPProperties::default(),
+            )
+            .await?;
+        Ok(())
     }
 }

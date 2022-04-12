@@ -1128,6 +1128,8 @@ dependencies = [
  "futures-util",
  "lapin",
  "lazy_static",
+ "prost",
+ "protobuf-rust",
  "serde",
  "tokio",
  "twilight-cache-inmemory",

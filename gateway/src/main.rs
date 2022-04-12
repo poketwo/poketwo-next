@@ -6,6 +6,8 @@ use std::str;
 
 use anyhow::Result;
 use futures_util::StreamExt;
+use prost::Message;
+use protobuf_rust::poketwo::gateway::v1::MessageCreate;
 use twilight_gateway::Event;
 
 use crate::amqp::AMQP;
@@ -19,11 +21,16 @@ async fn main() -> Result<()> {
 
     while let Some(event) = gateway.events.next().await {
         gateway.cache.update(&event);
-        match event {
+
+        let (payload, routing_key) = match event {
             Event::MessageCreate(data) => {
-                println!("{:?}", data.author.public_flags);
+                (MessageCreate::from(*data).encode_to_vec(), "MESSAGE_CREATE")
             }
-            _ => {}
+            _ => continue,
+        };
+
+        if let Err(x) = amqp.publish(&payload, routing_key).await {
+            dbg!(x);
         }
     }
 
