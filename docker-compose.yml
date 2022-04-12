@@ -1,0 +1,25 @@
+services:
+  gateway:
+    build:
+      context: .
+      target: gateway
+    environment:
+      - TOKEN
+      - SHARD_ID=0
+      - SHARD_TOTAL=1
+      - INTENTS=32509
+      - AMQP_URL=amqp://rabbitmq:5672
+      - AMQP_EXCHANGE=gateway
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  rabbitmq:
+    image: rabbitmq:3.9-management
+    ports:
+      - 15673:15672
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "status" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3

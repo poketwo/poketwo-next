@@ -1,3 +1,4 @@
+.env
 config.json
 config.toml
 config.yaml
