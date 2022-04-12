@@ -40,7 +40,7 @@ pub mod poketwo {
 fn convert_timestamp(timestamp: TwilightTimestamp) -> Timestamp {
     Timestamp {
         seconds: timestamp.as_secs(),
-        nanos: (timestamp.as_micros() * 1000 % 1000_000_000) as i32,
+        nanos: (timestamp.as_micros() * 1000 % 1_000_000_000) as i32,
     }
 }
 

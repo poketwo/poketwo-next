@@ -1,14 +1,10 @@
-use std::io::Cursor;
-
 use anyhow::Result;
 use lapin::{
     options::{BasicPublishOptions, ExchangeDeclareOptions},
     protocol::basic::AMQPProperties,
-    publisher_confirm::PublisherConfirm,
     types::FieldTable,
     Channel, Connection, ExchangeKind,
 };
-use prost::Message;
 
 use crate::config::Config;
 
@@ -20,13 +16,13 @@ static EXCHANGE_DECLARE_OPTIONS: ExchangeDeclareOptions = ExchangeDeclareOptions
     nowait: false,
 };
 
-pub struct AMQP {
+pub struct Amqp {
     pub config: Config,
     pub connection: Connection,
     pub channel: Channel,
 }
 
-impl AMQP {
+impl Amqp {
     pub async fn connect(config: &Config) -> Result<Self> {
         let connection =
             lapin::Connection::connect(&config.amqp_url, lapin::ConnectionProperties::default())

@@ -1,6 +1,6 @@
 use anyhow::Result;
 use twilight_cache_inmemory::InMemoryCache;
-use twilight_gateway::{shard::Events, EventTypeFlags, Shard};
+use twilight_gateway::{shard::Events, Shard};
 use twilight_model::gateway::{
     payload::outgoing::update_presence::UpdatePresencePayload,
     presence::{ActivityType, MinimalActivity, Status},
