@@ -14,14 +14,17 @@ defmodule Poketwo.Database.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger],
+      mod: {Poketwo.Database.Application, []}
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:poketwo_protobuf, path: "../protobuf-elixir"}
+      {:poketwo_protobuf, path: "../protobuf-elixir"},
+      {:ecto_sql, "~> 3.7"},
+      {:postgrex, "~> 0.16.2"}
     ]
   end
 end
