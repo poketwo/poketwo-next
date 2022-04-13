@@ -4,7 +4,7 @@ mod gateway;
 
 use anyhow::Result;
 use futures_util::StreamExt;
-use poketwo_protobuf_rust::poketwo::gateway::v1::MessageCreate;
+use poketwo_protobuf::poketwo::gateway::v1::MessageCreate;
 use prost::Message;
 use tracing::{info, warn};
 use twilight_gateway::Event;
