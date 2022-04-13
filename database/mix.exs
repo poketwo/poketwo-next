@@ -24,7 +24,8 @@ defmodule Poketwo.Database.MixProject do
     [
       {:poketwo_protobuf, path: "../protobuf-elixir"},
       {:ecto_sql, "~> 3.7"},
-      {:postgrex, "~> 0.16.2"}
+      {:postgrex, "~> 0.16.2"},
+      {:csv, "~> 2.4"}
     ]
   end
 end
