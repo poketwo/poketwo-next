@@ -1,6 +1,6 @@
 defmodule Poketwo.Database.Models.SpeciesInfo do
   use Ecto.Schema
-  alias Poketwo.Database.Models
+  alias Poketwo.Database.{Models, V1, Utils}
 
   @primary_key false
   schema "pokemon_species_info" do
@@ -11,4 +11,14 @@ defmodule Poketwo.Database.Models.SpeciesInfo do
     belongs_to :species, Models.Species
     belongs_to :language, Models.Language
   end
+
+  def to_protobuf(%Models.SpeciesInfo{} = info) do
+    V1.SpeciesInfo.new(
+      name: info.name,
+      genus: Utils.string_value(info.genus),
+      flavor_text: Utils.string_value(info.flavor_text)
+    )
+  end
+
+  def to_protobuf(_), do: nil
 end
