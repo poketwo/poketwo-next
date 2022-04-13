@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package poketwo.database.v1;
+
+import "google/protobuf/wrappers.proto";
+
+message Language {
+  int32 id = 1;
+  string iso639 = 2;
+  string iso3166 = 3;
+  string identifier = 4;
+  bool official = 5;
+}
+
+message Species {
+  int32 id = 1;
+  string identifier = 2;
+  bool is_legendary = 3;
+  bool is_mythical = 4;
+  bool is_ultra_beast = 5;
+  repeated SpeciesInfo info = 6;
+  repeated Variant variants = 7;
+}
+
+message SpeciesInfo {
+  string name = 1;
+  google.protobuf.StringValue genus = 2;
+  google.protobuf.StringValue flavor_text = 3;
+}
+
+message Variant {
+  int32 id = 1;
+  string identifier = 2;
+  google.protobuf.StringValue variant_identifier = 3;
+  int32 height = 4;
+  int32 weight = 5;
+  int32 base_experience = 6;
+  int32 base_hp = 7;
+  int32 base_atk = 8;
+  int32 base_def = 9;
+  int32 base_satk = 10;
+  int32 base_sdef = 11;
+  int32 base_spd = 12;
+  bool is_default = 13;
+  bool is_mega = 14;
+  bool is_enabled = 15;
+  bool is_catchable = 16;
+  bool is_redeemable = 17;
+  repeated VariantInfo info = 18;
+  Species species = 19;
+}
+
+message VariantInfo {
+  google.protobuf.StringValue variant_name = 1;
+  google.protobuf.StringValue pokemon_name = 2;
+}

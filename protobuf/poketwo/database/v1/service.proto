@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package poketwo.database.v1;
+
+import "poketwo/database/v1/models.proto";
+
+service Database {
+  rpc GetSpecies(GetSpeciesRequest) returns (GetSpeciesResponse);
+  rpc GetVariant(GetVariantRequest) returns (GetVariantResponse);
+}
+
+// GetSpecies
+
+message GetSpeciesRequest {
+  oneof query {
+    int32 id = 1;
+    string name = 2;
+  }
+}
+
+message GetSpeciesResponse { Species species = 1; }
+
+// GetVariant
+
+message GetVariantRequest {
+  oneof query {
+    int32 id = 1;
+    string name = 2;
+  }
+}
+
+message GetVariantResponse { Variant variant = 1; }
