@@ -15,6 +15,20 @@ repos:
 
   - repo: local
     hooks:
+      - id: mix-format-database
+        name: mix format (database)
+        description: Formats Elixir files with mix format.
+        language: system
+        entry: cd database && mix format
+        files: \.exs?$
+
+      - id: mix-format-protobuf-elixir
+        name: mix format (protobuf-elixir)
+        description: Formats Elixir files with mix format.
+        language: system
+        entry: cd protobuf-elixir && mix format
+        files: \.exs?$
+
       - id: compile-protos-python
         name: Compile Protobufs (Python)
         description: This hook compiles protobufs for Python.
