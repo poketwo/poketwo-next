@@ -1,6 +1,5 @@
 defmodule Poketwo.Database.Models.Variant do
   use Ecto.Schema
-  import Ecto.Query
   alias Poketwo.Database.Models
 
   schema "pokemon_variants" do
