@@ -25,7 +25,9 @@ defmodule Poketwo.Database.MixProject do
       {:poketwo_protobuf, path: "../protobuf-elixir"},
       {:ecto_sql, "~> 3.7"},
       {:postgrex, "~> 0.16.2"},
-      {:csv, "~> 2.4"}
+      {:csv, "~> 2.4"},
+      {:grpc, github: "elixir-grpc/grpc"},
+      {:cowlib, "~> 2.9.0", override: true}
     ]
   end
 end

@@ -1,5 +1,6 @@
 defmodule Poketwo.Database.Models.Variant do
   use Ecto.Schema
+  import Ecto.Query
   alias Poketwo.Database.{Models, V1, Utils}
 
   schema "pokemon_variants" do
@@ -22,6 +23,27 @@ defmodule Poketwo.Database.Models.Variant do
 
     has_many :info, Models.VariantInfo
     belongs_to :species, Models.Species
+  end
+
+  def query_by_id(id) do
+    from v in Models.Variant,
+      where: v.id == ^id,
+      preload: [:info, species: :info]
+  end
+
+  def query_by_name(name) do
+    from v in Models.Variant,
+      left_join: i in assoc(v, :info),
+      left_join: s in assoc(v, :species),
+      left_join: si in assoc(s, :info),
+      where:
+        v.identifier == ^name or
+          i.variant_name == ^name or
+          i.pokemon_name == ^name or
+          (v.is_default and s.identifier == ^name) or
+          (v.is_default and si.name == ^name),
+      preload: [:info, species: :info],
+      limit: 1
   end
 
   def to_protobuf(%Models.Variant{} = variant) do

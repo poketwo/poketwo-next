@@ -6,7 +6,11 @@ defmodule Poketwo.Database.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      Poketwo.Database.Repo
+      Poketwo.Database.Repo,
+      {
+        GRPC.Server.Supervisor,
+        {Poketwo.Database.Endpoint, Application.get_env(:poketwo_database, :port, 50051)}
+      }
     ]
 
     opts = [strategy: :one_for_one, name: Poketwo.Database.Supervisor]

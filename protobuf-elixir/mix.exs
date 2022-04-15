@@ -21,7 +21,8 @@ defmodule Poketwo.Protobuf.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:protobuf, "~> 0.8.0"}
+      {:protobuf, "~> 0.8.0"},
+      {:grpc, github: "elixir-grpc/grpc"},
     ]
   end
 end
