@@ -59,16 +59,19 @@ defmodule Poketwo.Database.V1.SpeciesInfo do
   @type t :: %__MODULE__{
           name: String.t(),
           genus: Google.Protobuf.StringValue.t() | nil,
-          flavor_text: Google.Protobuf.StringValue.t() | nil
+          flavor_text: Google.Protobuf.StringValue.t() | nil,
+          language: Poketwo.Database.V1.Language.t() | nil
         }
 
   defstruct name: "",
             genus: nil,
-            flavor_text: nil
+            flavor_text: nil,
+            language: nil
 
   field :name, 1, type: :string
   field :genus, 2, type: Google.Protobuf.StringValue
   field :flavor_text, 3, type: Google.Protobuf.StringValue, json_name: "flavorText"
+  field :language, 4, type: Poketwo.Database.V1.Language
 end
 defmodule Poketwo.Database.V1.Variant do
   @moduledoc false
@@ -142,12 +145,15 @@ defmodule Poketwo.Database.V1.VariantInfo do
 
   @type t :: %__MODULE__{
           variant_name: Google.Protobuf.StringValue.t() | nil,
-          pokemon_name: Google.Protobuf.StringValue.t() | nil
+          pokemon_name: Google.Protobuf.StringValue.t() | nil,
+          language: Poketwo.Database.V1.Language.t() | nil
         }
 
   defstruct variant_name: nil,
-            pokemon_name: nil
+            pokemon_name: nil,
+            language: nil
 
   field :variant_name, 1, type: Google.Protobuf.StringValue, json_name: "variantName"
   field :pokemon_name, 2, type: Google.Protobuf.StringValue, json_name: "pokemonName"
+  field :language, 3, type: Poketwo.Database.V1.Language
 end

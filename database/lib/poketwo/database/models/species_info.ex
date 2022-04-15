@@ -16,7 +16,8 @@ defmodule Poketwo.Database.Models.SpeciesInfo do
     V1.SpeciesInfo.new(
       name: info.name,
       genus: Utils.string_value(info.genus),
-      flavor_text: Utils.string_value(info.flavor_text)
+      flavor_text: Utils.string_value(info.flavor_text),
+      language: Models.Language.to_protobuf(info.language)
     )
   end
 

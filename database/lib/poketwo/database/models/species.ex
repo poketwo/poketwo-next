@@ -16,14 +16,14 @@ defmodule Poketwo.Database.Models.Species do
   def query_by_id(id) do
     from s in Models.Species,
       where: s.id == ^id,
-      preload: [:info, variants: :info]
+      preload: [info: :language, variants: :info]
   end
 
   def query_by_name(name) do
     from s in Models.Species,
       left_join: i in assoc(s, :info),
       where: s.identifier == ^name or i.name == ^name,
-      preload: [:info, variants: :info],
+      preload: [info: :language, variants: :info],
       limit: 1
   end
 

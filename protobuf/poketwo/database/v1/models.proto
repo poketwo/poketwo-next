@@ -26,6 +26,7 @@ message SpeciesInfo {
   string name = 1;
   google.protobuf.StringValue genus = 2;
   google.protobuf.StringValue flavor_text = 3;
+  Language language = 4;
 }
 
 message Variant {
@@ -53,4 +54,5 @@ message Variant {
 message VariantInfo {
   google.protobuf.StringValue variant_name = 1;
   google.protobuf.StringValue pokemon_name = 2;
+  Language language = 3;
 }

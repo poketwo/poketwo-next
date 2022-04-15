@@ -28,7 +28,7 @@ defmodule Poketwo.Database.Models.Variant do
   def query_by_id(id) do
     from v in Models.Variant,
       where: v.id == ^id,
-      preload: [:info, species: :info]
+      preload: [info: :language, species: [info: :language]]
   end
 
   def query_by_name(name) do
@@ -42,7 +42,7 @@ defmodule Poketwo.Database.Models.Variant do
           i.pokemon_name == ^name or
           (v.is_default and s.identifier == ^name) or
           (v.is_default and si.name == ^name),
-      preload: [:info, species: :info],
+      preload: [info: :language, species: [info: :language]],
       limit: 1
   end
 
