@@ -52,3 +52,16 @@ defmodule Poketwo.Database.V1.GetVariantResponse do
 
   field :variant, 1, type: Poketwo.Database.V1.Variant
 end
+defmodule Poketwo.Database.V1.Database.Service do
+  @moduledoc false
+  use GRPC.Service, name: "poketwo.database.v1.Database"
+
+  rpc :GetSpecies, Poketwo.Database.V1.GetSpeciesRequest, Poketwo.Database.V1.GetSpeciesResponse
+
+  rpc :GetVariant, Poketwo.Database.V1.GetVariantRequest, Poketwo.Database.V1.GetVariantResponse
+end
+
+defmodule Poketwo.Database.V1.Database.Stub do
+  @moduledoc false
+  use GRPC.Stub, service: Poketwo.Database.V1.Database.Service
+end

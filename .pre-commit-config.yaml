@@ -40,6 +40,6 @@ repos:
       - id: compile-protos-elixir
         name: Compile Protobufs (Elixir)
         description: This hook compiles protobufs for Elixir.
-        entry: protoc --elixir_out=./protobuf-elixir/lib/ --proto_path=./protobuf
+        entry: protoc --elixir_out=plugins=grpc:./protobuf-elixir/lib/ --proto_path=./protobuf
         language: system
         files: \.proto$
