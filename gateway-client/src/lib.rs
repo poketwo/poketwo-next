@@ -4,6 +4,7 @@ use lapin::{
     types::FieldTable,
     Channel, Connection, Consumer, ExchangeKind, Queue,
 };
+use tracing::{debug, info};
 
 static EXCHANGE_DECLARE_OPTIONS: ExchangeDeclareOptions = ExchangeDeclareOptions {
     passive: false,
@@ -42,7 +43,11 @@ impl GatewayClient {
             lapin::Connection::connect(&options.amqp_url, lapin::ConnectionProperties::default())
                 .await?;
 
+        debug!("Connection established");
+
         let channel = connection.create_channel().await?;
+
+        debug!("Channel established");
 
         channel
             .exchange_declare(
@@ -53,9 +58,13 @@ impl GatewayClient {
             )
             .await?;
 
+        debug!("Exchange declared");
+
         let queue = channel
             .queue_declare(&options.amqp_queue, QUEUE_DECLARE_OPTIONS, FieldTable::default())
             .await?;
+
+        debug!("Queue declared");
 
         let consumer = channel
             .basic_consume(
@@ -66,6 +75,8 @@ impl GatewayClient {
             )
             .await?;
 
+        debug!("Consume started");
+
         channel
             .queue_bind(
                 &options.amqp_queue,
@@ -75,6 +86,9 @@ impl GatewayClient {
                 FieldTable::default(),
             )
             .await?;
+
+        debug!("Queue bind successful");
+        info!("Connected to AMQP");
 
         Ok(Self { options, connection, channel, queue, consumer })
     }
