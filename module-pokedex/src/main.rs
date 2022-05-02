@@ -33,7 +33,7 @@ async fn main() -> Result<()> {
 
 async fn handler(delivery: Delivery) -> Result<()> {
     delivery.ack(BasicAckOptions::default()).await?;
-    let event: MessageCreate = rmp_serde::from_slice(&delivery.data)?;
+    let event: MessageCreate = serde_json::from_slice(&delivery.data)?;
 
     dbg!(event);
 
