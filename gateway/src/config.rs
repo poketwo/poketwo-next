@@ -22,7 +22,7 @@ pub struct Config {
 
     pub amqp_url: String,
     pub amqp_exchange: String,
-    pub amqp_expiration: u32,
+    pub amqp_expiration: Option<u32>,
 }
 
 lazy_static! {
