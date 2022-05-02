@@ -42,17 +42,16 @@ async fn main() -> Result<()> {
 fn get_payload(event: &Event) -> Option<(Vec<u8>, String)> {
     match event {
         Event::MessageCreate(data) => {
-            Some((rmp_serde::to_vec(data).ok()?, String::from("MESSAGE_CREATE")))
+            Some((rmp_serde::to_vec(data).ok()?, "MESSAGE_CREATE".into()))
         }
         Event::InteractionCreate(data) => match &**data {
             Interaction::ApplicationCommand(interaction) => Some((
                 rmp_serde::to_vec(interaction).ok()?,
                 format!("INTERACTION.APPLICATION_COMMAND.{}", interaction.data.name),
             )),
-            Interaction::MessageComponent(interaction) => Some((
-                rmp_serde::to_vec(interaction).ok()?,
-                String::from("INTERACTION.MESSAGE_COMPONENT"),
-            )),
+            Interaction::MessageComponent(interaction) => {
+                Some((rmp_serde::to_vec(interaction).ok()?, "INTERACTION.MESSAGE_COMPONENT".into()))
+            }
             _ => None,
         },
         _ => None,
