@@ -29,14 +29,6 @@ repos:
         entry: cd protobuf-elixir && mix format
         files: \.exs?$
 
-      - id: compile-protos-python
-        name: Compile Protobufs (Python)
-        description: This hook compiles protobufs for Python.
-        entry: python protobuf-python/build.py
-        language: python
-        files: \.proto$
-        pass_filenames: false
-
       - id: compile-protos-elixir
         name: Compile Protobufs (Elixir)
         description: This hook compiles protobufs for Elixir.
