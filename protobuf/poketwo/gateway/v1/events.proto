@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-package poketwo.gateway.v1;
-
-import "poketwo/discord/v1/models.proto";
-
-message MessageCreate { discord.v1.Message message = 1; }
