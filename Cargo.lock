@@ -1154,6 +1154,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "poketwo-gateway-client"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "lapin",
+]
+
+[[package]]
 name = "poketwo-protobuf"
 version = "0.1.0"
 dependencies = [
