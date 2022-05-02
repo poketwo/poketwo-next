@@ -2,5 +2,6 @@
 members = [
     "gateway",
     "gateway-client",
+    "module-pokedex",
     "protobuf-rust"
 ]
