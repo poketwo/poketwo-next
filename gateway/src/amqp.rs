@@ -49,7 +49,8 @@ impl Amqp {
                 routing_key,
                 BasicPublishOptions::default(),
                 payload,
-                AMQPProperties::default(),
+                AMQPProperties::default()
+                    .with_expiration(self.config.amqp_expiration.to_string().into()),
             )
             .await?;
         Ok(())
