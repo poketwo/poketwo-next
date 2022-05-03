@@ -5,7 +5,8 @@ use futures_util::StreamExt;
 use lapin::{message::Delivery, options::BasicAckOptions};
 use poketwo_gateway_client::{GatewayClient, GatewayClientOptions};
 use tracing::error;
-use twilight_model::gateway::payload::incoming::MessageCreate;
+use twilight_http::{request::channel::reaction::RequestReactionType, Client};
+use twilight_model::{gateway::payload::incoming::MessageCreate, id::Id};
 
 use crate::config::CONFIG;
 
@@ -20,10 +21,11 @@ async fn main() -> Result<()> {
         amqp_routing_key: "MESSAGE_CREATE".into(),
     };
 
-    let mut client = GatewayClient::connect(options).await?;
+    let mut gateway = GatewayClient::connect(options).await?;
+    let http = Client::new(CONFIG.token.clone());
 
-    while let Some(delivery) = client.consumer.next().await {
-        if let Err(err) = handler(delivery?).await {
+    while let Some(delivery) = gateway.consumer.next().await {
+        if let Err(err) = handler(&http, delivery?).await {
             error!("{:?}", err);
         }
     }
@@ -31,9 +33,22 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
-async fn handler(delivery: Delivery) -> Result<()> {
+async fn handler(http: &Client, delivery: Delivery) -> Result<()> {
     delivery.ack(BasicAckOptions::default()).await?;
+
     let event: MessageCreate = serde_json::from_slice(&delivery.data)?;
+
+    if Some(Id::new(787517653211938877)) != event.guild_id {
+        return Ok(());
+    }
+
+    http.create_reaction(
+        event.channel_id,
+        event.id,
+        &RequestReactionType::Unicode { name: "\u{274C}" },
+    )
+    .exec()
+    .await?;
 
     dbg!(event);
 
