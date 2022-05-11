@@ -22,6 +22,7 @@ static QUEUE_DECLARE_OPTIONS: QueueDeclareOptions = QueueDeclareOptions {
     nowait: false,
 };
 
+#[derive(Debug, Clone)]
 pub struct GatewayClientOptions {
     pub amqp_url: String,
     pub amqp_exchange: String,
@@ -29,8 +30,8 @@ pub struct GatewayClientOptions {
     pub amqp_routing_key: String,
 }
 
+#[derive(Debug)]
 pub struct GatewayClient {
-    pub options: GatewayClientOptions,
     pub connection: Connection,
     pub channel: Channel,
     pub queue: Queue,
@@ -90,6 +91,6 @@ impl GatewayClient {
         debug!("Queue bind successful");
         info!("Connected to AMQP");
 
-        Ok(Self { options, connection, channel, queue, consumer })
+        Ok(Self { connection, channel, queue, consumer })
     }
 }

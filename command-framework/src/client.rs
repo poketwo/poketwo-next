@@ -1,81 +1,87 @@
-// use std::collections::HashMap;
+use std::collections::HashMap;
 
-// use anyhow::Result;
-// use futures_util::StreamExt;
-// use lapin::message::Delivery;
-// use poketwo_gateway_client::{GatewayClient, GatewayClientOptions};
-// use tracing::error;
-// use twilight_http::{client::InteractionClient, Client};
+use anyhow::{bail, Result};
+use futures_util::StreamExt;
+use lapin::{message::Delivery, options::BasicAckOptions};
+use poketwo_gateway_client::{GatewayClient, GatewayClientOptions};
+use tracing::error;
+use twilight_http::{client::InteractionClient, Client};
+use twilight_model::{
+    application::interaction::Interaction, gateway::payload::incoming::InteractionCreate,
+    oauth::Application,
+};
 
-// pub struct CommandClient<'a> {
-//     pub http: &'a Client,
-//     pub interaction: InteractionClient<'a>,
-//     pub gateway: GatewayClient,
+use crate::{command::Command, context::Context};
 
-//     amqp_url: String,
-//     amqp_exchange: String,
-//     amqp_queue: String,
-// }
+#[derive(Debug, Clone)]
+pub struct CommandClientOptions {
+    pub amqp_url: String,
+    pub amqp_exchange: String,
+    pub amqp_queue: String,
+    pub commands: Vec<Command>,
+}
 
-// impl<'a> CommandClient<'a> {
-//     pub async fn connect(
-//         http: &'a Client,
-//         options: CommandClientOptions,
-//     ) -> Result<CommandClient<'a>> {
-//         let gateway_options = GatewayClientOptions {
-//             amqp_url: options.amqp_url.clone(),
-//             amqp_exchange: options.amqp_exchange.clone(),
-//             amqp_queue: options.amqp_queue.clone(),
-//             amqp_routing_key: "INTERACTION.APPLICATION_COMMAND.pokedex".into(),
-//         };
+#[derive(Debug)]
+pub struct CommandClient<'a> {
+    pub application: Application,
+    pub http: &'a Client,
+    pub interaction: InteractionClient<'a>,
+    pub gateway: GatewayClient,
 
-//         let gateway = GatewayClient::connect(gateway_options).await?;
+    commands: HashMap<String, Command>,
+}
 
-//         let application = http.current_user_application().exec().await?.model().await?;
-//         let interaction = http.interaction(application.id);
+impl<'a> CommandClient<'a> {
+    pub async fn connect(
+        http: &'a Client,
+        options: CommandClientOptions,
+    ) -> Result<CommandClient<'a>> {
+        let gateway_options = GatewayClientOptions {
+            amqp_url: options.amqp_url.clone(),
+            amqp_exchange: options.amqp_exchange.clone(),
+            amqp_queue: options.amqp_queue.clone(),
+            amqp_routing_key: "INTERACTION.APPLICATION_COMMAND.*".into(),
+        };
 
-//         Ok(Self { http, interaction, gateway })
-//     }
+        let gateway = GatewayClient::connect(gateway_options).await?;
+        let application = http.current_user_application().exec().await?.model().await?;
+        let interaction = http.interaction(application.id);
 
-//     pub async fn run(&mut self) -> Result<()> {
-//         while let Some(delivery) = self.gateway.consumer.next().await {
-//             if let Err(err) = self.handler(delivery?).await {
-//                 error!("{:?}", err);
-//             }
-//         }
+        let mut commands = HashMap::new();
 
-//         Ok(())
-//     }
+        for command in options.commands {
+            let key = command.command.name.clone();
+            match commands.get(&key) {
+                Some(_) => bail!("Duplicate command {}", command.command.name),
+                None => commands.insert(key, command),
+            };
+        }
 
-//     async fn handler(&mut self, delivery: Delivery) -> Result<()> {
-//         Ok(())
-//     }
-// }
+        Ok(Self { application, http, interaction, gateway, commands })
+    }
 
-// pub struct CommandClientOptions {
-//     pub amqp_url: String,
-//     pub amqp_exchange: String,
-//     pub amqp_queue: String,
-// }
+    pub async fn run(&mut self) -> Result<()> {
+        while let Some(delivery) = self.gateway.consumer.next().await {
+            if let Err(err) = self.handle_delivery(delivery?).await {
+                error!("{:?}", err);
+            }
+        }
 
-// pub struct CommandClientBuilder {
-//     amqp_url: String,
-//     amqp_exchange: String,
-//     amqp_queue: String,
-//     commands: HashMap<String, String>,
-// }
+        Ok(())
+    }
 
-// impl CommandClientBuilder {
-//     fn new(options: CommandClientOptions) -> Self {
-//         Self {
-//             amqp_url: options.amqp_url,
-//             amqp_exchange: options.amqp_exchange,
-//             amqp_queue: options.amqp_queue,
-//             commands: HashMap::new(),
-//         }
-//     }
+    async fn handle_delivery(&self, delivery: Delivery) -> Result<()> {
+        delivery.ack(BasicAckOptions::default()).await?;
 
-//     fn add_command(self, command: String) -> Self {
-//         self
-//     }
-// }
+        let event: InteractionCreate = serde_json::from_slice(&delivery.data)?;
+
+        if let Interaction::ApplicationCommand(interaction) = event.0 {
+            if let Some(command) = self.commands.get(&interaction.data.name) {
+                let ctx = Context { client: self, interaction: *interaction };
+                (command.handler)(ctx).await?;
+            }
+        }
+
+        Ok(())
+    }
+}

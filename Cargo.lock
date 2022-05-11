@@ -1327,6 +1327,7 @@ dependencies = [
  "lapin",
  "poketwo-command-framework-macros",
  "poketwo-gateway-client",
+ "serde_json",
  "tracing",
  "twilight-http",
  "twilight-interactions",
