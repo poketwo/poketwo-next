@@ -17,7 +17,7 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
     }
 
     if input.sig.inputs.is_empty() {
-        abort!(input.sig.inputs, "Expected parameter of type Context");
+        abort!(input.sig.inputs, "Expected context parameter");
     }
 
     let options = match CommandOptions::from_list(&args) {
@@ -26,22 +26,20 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
     };
 
     let ident = input.sig.ident.clone();
+    input.sig.ident = Ident::new("inner", input.sig.ident.span());
 
-    let name = options.name.unwrap_or_else(|| input.sig.ident.to_string());
+    let name = options.name.unwrap_or_else(|| ident.to_string());
     let desc = options.desc;
     let default_permission = options.default_permission;
 
-    let (struct_args, func_args): (Vec<_>, Vec<_>) =
+    let (struct_args, arg_idents): (Vec<_>, Vec<_>) =
         input.sig.inputs.iter_mut().skip(1).map(command_argument).unzip();
 
-    input.sig.ident = Ident::new(&format!("_{}", input.sig.ident), input.sig.ident.span());
-    let inner_ident = &input.sig.ident;
-
     quote! {
-        #input
-
         fn #ident() -> ::poketwo_command_framework::command::Command {
             use ::twilight_interactions::command::{CommandModel, CreateCommand};
+
+            #input
 
             #[derive(::twilight_interactions::command::CreateCommand, ::twilight_interactions::command::CommandModel)]
             #[command(name = #name, desc = #desc, default_permission = #default_permission)]
@@ -53,7 +51,7 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
                 command: Inner::create_command().into(),
                 handler: |ctx: ::poketwo_command_framework::context::Context| Box::pin(async move {
                     let parsed = Inner::from_interaction(ctx.interaction.data.clone().into())?;
-                    #inner_ident(ctx, #(#func_args),*).await?;
+                    inner(ctx, #(parsed.#arg_idents),*).await?;
                     Ok(())
                 })
             }
@@ -123,5 +121,5 @@ pub fn command_argument(arg: &mut FnArg) -> (TokenStream, TokenStream) {
         #ident: #ty
     };
 
-    (struct_arg, quote! { parsed.#ident })
+    (struct_arg, quote! { #ident })
 }
