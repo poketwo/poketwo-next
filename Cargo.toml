@@ -1,7 +1,10 @@
 [workspace]
 members = [
+    "command-framework",
+    "command-framework-macros",
+    "command-framework-test",
     "gateway",
     "gateway-client",
     "module-pokedex",
-    "protobuf-rust"
+    "protobuf-rust",
 ]

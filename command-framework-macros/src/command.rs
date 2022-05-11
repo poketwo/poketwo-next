@@ -12,7 +12,7 @@ struct CommandOptions {
 }
 
 pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
-    if let None = input.sig.asyncness {
+    if input.sig.asyncness.is_none() {
         abort!(input.sig.asyncness, "Function must be async");
     }
 
@@ -22,7 +22,7 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
 
     let options = match CommandOptions::from_list(&args) {
         Ok(x) => x,
-        Err(e) => return e.write_errors().into(),
+        Err(e) => return e.write_errors(),
     };
 
     let ident = input.sig.ident.clone();
@@ -101,7 +101,7 @@ pub fn command_argument(arg: &mut FnArg) -> (TokenStream, TokenStream) {
 
     let options = match CommandArgumentOptions::from_list(&args) {
         Ok(x) => x,
-        Err(e) => return (e.write_errors().into(), TokenStream::new()),
+        Err(e) => return (e.write_errors(), TokenStream::new()),
     };
 
     let name = options.name.unwrap_or_else(|| ident.ident.to_string());
