@@ -1,0 +1,26 @@
+[package]
+name = "poketwo-command-framework-macros"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+proc-macro = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+darling = "0.14.1"
+proc-macro-error = "1.0.4"
+proc-macro2 = "1.0.38"
+quote = "1.0.18"
+syn = { version = "1.0.92", features = [
+    "derive",
+    "full",
+    "parsing",
+    "printing",
+    "clone-impls",
+    "extra-traits",
+    "proc-macro",
+] }
+
+[features]
