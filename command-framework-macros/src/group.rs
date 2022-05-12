@@ -88,9 +88,7 @@ pub fn group(args: AttributeArgs, input: ItemFn) -> TokenStream {
             ::poketwo_command_framework::command::Command {
                 command: #model_ident::create_command().into(),
                 handler: |ctx: ::poketwo_command_framework::context::Context| Box::pin(async move {
-                    let parsed = #model_ident::from_interaction(ctx.interaction.data.clone().into())?;
-                    parsed.handler(ctx).await?;
-                    Ok(())
+                    #model_ident::from_interaction(ctx.interaction.data.clone().into())?.handler(ctx).await
                 })
             }
         }
