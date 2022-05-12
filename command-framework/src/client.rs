@@ -4,10 +4,10 @@ use anyhow::{bail, Result};
 use futures_util::StreamExt;
 use lapin::{message::Delivery, options::BasicAckOptions};
 use poketwo_gateway_client::{GatewayClient, GatewayClientOptions};
-use tracing::error;
+use tracing::{error, info};
 use twilight_http::{client::InteractionClient, Client};
 use twilight_model::{
-    application::interaction::Interaction, gateway::payload::incoming::InteractionCreate,
+    application::interaction::Interaction, gateway::payload::incoming::InteractionCreate, id::Id,
     oauth::Application,
 };
 
@@ -58,6 +58,26 @@ impl<'a> CommandClient<'a> {
         }
 
         Ok(Self { application, http, interaction, gateway, commands })
+    }
+
+    pub async fn register_commands(&self) -> Result<()> {
+        info!("Registering commands");
+
+        for command in self.commands.values() {
+            let mut action = self
+                .interaction
+                .create_guild_command(Id::new(967272023845929010))
+                .chat_input(&command.command.name, &command.command.description)?
+                .command_options(&command.command.options)?;
+
+            if let Some(value) = command.command.default_permission {
+                action = action.default_permission(value);
+            }
+
+            action.exec().await?;
+        }
+
+        Ok(())
     }
 
     pub async fn run(&mut self) -> Result<()> {
