@@ -13,103 +13,71 @@ use twilight_model::http::interaction::{
 };
 
 #[command(desc = "Add two numbers", default_permission = true)]
-async fn add(ctx: Context<'_>, #[desc = "test"] a: i64, #[desc = "test"] b: i64) -> Result<()> {
-    ctx.client
-        .interaction
-        .create_response(
-            ctx.interaction.id,
-            &ctx.interaction.token,
-            &InteractionResponse {
-                kind: InteractionResponseType::ChannelMessageWithSource,
-                data: Some(InteractionResponseData {
-                    content: Some(
-                        a.checked_add(b).map(|x| x.to_string()).unwrap_or_else(|| "Error".into()),
-                    ),
-                    ..Default::default()
-                }),
-            },
-        )
-        .exec()
-        .await?;
-
-    Ok(())
+async fn add(
+    _ctx: Context<'_>,
+    #[desc = "test"] a: i64,
+    #[desc = "test"] b: i64,
+) -> Result<InteractionResponse> {
+    Ok(InteractionResponse {
+        kind: InteractionResponseType::ChannelMessageWithSource,
+        data: Some(InteractionResponseData {
+            content: Some(
+                a.checked_add(b).map(|x| x.to_string()).unwrap_or_else(|| "Error".into()),
+            ),
+            ..Default::default()
+        }),
+    })
 }
 
 #[command(desc = "Subtract two numbers", default_permission = true)]
 async fn subtract(
-    ctx: Context<'_>,
+    _ctx: Context<'_>,
     #[desc = "test"] a: i64,
     #[desc = "test"] b: i64,
-) -> Result<()> {
-    ctx.client
-        .interaction
-        .create_response(
-            ctx.interaction.id,
-            &ctx.interaction.token,
-            &InteractionResponse {
-                kind: InteractionResponseType::ChannelMessageWithSource,
-                data: Some(InteractionResponseData {
-                    content: Some(
-                        a.checked_sub(b).map(|x| x.to_string()).unwrap_or_else(|| "Error".into()),
-                    ),
-                    ..Default::default()
-                }),
-            },
-        )
-        .exec()
-        .await?;
-
-    Ok(())
+) -> Result<InteractionResponse> {
+    Ok(InteractionResponse {
+        kind: InteractionResponseType::ChannelMessageWithSource,
+        data: Some(InteractionResponseData {
+            content: Some(
+                a.checked_sub(b).map(|x| x.to_string()).unwrap_or_else(|| "Error".into()),
+            ),
+            ..Default::default()
+        }),
+    })
 }
 
 #[command(desc = "Multiply two numbers", default_permission = true)]
 async fn multiply(
-    ctx: Context<'_>,
+    _ctx: Context<'_>,
     #[desc = "test"] a: i64,
     #[desc = "test"] b: i64,
-) -> Result<()> {
-    ctx.client
-        .interaction
-        .create_response(
-            ctx.interaction.id,
-            &ctx.interaction.token,
-            &InteractionResponse {
-                kind: InteractionResponseType::ChannelMessageWithSource,
-                data: Some(InteractionResponseData {
-                    content: Some(
-                        a.checked_mul(b).map(|x| x.to_string()).unwrap_or_else(|| "Error".into()),
-                    ),
-                    ..Default::default()
-                }),
-            },
-        )
-        .exec()
-        .await?;
-
-    Ok(())
+) -> Result<InteractionResponse> {
+    Ok(InteractionResponse {
+        kind: InteractionResponseType::ChannelMessageWithSource,
+        data: Some(InteractionResponseData {
+            content: Some(
+                a.checked_mul(b).map(|x| x.to_string()).unwrap_or_else(|| "Error".into()),
+            ),
+            ..Default::default()
+        }),
+    })
 }
 
 #[command(desc = "Divide two numbers", default_permission = true)]
-async fn divide(ctx: Context<'_>, #[desc = "test"] a: i64, #[desc = "test"] b: i64) -> Result<()> {
-    ctx.client
-        .interaction
-        .create_response(
-            ctx.interaction.id,
-            &ctx.interaction.token,
-            &InteractionResponse {
-                kind: InteractionResponseType::ChannelMessageWithSource,
-                data: Some(InteractionResponseData {
-                    content: Some(
-                        a.checked_div(b).map(|x| x.to_string()).unwrap_or_else(|| "Error".into()),
-                    ),
-                    ..Default::default()
-                }),
-            },
-        )
-        .exec()
-        .await?;
-
-    Ok(())
+async fn divide(
+    _ctx: Context<'_>,
+    #[desc = "test"] a: i64,
+    #[desc = "test"] b: i64,
+) -> Result<InteractionResponse> {
+    Ok(InteractionResponse {
+        kind: InteractionResponseType::ChannelMessageWithSource,
+        data: Some(InteractionResponseData {
+            content: Some(
+                a.checked_div(b).map(|x| x.to_string()).unwrap_or_else(|| "Error".into()),
+            ),
+            ..Default::default()
+        }),
+    })
 }
 
 #[group(desc = "math", default_permission = true, subcommands(add, subtract, multiply, divide))]

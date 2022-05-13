@@ -98,7 +98,15 @@ impl<'a> CommandClient<'a> {
         if let Interaction::ApplicationCommand(interaction) = event.0 {
             if let Some(command) = self.commands.get(&interaction.data.name) {
                 let ctx = Context { client: self, interaction: *interaction };
-                (command.handler)(ctx).await?;
+
+                self.interaction
+                    .create_response(
+                        ctx.interaction.id,
+                        &ctx.interaction.token.clone(),
+                        &(command.handler)(ctx).await?,
+                    )
+                    .exec()
+                    .await?;
             }
         }
 

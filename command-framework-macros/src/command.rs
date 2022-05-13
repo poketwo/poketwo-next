@@ -49,7 +49,12 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
         impl #model_ident {
             #input
 
-            pub async fn handler(self, ctx: ::poketwo_command_framework::context::Context<'_>) -> ::poketwo_command_framework::anyhow::Result<()> {
+            pub async fn handler(
+                self,
+                ctx: ::poketwo_command_framework::context::Context<'_>
+            ) -> ::poketwo_command_framework::anyhow::Result<
+                ::poketwo_command_framework::twilight_model::http::interaction::InteractionResponse
+            > {
                 Self::inner(ctx, #(self.#inner_args),*).await
             }
         }
