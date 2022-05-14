@@ -99,7 +99,7 @@ fn math(_ctx: Context<'_, Data>) {}
 
 #[command(desc = "Increment the counter by a value", default_permission = true)]
 async fn inc(ctx: Context<'_, Data>, #[desc = "test"] number: i64) -> Result<InteractionResponse> {
-    let mut data = ctx.client.data.lock().await;
+    let mut data = ctx.client.state.lock().await;
     data.state += number;
 
     Ok(InteractionResponse {
@@ -113,7 +113,7 @@ async fn inc(ctx: Context<'_, Data>, #[desc = "test"] number: i64) -> Result<Int
 
 #[command(desc = "Decrement the counter by a value", default_permission = true)]
 async fn dec(ctx: Context<'_, Data>, #[desc = "test"] number: i64) -> Result<InteractionResponse> {
-    let mut data = ctx.client.data.lock().await;
+    let mut data = ctx.client.state.lock().await;
     data.state -= number;
 
     Ok(InteractionResponse {

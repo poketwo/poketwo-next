@@ -25,7 +25,7 @@ pub struct CommandClient<'a, T> {
     pub http: &'a Client,
     pub interaction: InteractionClient<'a>,
     pub gateway: GatewayClient,
-    pub data: Arc<Mutex<T>>,
+    pub state: Arc<Mutex<T>>,
 
     commands: HashMap<String, Command<T>>,
 }
@@ -33,7 +33,7 @@ pub struct CommandClient<'a, T> {
 impl<'a, T> CommandClient<'a, T> {
     pub async fn connect(
         http: &'a Client,
-        data: T,
+        state: T,
         options: CommandClientOptions<T>,
     ) -> Result<CommandClient<'a, T>> {
         let gateway_options = GatewayClientOptions {
@@ -57,7 +57,7 @@ impl<'a, T> CommandClient<'a, T> {
             };
         }
 
-        Ok(Self { http, interaction, gateway, commands, data: Arc::new(Mutex::new(data)) })
+        Ok(Self { http, interaction, gateway, commands, state: Arc::new(Mutex::new(state)) })
     }
 
     pub async fn register_commands(&self) -> Result<()> {
