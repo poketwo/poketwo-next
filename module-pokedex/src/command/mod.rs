@@ -1,1 +1,3 @@
-pub mod pokedex;
+mod pokedex;
+
+pub use pokedex::pokedex;

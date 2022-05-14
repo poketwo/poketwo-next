@@ -8,9 +8,12 @@ use serde::Deserialize;
 #[derive(Deserialize, Clone)]
 pub struct Config {
     pub token: String,
+
     pub amqp_url: String,
     pub amqp_exchange: String,
     pub amqp_queue: String,
+
+    pub database_service_url: String,
 }
 
 lazy_static! {

@@ -938,6 +938,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "indoc"
+version = "1.0.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "05a0bd019339e5d968b37855180087b7b9d512c5046fbd244cf8c95687927d6e"
+
+[[package]]
 name = "inlinable_string"
 version = "0.1.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1400,17 +1406,20 @@ dependencies = [
  "anyhow",
  "figment",
  "futures-util",
+ "indoc",
  "lapin",
  "lazy_static",
- "poketwo-gateway-client",
+ "poketwo-command-framework",
+ "poketwo-protobuf",
  "serde",
- "serde_json",
  "tokio",
+ "tonic",
  "tracing",
  "tracing-subscriber",
  "twilight-http",
  "twilight-interactions",
  "twilight-model",
+ "twilight-util",
 ]
 
 [[package]]
@@ -2106,9 +2115,9 @@ dependencies = [
 
 [[package]]
 name = "tonic"
-version = "0.7.1"
+version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "30fb54bf1e446f44d870d260d99957e7d11fb9d0a0f5bd1a662ad1411cc103f9"
+checksum = "5be9d60db39854b30b835107500cf0aca0b0d14d6e1c3de124217c23a29c2ddb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -2405,6 +2414,16 @@ dependencies = [
  "serde_repr",
  "time",
  "tracing",
+]
+
+[[package]]
+name = "twilight-util"
+version = "0.10.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9d65ae88fff2c9f64d8d4cd6513924895f9c475b0f62754cb4cdd304612f5ed7"
+dependencies = [
+ "twilight-model",
+ "twilight-validate",
 ]
 
 [[package]]
