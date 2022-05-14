@@ -9,12 +9,12 @@ use twilight_model::{
 use crate::context::Context;
 
 #[derive(Clone)]
-pub struct Command {
+pub struct Command<T> {
     pub command: TwilightCommand,
-    pub handler: fn(Context) -> BoxFuture<Result<InteractionResponse>>,
+    pub handler: fn(Context<T>) -> BoxFuture<Result<InteractionResponse>>,
 }
 
-impl Debug for Command {
+impl<T> Debug for Command<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         self.command.fmt(f)
     }

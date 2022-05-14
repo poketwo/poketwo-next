@@ -1,41 +1,41 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
 use anyhow::{bail, Result};
-use futures_util::StreamExt;
+use futures_util::{lock::Mutex, StreamExt};
 use lapin::{message::Delivery, options::BasicAckOptions};
 use poketwo_gateway_client::{GatewayClient, GatewayClientOptions};
 use tracing::{error, info};
 use twilight_http::{client::InteractionClient, Client};
 use twilight_model::{
     application::interaction::Interaction, gateway::payload::incoming::InteractionCreate, id::Id,
-    oauth::Application,
 };
 
 use crate::{command::Command, context::Context};
 
 #[derive(Debug, Clone)]
-pub struct CommandClientOptions {
+pub struct CommandClientOptions<T> {
     pub amqp_url: String,
     pub amqp_exchange: String,
     pub amqp_queue: String,
-    pub commands: Vec<Command>,
+    pub commands: Vec<Command<T>>,
 }
 
 #[derive(Debug)]
-pub struct CommandClient<'a> {
-    pub application: Application,
+pub struct CommandClient<'a, T> {
     pub http: &'a Client,
     pub interaction: InteractionClient<'a>,
     pub gateway: GatewayClient,
+    pub data: Arc<Mutex<T>>,
 
-    commands: HashMap<String, Command>,
+    commands: HashMap<String, Command<T>>,
 }
 
-impl<'a> CommandClient<'a> {
+impl<'a, T> CommandClient<'a, T> {
     pub async fn connect(
         http: &'a Client,
-        options: CommandClientOptions,
-    ) -> Result<CommandClient<'a>> {
+        data: T,
+        options: CommandClientOptions<T>,
+    ) -> Result<CommandClient<'a, T>> {
         let gateway_options = GatewayClientOptions {
             amqp_url: options.amqp_url.clone(),
             amqp_exchange: options.amqp_exchange.clone(),
@@ -57,7 +57,7 @@ impl<'a> CommandClient<'a> {
             };
         }
 
-        Ok(Self { application, http, interaction, gateway, commands })
+        Ok(Self { http, interaction, gateway, commands, data: Arc::new(Mutex::new(data)) })
     }
 
     pub async fn register_commands(&self) -> Result<()> {

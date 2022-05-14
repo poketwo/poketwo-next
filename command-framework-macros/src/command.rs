@@ -3,7 +3,9 @@ use inflector::Inflector;
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;
 use quote::quote;
-use syn::{AttributeArgs, FnArg, Ident, ItemFn, NestedMeta, Pat};
+use syn::{fold::fold_type, AttributeArgs, FnArg, Ident, ItemFn, NestedMeta, Pat, Visibility};
+
+use crate::util::AllLifetimesToStatic;
 
 #[derive(Default, Debug, FromMeta)]
 struct CommandOptions {
@@ -17,9 +19,12 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
         abort!(input.sig.asyncness, "Function must be async");
     }
 
-    if input.sig.inputs.is_empty() {
-        abort!(input.sig.inputs, "Expected context parameter");
-    }
+    let ctx_type = match input.sig.inputs.first() {
+        Some(FnArg::Typed(x)) => (*x.ty).clone(),
+        _ => abort!(input.sig.generics, "Expected context parameter"),
+    };
+
+    let ctx_type_with_static = fold_type(&mut AllLifetimesToStatic, ctx_type.clone());
 
     let options = match CommandOptions::from_list(&args) {
         Ok(x) => x,
@@ -32,6 +37,9 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
 
     input.sig.ident = Ident::new("inner", input.sig.ident.span());
 
+    let vis = input.vis.clone();
+    input.vis = Visibility::Inherited;
+
     let name = options.name.unwrap_or_else(|| ident.to_string());
     let desc = options.desc;
     let default_permission = options.default_permission;
@@ -42,7 +50,7 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
     quote! {
         #[derive(Debug, ::twilight_interactions::command::CreateCommand, ::twilight_interactions::command::CommandModel)]
         #[command(name = #name, desc = #desc, default_permission = #default_permission)]
-        pub struct #model_ident {
+        #vis struct #model_ident {
             #(#struct_fields),*
         }
 
@@ -51,7 +59,7 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
 
             pub async fn handler(
                 self,
-                ctx: ::poketwo_command_framework::context::Context<'_>
+                ctx: #ctx_type,
             ) -> ::poketwo_command_framework::anyhow::Result<
                 ::poketwo_command_framework::twilight_model::http::interaction::InteractionResponse
             > {
@@ -59,12 +67,14 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
             }
         }
 
-        fn #ident() -> ::poketwo_command_framework::command::Command {
+        #vis fn #ident() -> ::poketwo_command_framework::command::Command<
+            <#ctx_type_with_static as ::poketwo_command_framework::context::_Context>::T
+        > {
             use ::twilight_interactions::command::{CommandModel, CreateCommand};
 
             ::poketwo_command_framework::command::Command {
                 command: #model_ident::create_command().into(),
-                handler: |ctx: ::poketwo_command_framework::context::Context| Box::pin(async move {
+                handler: |ctx: #ctx_type| Box::pin(async move {
                     #model_ident::from_interaction(ctx.interaction.data.clone().into())?.handler(ctx).await
                 })
             }

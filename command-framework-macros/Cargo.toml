@@ -14,14 +14,6 @@ darling = "0.14.1"
 proc-macro-error = "1.0.4"
 proc-macro2 = "1.0.38"
 quote = "1.0.18"
-syn = { version = "1.0.92", features = [
-    "derive",
-    "full",
-    "parsing",
-    "printing",
-    "clone-impls",
-    "extra-traits",
-    "proc-macro",
-] }
+syn = { version = "1.0.92", features = ["derive", "full", "parsing", "printing", "clone-impls", "extra-traits", "proc-macro", "fold"] }
 
 [features]
