@@ -7,6 +7,8 @@ defmodule Poketwo.Database.Models.Language do
     field :iso3166, :string
     field :identifier, :string
     field :official, :boolean
+    field :order, :integer
+    field :enabled, :boolean
   end
 
   def to_protobuf(%Models.Language{} = language) do

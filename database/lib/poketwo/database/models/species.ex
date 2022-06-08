@@ -11,6 +11,7 @@ defmodule Poketwo.Database.Models.Species do
 
     has_many :info, Models.SpeciesInfo
     has_many :variants, Models.Variant
+    belongs_to :generation, Models.Generation
   end
 
   def query_by_id(id) do

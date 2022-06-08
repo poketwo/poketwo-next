@@ -22,6 +22,7 @@ defmodule Poketwo.Database.Models.Variant do
     field :is_redeemable, :boolean
 
     has_many :info, Models.VariantInfo
+    many_to_many :types, Models.Type, join_through: "pokemon_variant_types"
     belongs_to :species, Models.Species
   end
 
