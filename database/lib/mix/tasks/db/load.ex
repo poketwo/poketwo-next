@@ -3,21 +3,43 @@ defmodule Mix.Tasks.Db.Load do
   @shortdoc "Loads data"
   @requirements ["app.start"]
 
+  @enabled_languages [2, 3, 5, 6, 7, 8, 9, 11, 12]
   @ultra_beasts [793, 794, 795, 796, 797, 798, 799, 803, 804, 805, 806]
 
   use Mix.Task
   alias Poketwo.Database.Repo
-  alias Poketwo.Database.Models.{Variant, VariantInfo, Language, Species, SpeciesInfo}
+
+  alias Poketwo.Database.Models.{
+    Generation,
+    GenerationInfo,
+    Language,
+    Region,
+    RegionInfo,
+    Species,
+    SpeciesInfo,
+    Type,
+    TypeInfo,
+    Variant,
+    VariantInfo,
+    VariantType
+  }
 
   require Logger
 
   @impl true
   def run(_args) do
     load_languages()
+    load_regions()
+    load_region_info()
+    load_generations()
+    load_generation_info()
+    load_types()
+    load_type_info()
     load_species()
     load_species_info()
     load_variants()
     load_variant_info()
+    load_variant_types()
   end
 
   defp load_languages do
@@ -26,6 +48,54 @@ defmodule Mix.Tasks.Db.Load do
     read_csv_file("languages.csv")
     |> Enum.map(&parse_language/1)
     |> insert_into(Language)
+  end
+
+  defp load_regions do
+    Logger.info("Loading regions...")
+
+    read_csv_file("regions.csv")
+    |> Enum.map(&parse_region/1)
+    |> insert_into(Region)
+  end
+
+  defp load_region_info do
+    Logger.info("Loading region info...")
+
+    read_csv_file("region_names.csv")
+    |> Enum.map(&parse_region_info/1)
+    |> insert_into(RegionInfo, [:region_id, :language_id])
+  end
+
+  defp load_generations do
+    Logger.info("Loading generations...")
+
+    read_csv_file("generations.csv")
+    |> Enum.map(&parse_generation/1)
+    |> insert_into(Generation)
+  end
+
+  defp load_generation_info do
+    Logger.info("Loading generation info...")
+
+    read_csv_file("generation_names.csv")
+    |> Enum.map(&parse_generation_info/1)
+    |> insert_into(GenerationInfo, [:generation_id, :language_id])
+  end
+
+  defp load_types do
+    Logger.info("Loading types...")
+
+    read_csv_file("types.csv")
+    |> Enum.map(&parse_type/1)
+    |> insert_into(Type)
+  end
+
+  defp load_type_info do
+    Logger.info("Loading type info...")
+
+    read_csv_file("type_names.csv")
+    |> Enum.map(&parse_type_info/1)
+    |> insert_into(TypeInfo, [:type_id, :language_id])
   end
 
   defp load_species do
@@ -77,6 +147,20 @@ defmodule Mix.Tasks.Db.Load do
     |> insert_into(VariantInfo, [:variant_id, :language_id])
   end
 
+  defp load_variant_types do
+    Logger.info("Loading pokemon variant types...")
+
+    variants =
+      read_csv_file("pokemon_forms.csv")
+      |> Enum.reduce(%{}, fn x, acc ->
+        Map.update(acc, int(x["pokemon_id"]), [int(x["id"])], &[int(x["id"]) | &1])
+      end)
+
+    read_csv_file("pokemon_types.csv")
+    |> Enum.flat_map(&parse_variant_type(&1, variants))
+    |> insert_into(VariantType, [:variant_id, :slot])
+  end
+
   # Utils
 
   defp read_csv_file(filename) do
@@ -107,7 +191,56 @@ defmodule Mix.Tasks.Db.Load do
       identifier: row["identifier"],
       iso639: row["iso639"],
       iso3166: row["iso3166"],
-      official: bool(row["official"])
+      official: bool(row["official"]),
+      order: int(row["order"]),
+      enabled: int(row["id"]) in @enabled_languages
+    }
+  end
+
+  defp parse_region(row) do
+    %{
+      id: int(row["id"]),
+      identifier: row["identifier"]
+    }
+  end
+
+  defp parse_region_info(row) do
+    %{
+      region_id: int(row["region_id"]),
+      language_id: int(row["local_language_id"]),
+      name: row["name"]
+    }
+  end
+
+  defp parse_generation(row) do
+    %{
+      id: int(row["id"]),
+      identifier: row["identifier"],
+      main_region_id: int(row["main_region_id"])
+    }
+  end
+
+  defp parse_generation_info(row) do
+    %{
+      generation_id: int(row["generation_id"]),
+      language_id: int(row["local_language_id"]),
+      name: row["name"]
+    }
+  end
+
+  defp parse_type(row) do
+    %{
+      id: int(row["id"]),
+      identifier: row["identifier"],
+      generation_id: int(row["generation_id"])
+    }
+  end
+
+  defp parse_type_info(row) do
+    %{
+      type_id: int(row["type_id"]),
+      language_id: int(row["local_language_id"]),
+      name: row["name"]
     }
   end
 
@@ -119,7 +252,8 @@ defmodule Mix.Tasks.Db.Load do
       identifier: row["identifier"],
       is_legendary: bool(row["is_legendary"]),
       is_mythical: bool(row["is_mythical"]),
-      is_ultra_beast: Enum.member?(@ultra_beasts, id)
+      is_ultra_beast: id in @ultra_beasts,
+      generation_id: int(row["generation_id"])
     }
   end
 
@@ -169,6 +303,18 @@ defmodule Mix.Tasks.Db.Load do
       variant_name: Map.get(row, "form_name"),
       pokemon_name: Map.get(row, "pokemon_name")
     }
+  end
+
+  defp parse_variant_type(row, variants) do
+    variants
+    |> Map.get(int(row["pokemon_id"]), [])
+    |> Enum.map(
+      &%{
+        variant_id: &1,
+        slot: int(row["slot"]),
+        type_id: int(row["type_id"])
+      }
+    )
   end
 
   def int(x), do: String.to_integer(x)
