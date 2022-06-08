@@ -22,6 +22,108 @@ defmodule Poketwo.Database.V1.Language do
   field :identifier, 4, type: :string
   field :official, 5, type: :bool
 end
+defmodule Poketwo.Database.V1.Region do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          id: integer,
+          identifier: String.t(),
+          info: [Poketwo.Database.V1.RegionInfo.t()]
+        }
+
+  defstruct id: 0,
+            identifier: "",
+            info: []
+
+  field :id, 1, type: :int32
+  field :identifier, 2, type: :string
+  field :info, 3, repeated: true, type: Poketwo.Database.V1.RegionInfo
+end
+defmodule Poketwo.Database.V1.RegionInfo do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          name: String.t(),
+          language: Poketwo.Database.V1.Language.t() | nil
+        }
+
+  defstruct name: "",
+            language: nil
+
+  field :name, 1, type: :string
+  field :language, 2, type: Poketwo.Database.V1.Language
+end
+defmodule Poketwo.Database.V1.Generation do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          id: integer,
+          identifier: String.t(),
+          info: [Poketwo.Database.V1.GenerationInfo.t()],
+          main_region: Poketwo.Database.V1.Region.t() | nil
+        }
+
+  defstruct id: 0,
+            identifier: "",
+            info: [],
+            main_region: nil
+
+  field :id, 1, type: :int32
+  field :identifier, 2, type: :string
+  field :info, 3, repeated: true, type: Poketwo.Database.V1.GenerationInfo
+  field :main_region, 4, type: Poketwo.Database.V1.Region, json_name: "mainRegion"
+end
+defmodule Poketwo.Database.V1.GenerationInfo do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          name: String.t(),
+          language: Poketwo.Database.V1.Language.t() | nil
+        }
+
+  defstruct name: "",
+            language: nil
+
+  field :name, 1, type: :string
+  field :language, 2, type: Poketwo.Database.V1.Language
+end
+defmodule Poketwo.Database.V1.Type do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          id: integer,
+          identifier: String.t(),
+          info: [Poketwo.Database.V1.TypeInfo.t()]
+        }
+
+  defstruct id: 0,
+            identifier: "",
+            info: []
+
+  field :id, 1, type: :int32
+  field :identifier, 2, type: :string
+  field :info, 3, repeated: true, type: Poketwo.Database.V1.TypeInfo
+end
+defmodule Poketwo.Database.V1.TypeInfo do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          name: String.t(),
+          language: Poketwo.Database.V1.Language.t() | nil
+        }
+
+  defstruct name: "",
+            language: nil
+
+  field :name, 1, type: :string
+  field :language, 2, type: Poketwo.Database.V1.Language
+end
 defmodule Poketwo.Database.V1.Species do
   @moduledoc false
   use Protobuf, syntax: :proto3
@@ -33,7 +135,8 @@ defmodule Poketwo.Database.V1.Species do
           is_mythical: boolean,
           is_ultra_beast: boolean,
           info: [Poketwo.Database.V1.SpeciesInfo.t()],
-          variants: [Poketwo.Database.V1.Variant.t()]
+          variants: [Poketwo.Database.V1.Variant.t()],
+          generation: Poketwo.Database.V1.Generation.t() | nil
         }
 
   defstruct id: 0,
@@ -42,7 +145,8 @@ defmodule Poketwo.Database.V1.Species do
             is_mythical: false,
             is_ultra_beast: false,
             info: [],
-            variants: []
+            variants: [],
+            generation: nil
 
   field :id, 1, type: :int32
   field :identifier, 2, type: :string
@@ -51,6 +155,7 @@ defmodule Poketwo.Database.V1.Species do
   field :is_ultra_beast, 5, type: :bool, json_name: "isUltraBeast"
   field :info, 6, repeated: true, type: Poketwo.Database.V1.SpeciesInfo
   field :variants, 7, repeated: true, type: Poketwo.Database.V1.Variant
+  field :generation, 8, type: Poketwo.Database.V1.Generation
 end
 defmodule Poketwo.Database.V1.SpeciesInfo do
   @moduledoc false
@@ -96,7 +201,8 @@ defmodule Poketwo.Database.V1.Variant do
           is_catchable: boolean,
           is_redeemable: boolean,
           info: [Poketwo.Database.V1.VariantInfo.t()],
-          species: Poketwo.Database.V1.Species.t() | nil
+          species: Poketwo.Database.V1.Species.t() | nil,
+          types: [Poketwo.Database.V1.Type.t()]
         }
 
   defstruct id: 0,
@@ -117,7 +223,8 @@ defmodule Poketwo.Database.V1.Variant do
             is_catchable: false,
             is_redeemable: false,
             info: [],
-            species: nil
+            species: nil,
+            types: []
 
   field :id, 1, type: :int32
   field :identifier, 2, type: :string
@@ -138,6 +245,7 @@ defmodule Poketwo.Database.V1.Variant do
   field :is_redeemable, 17, type: :bool, json_name: "isRedeemable"
   field :info, 18, repeated: true, type: Poketwo.Database.V1.VariantInfo
   field :species, 19, type: Poketwo.Database.V1.Species
+  field :types, 20, repeated: true, type: Poketwo.Database.V1.Type
 end
 defmodule Poketwo.Database.V1.VariantInfo do
   @moduledoc false

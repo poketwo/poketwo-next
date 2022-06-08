@@ -12,6 +12,40 @@ message Language {
   bool official = 5;
 }
 
+message Region {
+  int32 id = 1;
+  string identifier = 2;
+  repeated RegionInfo info = 3;
+}
+
+message RegionInfo {
+  string name = 1;
+  Language language = 2;
+}
+
+message Generation {
+  int32 id = 1;
+  string identifier = 2;
+  repeated GenerationInfo info = 3;
+  Region main_region = 4;
+}
+
+message GenerationInfo {
+  string name = 1;
+  Language language = 2;
+}
+
+message Type {
+  int32 id = 1;
+  string identifier = 2;
+  repeated TypeInfo info = 3;
+}
+
+message TypeInfo {
+  string name = 1;
+  Language language = 2;
+}
+
 message Species {
   int32 id = 1;
   string identifier = 2;
@@ -20,6 +54,7 @@ message Species {
   bool is_ultra_beast = 5;
   repeated SpeciesInfo info = 6;
   repeated Variant variants = 7;
+  Generation generation = 8;
 }
 
 message SpeciesInfo {
@@ -49,6 +84,7 @@ message Variant {
   bool is_redeemable = 17;
   repeated VariantInfo info = 18;
   Species species = 19;
+  repeated Type types = 20;
 }
 
 message VariantInfo {
