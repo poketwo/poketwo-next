@@ -15,7 +15,7 @@ defmodule Poketwo.Database.Models.VariantInfo do
     V1.VariantInfo.new(
       variant_name: Utils.string_value(info.variant_name),
       pokemon_name: Utils.string_value(info.pokemon_name),
-      language: Models.Language.to_protobuf(info.language)
+      language: Utils.if_loaded(info.language, &Models.Language.to_protobuf/1)
     )
   end
 

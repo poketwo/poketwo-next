@@ -29,7 +29,11 @@ defmodule Poketwo.Database.Models.Variant do
   def query_by_id(id) do
     from v in Models.Variant,
       where: v.id == ^id,
-      preload: [info: :language, species: [info: :language]]
+      preload: [
+        types: :info,
+        info: :language,
+        species: [generation: [:info, main_region: :info], info: :language]
+      ]
   end
 
   def query_by_name(name) do
@@ -43,7 +47,11 @@ defmodule Poketwo.Database.Models.Variant do
           i.pokemon_name == ^name or
           (v.is_default and s.identifier == ^name) or
           (v.is_default and si.name == ^name),
-      preload: [info: :language, species: [info: :language]],
+      preload: [
+        types: :info,
+        info: :language,
+        species: [generation: [:info, main_region: :info], info: :language]
+      ],
       limit: 1
   end
 
@@ -67,7 +75,8 @@ defmodule Poketwo.Database.Models.Variant do
       is_catchable: variant.is_catchable,
       is_redeemable: variant.is_redeemable,
       info: Utils.map_if_loaded(variant.info, &Models.VariantInfo.to_protobuf/1),
-      species: Utils.if_loaded(variant.species, &Models.Species.to_protobuf/1)
+      species: Utils.if_loaded(variant.species, &Models.Species.to_protobuf/1),
+      types: Utils.map_if_loaded(variant.types, &Models.Type.to_protobuf/1)
     )
   end
 

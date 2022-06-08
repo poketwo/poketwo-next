@@ -17,14 +17,14 @@ defmodule Poketwo.Database.Models.Species do
   def query_by_id(id) do
     from s in Models.Species,
       where: s.id == ^id,
-      preload: [info: :language, variants: :info]
+      preload: [generation: [:info, main_region: :info], info: :language, variants: :info]
   end
 
   def query_by_name(name) do
     from s in Models.Species,
       left_join: i in assoc(s, :info),
       where: s.identifier == ^name or i.name == ^name,
-      preload: [info: :language, variants: :info],
+      preload: [generation: [:info, main_region: :info], info: :language, variants: :info],
       limit: 1
   end
 
@@ -36,7 +36,8 @@ defmodule Poketwo.Database.Models.Species do
       is_mythical: species.is_mythical,
       is_ultra_beast: species.is_ultra_beast,
       info: Utils.map_if_loaded(species.info, &Models.SpeciesInfo.to_protobuf/1),
-      variants: Utils.map_if_loaded(species.variants, &Models.Variant.to_protobuf/1)
+      variants: Utils.map_if_loaded(species.variants, &Models.Variant.to_protobuf/1),
+      generation: Utils.if_loaded(species.generation, &Models.Generation.to_protobuf/1)
     )
   end
 
