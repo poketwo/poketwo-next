@@ -2,6 +2,7 @@ defmodule Poketwo.Database.Models.Variant do
   use Ecto.Schema
   import Ecto.Query
   alias Poketwo.Database.{Models, V1, Utils}
+  require Poketwo.Database.Utils
 
   schema "pokemon_variants" do
     field :identifier, :string
@@ -30,9 +31,15 @@ defmodule Poketwo.Database.Models.Variant do
     from v in Models.Variant,
       where: v.id == ^id,
       preload: [
-        types: :info,
-        info: :language,
-        species: [generation: [:info, main_region: :info], info: :language]
+        types: [info: ^Utils.from_info(Models.TypeInfo)],
+        info: ^Utils.from_info(Models.VariantInfo),
+        species: [
+          generation: [
+            info: ^Utils.from_info(Models.GenerationInfo),
+            main_region: [info: ^Utils.from_info(Models.RegionInfo)]
+          ],
+          info: ^Utils.from_info(Models.SpeciesInfo)
+        ]
       ]
   end
 
@@ -48,9 +55,15 @@ defmodule Poketwo.Database.Models.Variant do
           (v.is_default and s.identifier == ^name) or
           (v.is_default and si.name == ^name),
       preload: [
-        types: :info,
-        info: :language,
-        species: [generation: [:info, main_region: :info], info: :language]
+        types: [info: ^Utils.from_info(Models.TypeInfo)],
+        info: ^Utils.from_info(Models.VariantInfo),
+        species: [
+          generation: [
+            info: ^Utils.from_info(Models.GenerationInfo),
+            main_region: [info: ^Utils.from_info(Models.RegionInfo)]
+          ],
+          info: ^Utils.from_info(Models.SpeciesInfo)
+        ]
       ],
       limit: 1
   end

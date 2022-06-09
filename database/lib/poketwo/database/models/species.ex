@@ -2,6 +2,7 @@ defmodule Poketwo.Database.Models.Species do
   use Ecto.Schema
   import Ecto.Query
   alias Poketwo.Database.{Models, V1, Utils}
+  require Poketwo.Database.Utils
 
   schema "pokemon_species" do
     field :identifier, :string
@@ -17,14 +18,28 @@ defmodule Poketwo.Database.Models.Species do
   def query_by_id(id) do
     from s in Models.Species,
       where: s.id == ^id,
-      preload: [generation: [:info, main_region: :info], info: :language, variants: :info]
+      preload: [
+        generation: [
+          info: ^Utils.from_info(Models.GenerationInfo),
+          main_region: [info: ^Utils.from_info(Models.RegionInfo)]
+        ],
+        info: ^Utils.from_info(Models.SpeciesInfo),
+        variants: [info: ^Utils.from_info(Models.VariantInfo)]
+      ]
   end
 
   def query_by_name(name) do
     from s in Models.Species,
       left_join: i in assoc(s, :info),
       where: s.identifier == ^name or i.name == ^name,
-      preload: [generation: [:info, main_region: :info], info: :language, variants: :info],
+      preload: [
+        generation: [
+          info: ^Utils.from_info(Models.GenerationInfo),
+          main_region: [info: ^Utils.from_info(Models.RegionInfo)]
+        ],
+        info: ^Utils.from_info(Models.SpeciesInfo),
+        variants: [info: ^Utils.from_info(Models.VariantInfo)]
+      ],
       limit: 1
   end
 
