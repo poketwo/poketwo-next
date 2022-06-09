@@ -1403,6 +1403,7 @@ dependencies = [
 name = "poketwo-module-pokedex"
 version = "0.1.0"
 dependencies = [
+ "Inflector",
  "anyhow",
  "figment",
  "futures-util",
