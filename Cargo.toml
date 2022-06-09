@@ -2,7 +2,6 @@
 members = [
     "command-framework",
     "command-framework-macros",
-    "command-framework-test",
     "gateway",
     "gateway-client",
     "i18n-rust",
