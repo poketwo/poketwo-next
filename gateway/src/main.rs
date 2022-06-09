@@ -41,9 +41,7 @@ async fn main() -> Result<()> {
 
 fn get_payload(event: &Event) -> Option<(Vec<u8>, String)> {
     match event {
-        Event::MessageCreate(data) => {
-            Some((serde_json::to_vec(data).ok()?, "MESSAGE_CREATE".into()))
-        }
+        Event::MessageCreate(data) => Some((serde_json::to_vec(data).ok()?, "MESSAGE_CREATE".into())),
         Event::InteractionCreate(data) => match &**data {
             Interaction::ApplicationCommand(interaction) => Some((
                 serde_json::to_vec(data).ok()?,

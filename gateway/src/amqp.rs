@@ -8,13 +8,8 @@ use lapin::{
 
 use crate::config::Config;
 
-static EXCHANGE_DECLARE_OPTIONS: ExchangeDeclareOptions = ExchangeDeclareOptions {
-    passive: false,
-    durable: true,
-    auto_delete: false,
-    internal: false,
-    nowait: false,
-};
+static EXCHANGE_DECLARE_OPTIONS: ExchangeDeclareOptions =
+    ExchangeDeclareOptions { passive: false, durable: true, auto_delete: false, internal: false, nowait: false };
 
 pub struct Amqp {
     pub config: Config,
@@ -24,9 +19,7 @@ pub struct Amqp {
 
 impl Amqp {
     pub async fn connect(config: &Config) -> Result<Self> {
-        let connection =
-            lapin::Connection::connect(&config.amqp_url, lapin::ConnectionProperties::default())
-                .await?;
+        let connection = lapin::Connection::connect(&config.amqp_url, lapin::ConnectionProperties::default()).await?;
 
         let channel = connection.create_channel().await?;
 
@@ -50,10 +43,7 @@ impl Amqp {
                 BasicPublishOptions::default(),
                 payload,
                 AMQPProperties::default().with_expiration(
-                    self.config
-                        .amqp_expiration
-                        .map(|x| x.to_string().into())
-                        .unwrap_or_else(|| "60000".into()),
+                    self.config.amqp_expiration.map(|x| x.to_string().into()).unwrap_or_else(|| "60000".into()),
                 ),
             )
             .await?;

@@ -20,11 +20,7 @@ impl<T> Context<'_, T> {
         LOCALES.lookup(&self.get_langid(), text_id)
     }
 
-    pub fn locale_lookup_with_args<K: AsRef<str>>(
-        &self,
-        text_id: &str,
-        args: &HashMap<K, FluentValue>,
-    ) -> String {
+    pub fn locale_lookup_with_args<K: AsRef<str>>(&self, text_id: &str, args: &HashMap<K, FluentValue>) -> String {
         LOCALES.lookup_with_args(&self.get_langid(), text_id, args)
     }
 }

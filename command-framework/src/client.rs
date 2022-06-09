@@ -35,11 +35,7 @@ pub struct CommandClient<'a, T> {
 }
 
 impl<'a, T> CommandClient<'a, T> {
-    pub async fn connect(
-        http: &'a Client,
-        state: T,
-        options: CommandClientOptions<T>,
-    ) -> Result<CommandClient<'a, T>> {
+    pub async fn connect(http: &'a Client, state: T, options: CommandClientOptions<T>) -> Result<CommandClient<'a, T>> {
         let gateway_options = GatewayClientOptions {
             amqp_url: options.amqp_url.clone(),
             amqp_exchange: options.amqp_exchange.clone(),
@@ -113,11 +109,7 @@ impl<'a, T> CommandClient<'a, T> {
                 let ctx = Context { client: self, interaction: *interaction };
 
                 self.interaction
-                    .create_response(
-                        ctx.interaction.id,
-                        &ctx.interaction.token.clone(),
-                        &(command.handler)(ctx).await?,
-                    )
+                    .create_response(ctx.interaction.id, &ctx.interaction.token.clone(), &(command.handler)(ctx).await?)
                     .exec()
                     .await?;
             }
