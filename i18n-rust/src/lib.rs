@@ -1,7 +1,5 @@
-pub use fluent_templates;
-use fluent_templates::{fs::langid, static_loader, LanguageIdentifier};
-
-pub const US_ENGLISH: LanguageIdentifier = langid!("en-US");
+use fluent_templates::fs::langid;
+pub use fluent_templates::*;
 
 static_loader! {
     pub static LOCALES = {
@@ -9,3 +7,5 @@ static_loader! {
         fallback_language: "en-US",
     };
 }
+
+pub const US_ENGLISH: LanguageIdentifier = langid!("en-US");

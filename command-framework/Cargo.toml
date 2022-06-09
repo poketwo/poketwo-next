@@ -12,6 +12,7 @@ futures-util = "0.3.21"
 lapin = "2.1.1"
 poketwo-command-framework-macros = { version = "0.1.0", path = "../command-framework-macros" }
 poketwo-gateway-client = { version = "0.1.0", path = "../gateway-client" }
+poketwo-i18n = { version = "0.1.0", path = "../i18n-rust" }
 serde_json = "1.0.81"
 tracing = "0.1.34"
 twilight-http = "0.10.2"

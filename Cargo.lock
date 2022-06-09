@@ -1523,6 +1523,7 @@ dependencies = [
  "lapin",
  "poketwo-command-framework-macros",
  "poketwo-gateway-client",
+ "poketwo-i18n",
  "serde_json",
  "tracing",
  "twilight-http",

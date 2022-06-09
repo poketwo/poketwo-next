@@ -11,6 +11,8 @@ use twilight_http::Client;
 use crate::config::CONFIG;
 use crate::state::State;
 
+pub(crate) type Context<'a> = poketwo_command_framework::context::Context<'a, State>;
+
 #[tokio::main]
 async fn main() -> Result<()> {
     tracing_subscriber::fmt::init();

@@ -1,7 +1,6 @@
 use anyhow::{anyhow, Result};
 use inflector::Inflector;
-use poketwo_command_framework::{command, context::Context, group};
-use poketwo_i18n::{fluent_templates::Loader, LOCALES, US_ENGLISH};
+use poketwo_command_framework::{command, group};
 use poketwo_protobuf::poketwo::database::v1::{
     get_variant_request::Query, GetVariantRequest, Species, SpeciesInfo, Variant,
 };
@@ -11,7 +10,7 @@ use twilight_model::{
 };
 use twilight_util::builder::embed::{EmbedBuilder, EmbedFieldBuilder, ImageSource};
 
-use crate::state::State;
+use crate::Context;
 
 const FLAG_OFFSET: u32 = 0x1F1E6;
 const ASCII_OFFSET: u32 = 0x41;
@@ -41,20 +40,20 @@ fn format_region(species: &Species) -> Result<String> {
     Ok(region.identifier.to_title_case())
 }
 
-fn format_base_stats(variant: &Variant) -> String {
+fn format_base_stats(ctx: &Context<'_>, variant: &Variant) -> String {
     format!(
         "**{}:** {}\n**{}:** {}\n**{}:** {}\n**{}:** {}\n**{}:** {}\n**{}:** {}",
-        LOCALES.lookup(&US_ENGLISH, "hp"),
+        ctx.locale_lookup("hp"),
         variant.base_hp,
-        LOCALES.lookup(&US_ENGLISH, "atk"),
+        ctx.locale_lookup("atk"),
         variant.base_atk,
-        LOCALES.lookup(&US_ENGLISH, "def"),
+        ctx.locale_lookup("def"),
         variant.base_def,
-        LOCALES.lookup(&US_ENGLISH, "satk"),
+        ctx.locale_lookup("satk"),
         variant.base_satk,
-        LOCALES.lookup(&US_ENGLISH, "sdef"),
+        ctx.locale_lookup("sdef"),
         variant.base_sdef,
-        LOCALES.lookup(&US_ENGLISH, "spd"),
+        ctx.locale_lookup("spd"),
         variant.base_spd,
     )
 }
@@ -73,19 +72,20 @@ fn format_names(species: &Species) -> Result<String> {
     Ok(result)
 }
 
-fn format_appearance(variant: &Variant) -> String {
+fn format_appearance(ctx: &Context<'_>, variant: &Variant) -> String {
     format!(
         "{}: {}\n{}: {}",
-        LOCALES.lookup(&US_ENGLISH, "height"),
+        ctx.locale_lookup("height"),
         variant.height,
-        LOCALES.lookup(&US_ENGLISH, "weight"),
+        ctx.locale_lookup("weight"),
         variant.weight
     )
 }
 
-fn format_variant_embed(variant: &Variant) -> Result<Embed> {
+fn format_variant_embed(ctx: &Context<'_>, variant: &Variant) -> Result<Embed> {
     let species = variant.species.as_ref().ok_or_else(|| anyhow!("Missing species"))?;
-    let info = species.info.first().ok_or_else(|| anyhow!("Missing species info"))?;
+    let info =
+        species.get_locale_info(&ctx.interaction.locale).ok_or_else(|| anyhow!("Missing info"))?;
 
     let mut embed = EmbedBuilder::new()
         .title(format!("#{} — {}", variant.id, info.name))
@@ -95,34 +95,22 @@ fn format_variant_embed(variant: &Variant) -> Result<Embed> {
         embed = embed.description(flavor_text);
     }
 
+    embed = embed
+        .field(EmbedFieldBuilder::new(ctx.locale_lookup("types"), format_types(variant)).inline());
     embed = embed.field(
-        EmbedFieldBuilder::new(LOCALES.lookup(&US_ENGLISH, "types"), format_types(variant))
+        EmbedFieldBuilder::new(ctx.locale_lookup("region"), format_region(species)?).inline(),
+    );
+    embed =
+        embed.field(EmbedFieldBuilder::new(ctx.locale_lookup("catchable"), "Placeholder").inline());
+    embed = embed.field(
+        EmbedFieldBuilder::new(ctx.locale_lookup("base-stats"), format_base_stats(ctx, variant))
             .inline(),
     );
+    embed = embed
+        .field(EmbedFieldBuilder::new(ctx.locale_lookup("names"), format_names(species)?).inline());
     embed = embed.field(
-        EmbedFieldBuilder::new(LOCALES.lookup(&US_ENGLISH, "region"), format_region(species)?)
+        EmbedFieldBuilder::new(ctx.locale_lookup("appearance"), format_appearance(ctx, variant))
             .inline(),
-    );
-    embed = embed.field(
-        EmbedFieldBuilder::new(LOCALES.lookup(&US_ENGLISH, "catchable"), "Placeholder").inline(),
-    );
-    embed = embed.field(
-        EmbedFieldBuilder::new(
-            LOCALES.lookup(&US_ENGLISH, "base-stats"),
-            format_base_stats(variant),
-        )
-        .inline(),
-    );
-    embed = embed.field(
-        EmbedFieldBuilder::new(LOCALES.lookup(&US_ENGLISH, "names"), format_names(species)?)
-            .inline(),
-    );
-    embed = embed.field(
-        EmbedFieldBuilder::new(
-            LOCALES.lookup(&US_ENGLISH, "appearance"),
-            format_appearance(variant),
-        )
-        .inline(),
     );
 
     Ok(embed.validate()?.build())
@@ -130,7 +118,7 @@ fn format_variant_embed(variant: &Variant) -> Result<Embed> {
 
 #[command(desc = "Search the Pokédex for a Pokémon", default_permission = true)]
 pub async fn search(
-    ctx: Context<'_, State>,
+    ctx: Context<'_>,
     #[desc = "The name to search for"] query: String,
 ) -> Result<InteractionResponse> {
     let mut state = ctx.client.state.lock().await;
@@ -146,11 +134,11 @@ pub async fn search(
     Ok(InteractionResponse {
         kind: InteractionResponseType::ChannelMessageWithSource,
         data: Some(InteractionResponseData {
-            embeds: Some(vec![format_variant_embed(&variant)?]),
+            embeds: Some(vec![format_variant_embed(&ctx, &variant)?]),
             ..Default::default()
         }),
     })
 }
 
 #[group(desc = "Pokédex commands", default_permission = true, subcommands(search))]
-pub fn pokedex(_ctx: Context<'_, State>) {}
+pub fn pokedex(_ctx: Context<'_>) {}

@@ -7,3 +7,5 @@ edition = "2021"
 
 [dependencies]
 fluent-templates = "0.7.1"
+
+[features]

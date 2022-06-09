@@ -266,7 +266,11 @@ defmodule Mix.Tasks.Db.Load do
       language_id: language_id,
       name: row["name"],
       genus: Map.get(row, "genus"),
-      flavor_text: flavor_texts[{pokemon_id, language_id}]["flavor_text"]
+      flavor_text:
+        case flavor_texts[{pokemon_id, language_id}]["flavor_text"] do
+          nil -> nil
+          x -> String.replace(x, ~r/\s/, " ")
+        end
     }
   end
 
