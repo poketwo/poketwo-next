@@ -257,16 +257,16 @@ defmodule Mix.Tasks.Db.Load do
     }
   end
 
-  defp parse_species_info(row, flavor_text_map) do
-    pokemon_id = row["pokemon_species_id"]
-    language_id = row["local_language_id"]
+  defp parse_species_info(row, flavor_texts) do
+    pokemon_id = int(row["pokemon_species_id"])
+    language_id = int(row["local_language_id"])
 
     %{
-      species_id: int(pokemon_id),
-      language_id: int(language_id),
+      species_id: pokemon_id,
+      language_id: language_id,
       name: row["name"],
       genus: Map.get(row, "genus"),
-      flavor_text: flavor_text_map[{pokemon_id, language_id}]["flavor_text"]
+      flavor_text: flavor_texts[{pokemon_id, language_id}]["flavor_text"]
     }
   end
 
