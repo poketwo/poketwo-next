@@ -7,7 +7,9 @@ use poketwo_gateway_client::{GatewayClient, GatewayClientOptions};
 use tracing::{error, info};
 use twilight_http::{client::InteractionClient, Client};
 use twilight_model::{
-    application::interaction::Interaction, gateway::payload::incoming::InteractionCreate, id::Id,
+    application::interaction::Interaction,
+    gateway::payload::incoming::InteractionCreate,
+    id::{marker::GuildMarker, Id},
 };
 
 use crate::{command::Command, context::Context};
@@ -17,6 +19,7 @@ pub struct CommandClientOptions<T> {
     pub amqp_url: String,
     pub amqp_exchange: String,
     pub amqp_queue: String,
+    pub guild_ids: Vec<Id<GuildMarker>>,
     pub commands: Vec<Command<T>>,
 }
 
@@ -27,6 +30,7 @@ pub struct CommandClient<'a, T> {
     pub gateway: GatewayClient,
     pub state: Arc<Mutex<T>>,
 
+    guild_ids: Vec<Id<GuildMarker>>,
     commands: HashMap<String, Command<T>>,
 }
 
@@ -57,24 +61,33 @@ impl<'a, T> CommandClient<'a, T> {
             };
         }
 
-        Ok(Self { http, interaction, gateway, commands, state: Arc::new(Mutex::new(state)) })
+        Ok(Self {
+            http,
+            interaction,
+            gateway,
+            commands,
+            guild_ids: options.guild_ids,
+            state: Arc::new(Mutex::new(state)),
+        })
     }
 
     pub async fn register_commands(&self) -> Result<()> {
         info!("Registering commands");
 
         for command in self.commands.values() {
-            let mut action = self
-                .interaction
-                .create_guild_command(Id::new(967272023845929010))
-                .chat_input(&command.command.name, &command.command.description)?
-                .command_options(&command.command.options)?;
+            for guild_id in &self.guild_ids {
+                let mut action = self
+                    .interaction
+                    .create_guild_command(*guild_id)
+                    .chat_input(&command.command.name, &command.command.description)?
+                    .command_options(&command.command.options)?;
 
-            if let Some(value) = command.command.default_permission {
-                action = action.default_permission(value);
+                if let Some(value) = command.command.default_permission {
+                    action = action.default_permission(value);
+                }
+
+                action.exec().await?;
             }
-
-            action.exec().await?;
         }
 
         Ok(())

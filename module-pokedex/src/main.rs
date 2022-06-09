@@ -7,6 +7,7 @@ use command::pokedex;
 use poketwo_command_framework::client::{CommandClient, CommandClientOptions};
 use poketwo_protobuf::poketwo::database::v1::database_client::DatabaseClient;
 use twilight_http::Client;
+use twilight_model::id::Id;
 
 use crate::config::CONFIG;
 use crate::state::State;
@@ -22,6 +23,7 @@ async fn main() -> Result<()> {
         amqp_exchange: CONFIG.amqp_exchange.clone(),
         amqp_queue: CONFIG.amqp_queue.clone(),
         commands: vec![pokedex()],
+        guild_ids: vec![Id::new(967272023845929010), Id::new(787517653211938877)],
     };
 
     let http = Client::new(CONFIG.token.clone());
