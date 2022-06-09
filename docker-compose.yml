@@ -26,7 +26,8 @@ services:
   rabbitmq:
     image: rabbitmq:3.9-management
     ports:
-      - 15673:15672
+      - 15672:15672
+      - 5672:5672
     healthcheck:
       test: [ "CMD", "rabbitmq-diagnostics", "-q", "status" ]
       interval: 5s
