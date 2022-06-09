@@ -1,6 +1,7 @@
 use anyhow::{anyhow, Result};
 use inflector::Inflector;
 use poketwo_command_framework::{command, context::Context, group};
+use poketwo_i18n::{fluent_templates::Loader, LOCALES, US_ENGLISH};
 use poketwo_protobuf::poketwo::database::v1::{
     get_variant_request::Query, GetVariantRequest, Species, SpeciesInfo, Variant,
 };
@@ -42,19 +43,18 @@ fn format_region(species: &Species) -> Result<String> {
 
 fn format_base_stats(variant: &Variant) -> String {
     format!(
-        concat!(
-            "**HP:** {}\n",
-            "**Attack:** {}\n",
-            "**Defense:** {}\n",
-            "**Sp. Atk:** {}\n",
-            "**Sp. Def:** {}\n",
-            "**Speed:** {}"
-        ),
+        "**{}:** {}\n**{}:** {}\n**{}:** {}\n**{}:** {}\n**{}:** {}\n**{}:** {}",
+        LOCALES.lookup(&US_ENGLISH, "hp"),
         variant.base_hp,
+        LOCALES.lookup(&US_ENGLISH, "atk"),
         variant.base_atk,
+        LOCALES.lookup(&US_ENGLISH, "def"),
         variant.base_def,
+        LOCALES.lookup(&US_ENGLISH, "satk"),
         variant.base_satk,
+        LOCALES.lookup(&US_ENGLISH, "sdef"),
         variant.base_sdef,
+        LOCALES.lookup(&US_ENGLISH, "spd"),
         variant.base_spd,
     )
 }
@@ -74,7 +74,13 @@ fn format_names(species: &Species) -> Result<String> {
 }
 
 fn format_appearance(variant: &Variant) -> String {
-    format!("Height: {}\nWeight: {}", variant.height, variant.weight)
+    format!(
+        "{}: {}\n{}: {}",
+        LOCALES.lookup(&US_ENGLISH, "height"),
+        variant.height,
+        LOCALES.lookup(&US_ENGLISH, "weight"),
+        variant.weight
+    )
 }
 
 fn format_variant_embed(variant: &Variant) -> Result<Embed> {
@@ -89,12 +95,35 @@ fn format_variant_embed(variant: &Variant) -> Result<Embed> {
         embed = embed.description(flavor_text);
     }
 
-    embed = embed.field(EmbedFieldBuilder::new("Types", format_types(variant)).inline());
-    embed = embed.field(EmbedFieldBuilder::new("Region", format_region(species)?).inline());
-    embed = embed.field(EmbedFieldBuilder::new("Catchable", "Placeholder").inline());
-    embed = embed.field(EmbedFieldBuilder::new("Base Stats", format_base_stats(variant)).inline());
-    embed = embed.field(EmbedFieldBuilder::new("Names", format_names(species)?).inline());
-    embed = embed.field(EmbedFieldBuilder::new("Appearance", format_appearance(variant)).inline());
+    embed = embed.field(
+        EmbedFieldBuilder::new(LOCALES.lookup(&US_ENGLISH, "types"), format_types(variant))
+            .inline(),
+    );
+    embed = embed.field(
+        EmbedFieldBuilder::new(LOCALES.lookup(&US_ENGLISH, "region"), format_region(species)?)
+            .inline(),
+    );
+    embed = embed.field(
+        EmbedFieldBuilder::new(LOCALES.lookup(&US_ENGLISH, "catchable"), "Placeholder").inline(),
+    );
+    embed = embed.field(
+        EmbedFieldBuilder::new(
+            LOCALES.lookup(&US_ENGLISH, "base-stats"),
+            format_base_stats(variant),
+        )
+        .inline(),
+    );
+    embed = embed.field(
+        EmbedFieldBuilder::new(LOCALES.lookup(&US_ENGLISH, "names"), format_names(species)?)
+            .inline(),
+    );
+    embed = embed.field(
+        EmbedFieldBuilder::new(
+            LOCALES.lookup(&US_ENGLISH, "appearance"),
+            format_appearance(variant),
+        )
+        .inline(),
+    );
 
     Ok(embed.validate()?.build())
 }
