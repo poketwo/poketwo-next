@@ -265,3 +265,105 @@ defmodule Poketwo.Database.V1.VariantInfo do
   field :pokemon_name, 2, type: Google.Protobuf.StringValue, json_name: "pokemonName"
   field :language, 3, type: Poketwo.Database.V1.Language
 end
+defmodule Poketwo.Database.V1.User do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          id: non_neg_integer,
+          inserted_at: Google.Protobuf.Timestamp.t() | nil,
+          updated_at: Google.Protobuf.Timestamp.t() | nil
+        }
+
+  defstruct id: 0,
+            inserted_at: nil,
+            updated_at: nil
+
+  field :id, 1, type: :uint64
+  field :inserted_at, 2, type: Google.Protobuf.Timestamp, json_name: "insertedAt"
+  field :updated_at, 3, type: Google.Protobuf.Timestamp, json_name: "updatedAt"
+end
+defmodule Poketwo.Database.V1.PokedexEntry do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          user: Poketwo.Database.V1.User.t() | nil,
+          variant: Poketwo.Database.V1.Variant.t() | nil,
+          count: integer,
+          inserted_at: Google.Protobuf.Timestamp.t() | nil,
+          updated_at: Google.Protobuf.Timestamp.t() | nil
+        }
+
+  defstruct user: nil,
+            variant: nil,
+            count: 0,
+            inserted_at: nil,
+            updated_at: nil
+
+  field :user, 1, type: Poketwo.Database.V1.User
+  field :variant, 2, type: Poketwo.Database.V1.Variant
+  field :count, 3, type: :int32
+  field :inserted_at, 4, type: Google.Protobuf.Timestamp, json_name: "insertedAt"
+  field :updated_at, 5, type: Google.Protobuf.Timestamp, json_name: "updatedAt"
+end
+defmodule Poketwo.Database.V1.Pokemon do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          id: non_neg_integer,
+          user: Poketwo.Database.V1.User.t() | nil,
+          variant: Poketwo.Database.V1.Variant.t() | nil,
+          level: integer,
+          xp: integer,
+          shiny: boolean,
+          nature: String.t(),
+          iv_hp: integer,
+          iv_atk: integer,
+          iv_def: integer,
+          iv_satk: integer,
+          iv_sdef: integer,
+          iv_spd: integer,
+          favorite: boolean,
+          nickname: Google.Protobuf.StringValue.t() | nil,
+          inserted_at: Google.Protobuf.Timestamp.t() | nil,
+          updated_at: Google.Protobuf.Timestamp.t() | nil
+        }
+
+  defstruct id: 0,
+            user: nil,
+            variant: nil,
+            level: 0,
+            xp: 0,
+            shiny: false,
+            nature: "",
+            iv_hp: 0,
+            iv_atk: 0,
+            iv_def: 0,
+            iv_satk: 0,
+            iv_sdef: 0,
+            iv_spd: 0,
+            favorite: false,
+            nickname: nil,
+            inserted_at: nil,
+            updated_at: nil
+
+  field :id, 1, type: :uint64
+  field :user, 2, type: Poketwo.Database.V1.User
+  field :variant, 3, type: Poketwo.Database.V1.Variant
+  field :level, 4, type: :int32
+  field :xp, 5, type: :int32
+  field :shiny, 6, type: :bool
+  field :nature, 7, type: :string
+  field :iv_hp, 8, type: :int32, json_name: "ivHp"
+  field :iv_atk, 9, type: :int32, json_name: "ivAtk"
+  field :iv_def, 10, type: :int32, json_name: "ivDef"
+  field :iv_satk, 11, type: :int32, json_name: "ivSatk"
+  field :iv_sdef, 12, type: :int32, json_name: "ivSdef"
+  field :iv_spd, 13, type: :int32, json_name: "ivSpd"
+  field :favorite, 14, type: :bool
+  field :nickname, 15, type: Google.Protobuf.StringValue
+  field :inserted_at, 16, type: Google.Protobuf.Timestamp, json_name: "insertedAt"
+  field :updated_at, 17, type: Google.Protobuf.Timestamp, json_name: "updatedAt"
+end

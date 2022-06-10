@@ -3,6 +3,7 @@ syntax = "proto3";
 package poketwo.database.v1;
 
 import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
 
 message Language {
   int32 id = 1;
@@ -91,4 +92,44 @@ message VariantInfo {
   google.protobuf.StringValue variant_name = 1;
   google.protobuf.StringValue pokemon_name = 2;
   Language language = 3;
+}
+
+// User data
+
+message User {
+  uint64 id = 1;
+  google.protobuf.Timestamp inserted_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+}
+
+message PokedexEntry {
+  User user = 1;
+  Variant variant = 2;
+  int32 count = 3;
+  google.protobuf.Timestamp inserted_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
+}
+
+message Pokemon {
+  uint64 id = 1;
+  User user = 2;
+  Variant variant = 3;
+
+  int32 level = 4;
+  int32 xp = 5;
+  bool shiny = 6;
+  string nature = 7;
+
+  int32 iv_hp = 8;
+  int32 iv_atk = 9;
+  int32 iv_def = 10;
+  int32 iv_satk = 11;
+  int32 iv_sdef = 12;
+  int32 iv_spd = 13;
+
+  bool favorite = 14;
+  google.protobuf.StringValue nickname = 15;
+
+  google.protobuf.Timestamp inserted_at = 16;
+  google.protobuf.Timestamp updated_at = 17;
 }
