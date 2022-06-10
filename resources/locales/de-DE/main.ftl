@@ -1,4 +1,4 @@
-hp = PS
+hp = Gesundheitspunkte
 atk = Attacke
 def = Verteidigung
 satk = Spezialangriff
