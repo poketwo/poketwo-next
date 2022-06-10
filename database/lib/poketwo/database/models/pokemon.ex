@@ -1,5 +1,6 @@
 defmodule Poketwo.Database.Models.Pokemon do
   use Ecto.Schema
+  import Ecto.Query
   alias Poketwo.Database.{Models, V1, Utils}
 
   schema "pokemon" do
@@ -23,6 +24,17 @@ defmodule Poketwo.Database.Models.Pokemon do
     belongs_to :user, Models.User
     belongs_to :variant, Models.Variant
     belongs_to :original_user, Models.User
+  end
+
+  @spec query([{:id, integer}] | [{:user_id, integer}]) :: Ecto.Query.t()
+  def query(id: id) do
+    from p in Models.Pokemon,
+      where: p.id == ^id
+  end
+
+  def query(user_id: user_id) do
+    from p in Models.Pokemon,
+      where: p.user_id == ^user_id
   end
 
   @spec to_protobuf(any) :: V1.Pokemon.t() | nil

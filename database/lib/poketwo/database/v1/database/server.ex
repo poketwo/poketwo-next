@@ -27,4 +27,35 @@ defmodule Poketwo.Database.V1.Database.Server do
 
     V1.GetVariantResponse.new(variant: variant)
   end
+
+  @spec get_user(V1.GetUserRequest.t(), GRPC.Server.Stream.t()) :: V1.GetUserResponse.t()
+  def get_user(%V1.GetUserRequest{} = request, _stream) do
+    user =
+      Models.User.query(id: request.id)
+      |> Repo.one()
+      |> Models.User.to_protobuf()
+
+    V1.GetUserResponse.new(user: user)
+  end
+
+  @spec get_pokemon(V1.GetPokemonRequest.t(), GRPC.Server.Stream.t()) :: V1.GetPokemonResponse.t()
+  def get_pokemon(%V1.GetPokemonRequest{} = request, _stream) do
+    pokemon =
+      Models.Pokemon.query(id: request.id)
+      |> Repo.one()
+      |> Models.Pokemon.to_protobuf()
+
+    V1.GetPokemonResponse.new(pokemon: pokemon)
+  end
+
+  @spec get_pokemon_list(V1.GetPokemonListRequest.t(), GRPC.Server.Stream.t()) ::
+          V1.GetPokemonListResponse.t()
+  def get_pokemon_list(%V1.GetPokemonListRequest{} = request, _stream) do
+    pokemon =
+      Models.Pokemon.query(user_id: request.user_id)
+      |> Repo.all()
+      |> Enum.map(&Models.Pokemon.to_protobuf/1)
+
+    V1.GetPokemonListResponse.new(pokemon: pokemon)
+  end
 end

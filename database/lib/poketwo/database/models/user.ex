@@ -10,6 +10,12 @@ defmodule Poketwo.Database.Models.User do
     has_many :pokedex_entries, Models.PokedexEntry
   end
 
+  @spec query([{:id, integer}]) :: Ecto.Query.t()
+  def query(id: id) do
+    from u in Models.User,
+      where: u.id == ^id
+  end
+
   def to_protobuf(%Models.User{} = user) do
     V1.User.new(
       id: user.id,
