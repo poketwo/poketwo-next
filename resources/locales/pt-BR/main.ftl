@@ -1,6 +1,6 @@
-hp = HP
-atk = Attack
-def = Defense
-satk = Sp. Atk
-sdef = Sp. Def
-spd = Speed
+hp = PONTOS DE VIDA
+atk = Ataque
+def = Defesa
+satk = Ataque Esp.
+sdef = Defesa Esp.
+spd = Velocidade
