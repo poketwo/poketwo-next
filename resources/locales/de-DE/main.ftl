@@ -1,6 +1,6 @@
-hp = HP
-atk = Attack
-def = Defense
-satk = Sp. Atk
-sdef = Sp. Def
-spd = Speed
+hp = KP
+atk = Angriff
+def = Verteidigung
+satk = Spezial Angriff
+sdef = Spezial Verteidigung
+spd = Initiative
