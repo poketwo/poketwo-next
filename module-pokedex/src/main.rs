@@ -3,16 +3,16 @@ mod config;
 mod state;
 
 use anyhow::Result;
-use command::pokedex;
 use poketwo_command_framework::client::{CommandClient, CommandClientOptions};
 use poketwo_protobuf::poketwo::database::v1::database_client::DatabaseClient;
 use twilight_http::Client;
 use twilight_model::id::Id;
 
+use crate::command::pokedex;
 use crate::config::CONFIG;
 use crate::state::State;
 
-pub(crate) type Context<'a> = poketwo_command_framework::context::Context<'a, State>;
+pub type Context<'a> = poketwo_command_framework::context::Context<'a, State>;
 
 #[tokio::main]
 async fn main() -> Result<()> {
