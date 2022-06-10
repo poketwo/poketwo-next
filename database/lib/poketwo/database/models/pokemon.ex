@@ -25,6 +25,9 @@ defmodule Poketwo.Database.Models.Pokemon do
     belongs_to :original_user, Models.User
   end
 
+  @spec to_protobuf(any) :: V1.Pokemon.t() | nil
+  def to_protobuf(_)
+
   def to_protobuf(%Models.Pokemon{} = pokemon) do
     V1.Pokemon.new(
       id: pokemon.id,

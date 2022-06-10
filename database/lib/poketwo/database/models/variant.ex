@@ -27,7 +27,10 @@ defmodule Poketwo.Database.Models.Variant do
     belongs_to :species, Models.Species
   end
 
-  def query_by_id(id) do
+  @spec query([{:id, any}] | [{:name, any}]) :: Ecto.Query.t()
+  def query(opts)
+
+  def query(id: id) do
     from v in Models.Variant,
       where: v.id == ^id,
       preload: [
@@ -43,7 +46,7 @@ defmodule Poketwo.Database.Models.Variant do
       ]
   end
 
-  def query_by_name(name) do
+  def query(name: name) do
     from v in Models.Variant,
       left_join: i in assoc(v, :info),
       left_join: s in assoc(v, :species),
@@ -67,6 +70,9 @@ defmodule Poketwo.Database.Models.Variant do
       ],
       limit: 1
   end
+
+  @spec to_protobuf(any) :: V1.Variant.t() | nil
+  def to_protobuf(_)
 
   def to_protobuf(%Models.Variant{} = variant) do
     V1.Variant.new(

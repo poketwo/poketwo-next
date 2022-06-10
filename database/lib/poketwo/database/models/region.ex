@@ -8,6 +8,9 @@ defmodule Poketwo.Database.Models.Region do
     has_many :info, Models.RegionInfo
   end
 
+  @spec to_protobuf(any) :: V1.Region.t() | nil
+  def to_protobuf(_)
+
   def to_protobuf(%Models.Region{} = region) do
     V1.Region.new(
       id: region.id,

@@ -1,5 +1,6 @@
 defmodule Poketwo.Database.Models.User do
   use Ecto.Schema
+  import Ecto.Query
   alias Poketwo.Database.{Models, V1}
 
   schema "users" do

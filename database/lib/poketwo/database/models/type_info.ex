@@ -10,6 +10,9 @@ defmodule Poketwo.Database.Models.TypeInfo do
     belongs_to :language, Models.Language
   end
 
+  @spec to_protobuf(any) :: V1.TypeInfo.t() | nil
+  def to_protobuf(_)
+
   def to_protobuf(%Models.TypeInfo{} = info) do
     V1.TypeInfo.new(
       name: info.name,

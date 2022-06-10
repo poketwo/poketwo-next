@@ -15,7 +15,10 @@ defmodule Poketwo.Database.Models.Species do
     belongs_to :generation, Models.Generation
   end
 
-  def query_by_id(id) do
+  @spec query([{:id, integer}] | [{:name, String.t()}]) :: Ecto.Query.t()
+  def query(opts)
+
+  def query(id: id) do
     from s in Models.Species,
       where: s.id == ^id,
       preload: [
@@ -28,7 +31,7 @@ defmodule Poketwo.Database.Models.Species do
       ]
   end
 
-  def query_by_name(name) do
+  def query(name: name) do
     from s in Models.Species,
       left_join: i in assoc(s, :info),
       where: s.identifier == ^name or i.name == ^name,
@@ -42,6 +45,9 @@ defmodule Poketwo.Database.Models.Species do
       ],
       limit: 1
   end
+
+  @spec to_protobuf(any) :: V1.Species.t() | nil
+  def to_protobuf(_)
 
   def to_protobuf(%Models.Species{} = species) do
     V1.Species.new(
