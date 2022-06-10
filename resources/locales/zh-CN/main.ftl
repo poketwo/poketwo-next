@@ -1,6 +1,6 @@
-hp = HP
-atk = Attack
-def = Defense
+hp = 生命
+atk = 攻击
+def = 防御
 satk = Sp. Atk
 sdef = Sp. Def
-spd = Speed
+spd = 速度
