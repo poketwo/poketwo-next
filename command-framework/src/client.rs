@@ -1,18 +1,22 @@
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
+use std::sync::Arc;
 
 use anyhow::{bail, Result};
-use futures_util::{lock::Mutex, StreamExt};
-use lapin::{message::Delivery, options::BasicAckOptions};
+use futures_util::lock::Mutex;
+use futures_util::StreamExt;
+use lapin::message::Delivery;
+use lapin::options::BasicAckOptions;
 use poketwo_gateway_client::{GatewayClient, GatewayClientOptions};
 use tracing::{error, info};
-use twilight_http::{client::InteractionClient, Client};
-use twilight_model::{
-    application::interaction::Interaction,
-    gateway::payload::incoming::InteractionCreate,
-    id::{marker::GuildMarker, Id},
-};
+use twilight_http::client::InteractionClient;
+use twilight_http::Client;
+use twilight_model::application::interaction::Interaction;
+use twilight_model::gateway::payload::incoming::InteractionCreate;
+use twilight_model::id::marker::GuildMarker;
+use twilight_model::id::Id;
 
-use crate::{command::Command, context::Context};
+use crate::command::Command;
+use crate::context::Context;
 
 #[derive(Debug, Clone)]
 pub struct CommandClientOptions<T> {

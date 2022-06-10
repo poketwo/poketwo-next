@@ -1,10 +1,9 @@
 use anyhow::Result;
 use twilight_cache_inmemory::InMemoryCache;
-use twilight_gateway::{shard::Events, Shard};
-use twilight_model::gateway::{
-    payload::outgoing::update_presence::UpdatePresencePayload,
-    presence::{ActivityType, MinimalActivity, Status},
-};
+use twilight_gateway::shard::Events;
+use twilight_gateway::Shard;
+use twilight_model::gateway::payload::outgoing::update_presence::UpdatePresencePayload;
+use twilight_model::gateway::presence::{ActivityType, MinimalActivity, Status};
 
 use crate::config::Config;
 

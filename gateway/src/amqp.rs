@@ -1,10 +1,8 @@
 use anyhow::Result;
-use lapin::{
-    options::{BasicPublishOptions, ExchangeDeclareOptions},
-    protocol::basic::AMQPProperties,
-    types::FieldTable,
-    Channel, Connection, ExchangeKind,
-};
+use lapin::options::{BasicPublishOptions, ExchangeDeclareOptions};
+use lapin::protocol::basic::AMQPProperties;
+use lapin::types::FieldTable;
+use lapin::{Channel, Connection, ExchangeKind};
 
 use crate::config::Config;
 

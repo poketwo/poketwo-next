@@ -2,7 +2,8 @@ use std::fmt::Debug;
 
 use anyhow::Result;
 use futures_util::future::BoxFuture;
-use twilight_model::{application::command::Command as TwilightCommand, http::interaction::InteractionResponse};
+use twilight_model::application::command::Command as TwilightCommand;
+use twilight_model::http::interaction::InteractionResponse;
 
 use crate::context::Context;
 

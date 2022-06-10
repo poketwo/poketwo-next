@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
-use poketwo_i18n::{fluent_bundle::FluentValue, LanguageIdentifier, Loader, LOCALES, US_ENGLISH};
+use poketwo_i18n::fluent_bundle::FluentValue;
+use poketwo_i18n::{LanguageIdentifier, Loader, LOCALES, US_ENGLISH};
 use twilight_model::application::interaction::ApplicationCommand;
 
 use crate::client::CommandClient;

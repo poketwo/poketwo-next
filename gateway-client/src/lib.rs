@@ -1,9 +1,7 @@
 use anyhow::Result;
-use lapin::{
-    options::{BasicConsumeOptions, ExchangeDeclareOptions, QueueBindOptions, QueueDeclareOptions},
-    types::FieldTable,
-    Channel, Connection, Consumer, ExchangeKind, Queue,
-};
+use lapin::options::{BasicConsumeOptions, ExchangeDeclareOptions, QueueBindOptions, QueueDeclareOptions};
+use lapin::types::FieldTable;
+use lapin::{Channel, Connection, Consumer, ExchangeKind, Queue};
 use tracing::{debug, info};
 
 static EXCHANGE_DECLARE_OPTIONS: ExchangeDeclareOptions =

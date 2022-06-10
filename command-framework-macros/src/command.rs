@@ -3,7 +3,8 @@ use inflector::Inflector;
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;
 use quote::quote;
-use syn::{fold::fold_type, AttributeArgs, FnArg, Ident, ItemFn, NestedMeta, Pat, Visibility};
+use syn::fold::fold_type;
+use syn::{AttributeArgs, FnArg, Ident, ItemFn, NestedMeta, Pat, Visibility};
 
 use crate::util::AllLifetimesToStatic;
 

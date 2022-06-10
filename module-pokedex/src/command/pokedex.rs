@@ -1,13 +1,10 @@
 use anyhow::{anyhow, Result};
 use inflector::Inflector;
 use poketwo_command_framework::{command, group};
-use poketwo_protobuf::poketwo::database::v1::{
-    get_variant_request::Query, GetVariantRequest, Species, SpeciesInfo, Variant,
-};
-use twilight_model::{
-    channel::embed::Embed,
-    http::interaction::{InteractionResponse, InteractionResponseData, InteractionResponseType},
-};
+use poketwo_protobuf::poketwo::database::v1::get_variant_request::Query;
+use poketwo_protobuf::poketwo::database::v1::{GetVariantRequest, Species, SpeciesInfo, Variant};
+use twilight_model::channel::embed::Embed;
+use twilight_model::http::interaction::{InteractionResponse, InteractionResponseData, InteractionResponseType};
 use twilight_util::builder::embed::{EmbedBuilder, EmbedFieldBuilder, ImageSource};
 
 use crate::Context;

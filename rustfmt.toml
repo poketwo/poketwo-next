@@ -1,2 +1,6 @@
-use_small_heuristics = "Max"
 max_width = 120
+imports_granularity = "Module"
+overflow_delimited_expr = true
+group_imports = "StdExternalCrate"
+use_field_init_shorthand = true
+use_small_heuristics = "Max"

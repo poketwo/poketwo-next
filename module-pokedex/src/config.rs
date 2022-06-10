@@ -1,7 +1,5 @@
-use figment::{
-    providers::{Env, Format, Json, Toml, Yaml},
-    Figment,
-};
+use figment::providers::{Env, Format, Json, Toml, Yaml};
+use figment::Figment;
 use lazy_static::lazy_static;
 use serde::Deserialize;
 
