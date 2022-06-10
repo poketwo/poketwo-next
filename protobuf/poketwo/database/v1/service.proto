@@ -7,6 +7,9 @@ import "poketwo/database/v1/models.proto";
 service Database {
   rpc GetSpecies(GetSpeciesRequest) returns (GetSpeciesResponse);
   rpc GetVariant(GetVariantRequest) returns (GetVariantResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc GetPokemon(GetPokemonRequest) returns (GetPokemonResponse);
+  rpc GetPokemonList(GetPokemonListRequest) returns (GetPokemonListResponse);
 }
 
 // GetSpecies
@@ -30,3 +33,24 @@ message GetVariantRequest {
 }
 
 message GetVariantResponse { Variant variant = 1; }
+
+// GetUser
+
+message GetUserRequest { uint64 id = 1; }
+
+message GetUserResponse { User user = 1; }
+
+// GetPokemon
+
+message GetPokemonRequest { uint64 id = 1; }
+
+message GetPokemonResponse { Pokemon pokemon = 1; }
+
+// GetPokemonList
+
+message GetPokemonListRequest { uint64 user_id = 1; }
+
+message GetPokemonListResponse {
+  repeated Pokemon pokemon = 1;
+  int32 count = 2;
+}
