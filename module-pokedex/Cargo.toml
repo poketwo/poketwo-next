@@ -10,7 +10,6 @@ Inflector = "0.11.4"
 anyhow = "1.0.57"
 figment = { version = "0.10.6", features = ["env", "toml", "json", "yaml"] }
 futures-util = "0.3.21"
-indoc = "1.0.6"
 lapin = "2.1.1"
 lazy_static = "1.4.0"
 poketwo-command-framework = { version = "0.1.0", path = "../command-framework" }

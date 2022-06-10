@@ -1062,12 +1062,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "indoc"
-version = "1.0.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "05a0bd019339e5d968b37855180087b7b9d512c5046fbd244cf8c95687927d6e"
-
-[[package]]
 name = "inlinable_string"
 version = "0.1.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1276,6 +1270,10 @@ checksum = "b9f1c5b025cda876f66ef43a113f91ebc9f4ccef34843000e0adf6ebbab84e21"
 dependencies = [
  "winapi",
 ]
+
+[[package]]
+name = "module-general"
+version = "0.1.0"
 
 [[package]]
 name = "multimap"
@@ -1568,7 +1566,6 @@ dependencies = [
  "anyhow",
  "figment",
  "futures-util",
- "indoc",
  "lapin",
  "lazy_static",
  "poketwo-command-framework",
