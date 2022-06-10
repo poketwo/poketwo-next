@@ -1,8 +1,8 @@
-types = Types
+types = Typen
 region = Region
-catchable = Catchable
-base-stats = Base Stats
+catchable = Fangbar
+base-stats = Statuswerte
 names = Names
 appearance = Appearance
-height = Height
-weight = Weight
+height = Körpergröße
+weight = Gewicht
