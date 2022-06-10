@@ -1,8 +1,8 @@
 types = 屬性
 region = 地區
-catchable = Catchable
+catchable = 可捕捉的
 base-stats = 種族值
-names = Names
-appearance = Appearance
+names = 名稱
+appearance = 外觀
 height = 身高
 weight = 體重
