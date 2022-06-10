@@ -1,8 +1,8 @@
-types = Types
-region = Region
+types = 屬性
+region = 地區
 catchable = Catchable
-base-stats = Base Stats
+base-stats = 種族值
 names = Names
 appearance = Appearance
-height = Height
-weight = Weight
+height = 身高
+weight = 體重
