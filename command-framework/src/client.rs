@@ -12,6 +12,7 @@ use twilight_http::client::InteractionClient;
 use twilight_http::Client;
 use twilight_model::application::interaction::Interaction;
 use twilight_model::gateway::payload::incoming::InteractionCreate;
+use twilight_model::http::interaction::{InteractionResponse, InteractionResponseData, InteractionResponseType};
 use twilight_model::id::marker::GuildMarker;
 use twilight_model::id::Id;
 
@@ -111,11 +112,21 @@ impl<'a, T> CommandClient<'a, T> {
         if let Interaction::ApplicationCommand(interaction) = event.0 {
             if let Some(command) = self.commands.get(&interaction.data.name) {
                 let ctx = Context { client: self, interaction: *interaction };
+                let interaction_id = ctx.interaction.id;
+                let interaction_token = ctx.interaction.token.clone();
 
-                self.interaction
-                    .create_response(ctx.interaction.id, &ctx.interaction.token.clone(), &(command.handler)(ctx).await?)
-                    .exec()
-                    .await?;
+                let response = match (command.handler)(ctx).await {
+                    Ok(x) => x,
+                    Err(err) => InteractionResponse {
+                        kind: InteractionResponseType::ChannelMessageWithSource,
+                        data: Some(InteractionResponseData {
+                            content: Some(format!("**Error:** {}", err)),
+                            ..Default::default()
+                        }),
+                    },
+                };
+
+                self.interaction.create_response(interaction_id, &interaction_token, &response).exec().await?;
             }
         }
 

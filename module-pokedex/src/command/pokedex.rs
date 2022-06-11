@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use anyhow::{anyhow, Result};
 use inflector::Inflector;
 use poketwo_command_framework::{command, group};
@@ -107,7 +109,9 @@ pub async fn search(ctx: Context<'_>, #[desc = "The name to search for"] query: 
         .await?
         .into_inner()
         .variant
-        .ok_or_else(|| anyhow!("Missing variant"))?;
+        .ok_or_else(|| {
+            anyhow!(ctx.locale_lookup_with_args("pokemon-not-found", &HashMap::from([("query", query.into())])))
+        })?;
 
     Ok(InteractionResponse {
         kind: InteractionResponseType::ChannelMessageWithSource,
