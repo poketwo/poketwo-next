@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package poketwo.database.v1;
 
+import "google/protobuf/wrappers.proto";
 import "poketwo/database/v1/models.proto";
 
 service Database {
@@ -10,6 +11,8 @@ service Database {
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
   rpc GetPokemon(GetPokemonRequest) returns (GetPokemonResponse);
   rpc GetPokemonList(GetPokemonListRequest) returns (GetPokemonListResponse);
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc CreatePokemon(CreatePokemonRequest) returns (CreatePokemonResponse);
 }
 
 // GetSpecies
@@ -35,22 +38,42 @@ message GetVariantRequest {
 message GetVariantResponse { Variant variant = 1; }
 
 // GetUser
-
 message GetUserRequest { uint64 id = 1; }
-
 message GetUserResponse { User user = 1; }
 
+// CreateUser
+
+message CreateUserRequest { uint64 id = 1; }
+message CreateUserResponse { User user = 1; }
+
 // GetPokemon
-
 message GetPokemonRequest { uint64 id = 1; }
-
 message GetPokemonResponse { Pokemon pokemon = 1; }
 
 // GetPokemonList
-
 message GetPokemonListRequest { uint64 user_id = 1; }
-
 message GetPokemonListResponse {
   repeated Pokemon pokemon = 1;
   int32 count = 2;
 }
+
+// CreatePokemon
+
+message CreatePokemonRequest {
+  uint64 user_id = 1;
+  int32 variant_id = 2;
+
+  google.protobuf.Int32Value level = 3;
+  google.protobuf.Int32Value xp = 5;
+  google.protobuf.BoolValue shiny = 6;
+  google.protobuf.StringValue nature = 7;
+
+  google.protobuf.Int32Value iv_hp = 8;
+  google.protobuf.Int32Value iv_atk = 9;
+  google.protobuf.Int32Value iv_def = 10;
+  google.protobuf.Int32Value iv_satk = 11;
+  google.protobuf.Int32Value iv_sdef = 12;
+  google.protobuf.Int32Value iv_spd = 13;
+}
+
+message CreatePokemonResponse { Pokemon pokemon = 1; }
