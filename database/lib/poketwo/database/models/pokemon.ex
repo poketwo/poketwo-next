@@ -66,6 +66,7 @@ defmodule Poketwo.Database.Models.Pokemon do
     user
     |> cast(params, [
       :user_id,
+      :original_user_id,
       :variant_id,
       :level,
       :xp,
@@ -80,7 +81,7 @@ defmodule Poketwo.Database.Models.Pokemon do
       :favorite,
       :nickname
     ])
-    |> validate_required([:user_id, :variant_id])
+    |> validate_required([:user_id, :original_user_id, :variant_id])
     |> foreign_key_constraint(:user_id)
     |> foreign_key_constraint(:variant_id)
     |> validate_number(:level, greater_than_or_equal_to: 1, less_than_or_equal_to: 100)

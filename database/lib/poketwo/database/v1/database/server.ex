@@ -61,9 +61,14 @@ defmodule Poketwo.Database.V1.Database.Server do
   @spec create_pokemon(V1.CreatePokemonRequest.t(), GRPC.Server.Stream.t()) ::
           V1.CreatePokemonResponse.t()
   def create_pokemon(%V1.CreatePokemonRequest{} = request, _stream) do
+    request =
+      request
+      |> Map.put(:original_user_id, request.user_id)
+      |> Utils.unwrap()
+
     {:ok, pokemon} =
       %Models.Pokemon{}
-      |> Models.Pokemon.changeset(Utils.unwrap(request))
+      |> Models.Pokemon.changeset(request)
       |> Repo.insert()
 
     V1.CreatePokemonResponse.new(pokemon: Models.Pokemon.to_protobuf(pokemon))

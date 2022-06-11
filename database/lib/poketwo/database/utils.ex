@@ -30,7 +30,7 @@ defmodule Poketwo.Database.Utils do
   end
 
   def unwrap(value) do
-    IO.inspect(value)
+    value
   end
 
   defmacro from_info(queryable) do
