@@ -10,6 +10,12 @@ defmodule Poketwo.Database.Models.User do
     has_many :pokedex_entries, Models.PokedexEntry
   end
 
+  def changeset(user, params \\ %{}) do
+    user
+    |> Ecto.Changeset.cast(params, [:id])
+    |> Ecto.Changeset.unique_constraint(:id, name: :users_pkey)
+  end
+
   @spec query([{:id, integer}]) :: Ecto.Query.t()
   def query(id: id) do
     from u in Models.User,

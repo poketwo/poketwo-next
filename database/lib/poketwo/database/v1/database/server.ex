@@ -38,6 +38,16 @@ defmodule Poketwo.Database.V1.Database.Server do
     V1.GetUserResponse.new(user: user)
   end
 
+  @spec create_user(V1.CreateUserRequest.t(), GRPC.Server.Stream.t()) :: V1.CreateUserResponse.t()
+  def create_user(%V1.CreateUserRequest{} = request, _stream) do
+    {:ok, user} =
+      %Models.User{}
+      |> Models.User.changeset(%{id: request.id})
+      |> Repo.insert()
+
+    V1.GetUserResponse.new(user: Models.User.to_protobuf(user))
+  end
+
   @spec get_pokemon(V1.GetPokemonRequest.t(), GRPC.Server.Stream.t()) :: V1.GetPokemonResponse.t()
   def get_pokemon(%V1.GetPokemonRequest{} = request, _stream) do
     pokemon =
