@@ -1,6 +1,6 @@
 defmodule Poketwo.Database.V1.Database.Server do
   use GRPC.Server, service: Poketwo.Database.V1.Database.Service
-  alias Poketwo.Database.{Models, V1, Repo}
+  alias Poketwo.Database.{Models, Utils, V1, Repo}
 
   @spec get_species(V1.GetSpeciesRequest.t(), GRPC.Server.Stream.t()) :: V1.GetSpeciesResponse.t()
   def get_species(%V1.GetSpeciesRequest{} = request, _stream) do
@@ -45,7 +45,7 @@ defmodule Poketwo.Database.V1.Database.Server do
       |> Models.User.changeset(%{id: request.id})
       |> Repo.insert()
 
-    V1.GetUserResponse.new(user: Models.User.to_protobuf(user))
+    V1.CreateUserResponse.new(user: Models.User.to_protobuf(user))
   end
 
   @spec get_pokemon(V1.GetPokemonRequest.t(), GRPC.Server.Stream.t()) :: V1.GetPokemonResponse.t()
@@ -56,6 +56,17 @@ defmodule Poketwo.Database.V1.Database.Server do
       |> Models.Pokemon.to_protobuf()
 
     V1.GetPokemonResponse.new(pokemon: pokemon)
+  end
+
+  @spec create_pokemon(V1.CreatePokemonRequest.t(), GRPC.Server.Stream.t()) ::
+          V1.CreatePokemonResponse.t()
+  def create_pokemon(%V1.CreatePokemonRequest{} = request, _stream) do
+    {:ok, pokemon} =
+      %Models.Pokemon{}
+      |> Models.Pokemon.changeset(Utils.unwrap(request))
+      |> Repo.insert()
+
+    V1.CreatePokemonResponse.new(pokemon: Models.Pokemon.to_protobuf(pokemon))
   end
 
   @spec get_pokemon_list(V1.GetPokemonListRequest.t(), GRPC.Server.Stream.t()) ::
