@@ -6,10 +6,10 @@ use twilight_model::application::interaction::ApplicationCommand;
 
 use crate::client::CommandClient;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Context<'a, T> {
     pub client: &'a CommandClient<'a, T>,
-    pub interaction: ApplicationCommand,
+    pub interaction: &'a ApplicationCommand,
 }
 
 impl<T> Context<'_, T> {

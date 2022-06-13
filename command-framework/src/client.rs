@@ -111,9 +111,7 @@ impl<'a, T> CommandClient<'a, T> {
 
         if let Interaction::ApplicationCommand(interaction) = event.0 {
             if let Some(command) = self.commands.get(&interaction.data.name) {
-                let ctx = Context { client: self, interaction: *interaction };
-                let interaction_id = ctx.interaction.id;
-                let interaction_token = ctx.interaction.token.clone();
+                let ctx = Context { client: self, interaction: &*interaction };
 
                 let response = match (command.handler)(ctx).await {
                     Ok(x) => x,
@@ -126,7 +124,7 @@ impl<'a, T> CommandClient<'a, T> {
                     },
                 };
 
-                self.interaction.create_response(interaction_id, &interaction_token, &response).exec().await?;
+                self.interaction.create_response(interaction.id, &interaction.token, &response).exec().await?;
             }
         }
 
