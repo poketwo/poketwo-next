@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use anyhow::{bail, Result};
+use anyhow::{bail, Error, Result};
 use futures_util::lock::Mutex;
 use futures_util::StreamExt;
 use lapin::message::Delivery;
@@ -11,6 +11,7 @@ use tracing::{error, info};
 use twilight_http::client::InteractionClient;
 use twilight_http::Client;
 use twilight_model::application::interaction::Interaction;
+use twilight_model::channel::message::MessageFlags;
 use twilight_model::gateway::payload::incoming::InteractionCreate;
 use twilight_model::http::interaction::{InteractionResponse, InteractionResponseData, InteractionResponseType};
 use twilight_model::id::marker::GuildMarker;
@@ -113,20 +114,42 @@ impl<'a, T> CommandClient<'a, T> {
             if let Some(command) = self.commands.get(&interaction.data.name) {
                 let ctx = Context { client: self, interaction: &*interaction };
 
-                let response = match (command.handler)(ctx).await {
-                    Ok(x) => x,
-                    Err(err) => InteractionResponse {
-                        kind: InteractionResponseType::ChannelMessageWithSource,
-                        data: Some(InteractionResponseData {
-                            content: Some(format!("**Error:** {}", err)),
-                            ..Default::default()
-                        }),
-                    },
+                match (command.handler)(ctx.clone()).await {
+                    Ok(response) => {
+                        self.interaction.create_response(interaction.id, &interaction.token, &response).exec().await?;
+                    }
+                    Err(error) => {
+                        self.handle_command_error(command, ctx, error).await?;
+                    }
                 };
-
-                self.interaction.create_response(interaction.id, &interaction.token, &response).exec().await?;
             }
         }
+
+        Ok(())
+    }
+
+    async fn handle_command_error(&self, command: &Command<T>, ctx: Context<'a, T>, error: Error) -> Result<()> {
+        fn make_error_response(error: Error) -> InteractionResponse {
+            InteractionResponse {
+                kind: InteractionResponseType::ChannelMessageWithSource,
+                data: Some(InteractionResponseData {
+                    content: Some(error.to_string()),
+                    flags: Some(MessageFlags::EPHEMERAL),
+                    ..Default::default()
+                }),
+            }
+        }
+
+        let response = match command.error_handler {
+            Some(error_handler) => match error_handler(ctx.clone(), error).await {
+                Ok(Some(x)) => x,
+                Ok(None) => return Ok(()),
+                Err(error) => make_error_response(error),
+            },
+            _ => make_error_response(error),
+        };
+
+        self.interaction.create_response(ctx.interaction.id, &ctx.interaction.token, &response).exec().await?;
 
         Ok(())
     }

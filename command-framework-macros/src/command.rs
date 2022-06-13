@@ -13,6 +13,7 @@ struct CommandOptions {
     name: Option<String>,
     desc: String,
     default_permission: bool,
+    on_error: Option<Ident>,
 }
 
 pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
@@ -47,6 +48,15 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
     let (struct_fields, inner_args): (Vec<_>, Vec<_>) =
         input.sig.inputs.iter_mut().skip(1).map(command_argument).unzip();
 
+    let error_handler = match options.on_error {
+        Some(x) => quote! {
+            Some(|ctx: #ctx_type, error: ::poketwo_command_framework::anyhow::Error| Box::pin(async move {
+                #x(ctx, error).await
+            }))
+        },
+        None => quote! { None },
+    };
+
     quote! {
         #[derive(Debug, ::twilight_interactions::command::CreateCommand, ::twilight_interactions::command::CommandModel)]
         #[command(name = #name, desc = #desc, default_permission = #default_permission)]
@@ -76,7 +86,8 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
                 command: #model_ident::create_command().into(),
                 handler: |ctx: #ctx_type| Box::pin(async move {
                     #model_ident::from_interaction(ctx.interaction.data.clone().into())?.handler(ctx).await
-                })
+                }),
+                error_handler: #error_handler,
             }
         }
     }

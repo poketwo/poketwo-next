@@ -102,7 +102,8 @@ pub fn group(args: AttributeArgs, input: ItemFn) -> TokenStream {
                 command: #model_ident::create_command().into(),
                 handler: |ctx: #ctx_type| Box::pin(async move {
                     #model_ident::from_interaction(ctx.interaction.data.clone().into())?.handler(ctx).await
-                })
+                }),
+                error_handler: None
             }
         }
     }
