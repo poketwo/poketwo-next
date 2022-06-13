@@ -1,13 +1,15 @@
-use anyhow::{anyhow, Result};
+use anyhow::{anyhow, Error, Result};
 use maplit::hashmap;
 use poketwo_command_framework::command;
 use poketwo_protobuf::poketwo::database::v1::get_variant_request::Query;
 use poketwo_protobuf::poketwo::database::v1::{CreatePokemonRequest, CreateUserRequest, GetVariantRequest};
+use tonic::{Code, Status};
+use twilight_model::channel::message::MessageFlags;
 use twilight_model::http::interaction::{InteractionResponse, InteractionResponseData, InteractionResponseType};
 
 use crate::Context;
 
-#[command(desc = "Pick a starter Pokémon.", default_permission = true)]
+#[command(desc = "Pick a starter Pokémon.", default_permission = true, on_error = "handle_pick_error")]
 pub async fn pick(
     ctx: Context<'_>,
     #[desc = "The starter Pokémon of your choice"] starter: String,
@@ -39,6 +41,8 @@ pub async fn pick(
         .name
         .clone();
 
+    // TODO: Terms of Service prompt
+
     Ok(InteractionResponse {
         kind: InteractionResponseType::ChannelMessageWithSource,
         data: Some(InteractionResponseData {
@@ -46,4 +50,21 @@ pub async fn pick(
             ..Default::default()
         }),
     })
+}
+
+pub async fn handle_pick_error(ctx: Context<'_>, error: Error) -> Result<Option<InteractionResponse>> {
+    if let Some(x) = error.downcast_ref::<Status>() {
+        if let Code::AlreadyExists = x.code() {
+            return Ok(Some(InteractionResponse {
+                kind: InteractionResponseType::ChannelMessageWithSource,
+                data: Some(InteractionResponseData {
+                    content: Some(ctx.locale_lookup("account-exists")),
+                    flags: Some(MessageFlags::EPHEMERAL),
+                    ..Default::default()
+                }),
+            }));
+        }
+    }
+
+    Err(error)
 }
