@@ -40,12 +40,16 @@ defmodule Poketwo.Database.V1.Database.Server do
 
   @spec create_user(V1.CreateUserRequest.t(), GRPC.Server.Stream.t()) :: V1.CreateUserResponse.t()
   def create_user(%V1.CreateUserRequest{} = request, _stream) do
-    {:ok, user} =
+    result =
       %Models.User{}
       |> Models.User.changeset(%{id: request.id})
       |> Repo.insert()
 
-    V1.CreateUserResponse.new(user: Models.User.to_protobuf(user))
+    case result do
+      {:ok, user} -> V1.CreateUserResponse.new(user: Models.User.to_protobuf(user))
+      {:error, changeset} -> Utils.handle_changeset_errors(changeset)
+      _ -> raise GRPC.RPCError, status: GRPC.Status.unknown()
+    end
   end
 
   @spec get_pokemon(V1.GetPokemonRequest.t(), GRPC.Server.Stream.t()) :: V1.GetPokemonResponse.t()
@@ -66,12 +70,16 @@ defmodule Poketwo.Database.V1.Database.Server do
       |> Map.put(:original_user_id, request.user_id)
       |> Utils.unwrap()
 
-    {:ok, pokemon} =
+    result =
       %Models.Pokemon{}
       |> Models.Pokemon.changeset(request)
       |> Repo.insert()
 
-    V1.CreatePokemonResponse.new(pokemon: Models.Pokemon.to_protobuf(pokemon))
+    case result do
+      {:ok, pokemon} -> V1.CreatePokemonResponse.new(pokemon: Models.Pokemon.to_protobuf(pokemon))
+      {:error, changeset} -> Utils.handle_changeset_errors(changeset)
+      _ -> raise GRPC.RPCError, status: GRPC.Status.unknown()
+    end
   end
 
   @spec get_pokemon_list(V1.GetPokemonListRequest.t(), GRPC.Server.Stream.t()) ::

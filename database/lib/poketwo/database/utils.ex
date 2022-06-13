@@ -33,6 +33,33 @@ defmodule Poketwo.Database.Utils do
     value
   end
 
+  def handle_changeset_errors(%Ecto.Changeset{} = changeset) do
+    Ecto.Changeset.traverse_errors(changeset, &handle_changeset_error/3)
+  end
+
+  defp handle_changeset_error(_, key, {_, [constraint: :unique, constraint_name: _]} = error) do
+    raise GRPC.RPCError,
+      status: GRPC.Status.already_exists(),
+      message: format_changeset_error(key, error)
+  end
+
+  defp handle_changeset_error(_, key, error) do
+    raise GRPC.RPCError,
+      status: GRPC.Status.invalid_argument(),
+      message: format_changeset_error(key, error)
+  end
+
+  defp format_changeset_error(key, {msg, opts}) do
+    msg_fmt =
+      Regex.replace(~r"%{(\w+)}", msg, fn _, key ->
+        opts
+        |> Keyword.get(String.to_existing_atom(key), key)
+        |> to_string()
+      end)
+
+    "#{key} #{msg_fmt}"
+  end
+
   defmacro from_info(queryable) do
     quote do
       import Ecto.Query
