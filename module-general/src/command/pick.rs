@@ -1,5 +1,4 @@
 use anyhow::{anyhow, bail, Error, Result};
-use maplit::hashmap;
 use poketwo_command_framework::command;
 use poketwo_protobuf::poketwo::database::v1::get_variant_request::Query;
 use poketwo_protobuf::poketwo::database::v1::{CreatePokemonRequest, CreateUserRequest, GetVariantRequest};
@@ -13,10 +12,7 @@ static STARTER_IDS: &[i32] =
     &[1, 4, 7, 152, 155, 158, 252, 255, 258, 387, 390, 393, 495, 498, 501, 650, 653, 656, 722, 725, 728, 810, 813, 816];
 
 #[command(desc = "Pick a starter Pokémon.", default_permission = true, on_error = "handle_pick_error")]
-pub async fn pick(
-    ctx: Context<'_>,
-    #[desc = "The starter Pokémon of your choice"] starter: String,
-) -> Result<InteractionResponse> {
+pub async fn pick(ctx: Context<'_>, #[desc = "The starter Pokémon of your choice"] starter: String) -> Result<()> {
     let mut state = ctx.client.state.lock().await;
 
     let variant = state
@@ -25,9 +21,7 @@ pub async fn pick(
         .await?
         .into_inner()
         .variant
-        .ok_or_else(|| {
-            anyhow!(ctx.locale_lookup_with_args("pokemon-not-found", &hashmap!("query" => starter.into())))
-        })?;
+        .ok_or_else(|| anyhow!(ctx.locale_lookup_with_args("pokemon-not-found", vec![("query", starter)])))?;
 
     let name = variant
         .species
@@ -38,7 +32,7 @@ pub async fn pick(
         .clone();
 
     if !STARTER_IDS.contains(&variant.id) {
-        bail!(ctx.locale_lookup_with_args("pokemon-not-starter", &hashmap!("pokemon" => name.into())))
+        bail!(ctx.locale_lookup_with_args("pokemon-not-starter", vec![("pokemon", name)]))
     }
 
     let user_id = ctx.interaction.author_id().ok_or_else(|| anyhow!("Missing author"))?;
@@ -50,26 +44,34 @@ pub async fn pick(
 
     // TODO: Terms of Service prompt
 
-    Ok(InteractionResponse {
+    ctx.create_response(&InteractionResponse {
         kind: InteractionResponseType::ChannelMessageWithSource,
         data: Some(InteractionResponseData {
-            content: Some(ctx.locale_lookup_with_args("pick-response", &hashmap!("starter" => name.into()))),
+            content: Some(ctx.locale_lookup_with_args("pick-response", vec![("starter", name)])),
             ..Default::default()
         }),
     })
+    .exec()
+    .await?;
+
+    Ok(())
 }
 
-pub async fn handle_pick_error(ctx: Context<'_>, error: Error) -> Result<Option<InteractionResponse>> {
+pub async fn handle_pick_error(ctx: Context<'_>, error: Error) -> Result<()> {
     if let Some(x) = error.downcast_ref::<Status>() {
         if let Code::AlreadyExists = x.code() {
-            return Ok(Some(InteractionResponse {
+            ctx.create_response(&InteractionResponse {
                 kind: InteractionResponseType::ChannelMessageWithSource,
                 data: Some(InteractionResponseData {
                     content: Some(ctx.locale_lookup("account-exists")),
                     flags: Some(MessageFlags::EPHEMERAL),
                     ..Default::default()
                 }),
-            }));
+            })
+            .exec()
+            .await?;
+
+            return Ok(());
         }
     }
 

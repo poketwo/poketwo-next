@@ -50,7 +50,7 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
 
     let error_handler = match options.on_error {
         Some(x) => quote! {
-            Some(|ctx: #ctx_type, error: ::poketwo_command_framework::anyhow::Error| Box::pin(async move {
+            Some(|ctx: #ctx_type, error: ::poketwo_command_framework::Error| Box::pin(async move {
                 #x(ctx, error).await
             }))
         },
@@ -67,12 +67,7 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
         impl #model_ident {
             #input
 
-            pub async fn handler(
-                self,
-                ctx: #ctx_type,
-            ) -> ::poketwo_command_framework::anyhow::Result<
-                ::poketwo_command_framework::twilight_model::http::interaction::InteractionResponse
-            > {
+            pub async fn handler(self, ctx: #ctx_type) -> ::poketwo_command_framework::Result<()> {
                 Self::inner(ctx, #(self.#inner_args),*).await
             }
         }

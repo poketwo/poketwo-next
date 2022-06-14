@@ -81,12 +81,7 @@ pub fn group(args: AttributeArgs, input: ItemFn) -> TokenStream {
         }
 
         impl #model_ident {
-            pub async fn handler(
-                self,
-                ctx: #ctx_type
-            ) -> ::poketwo_command_framework::anyhow::Result<
-                ::poketwo_command_framework::twilight_model::http::interaction::InteractionResponse
-            > {
+            pub async fn handler(self, ctx: #ctx_type) -> ::poketwo_command_framework::Result<()> {
                 match self {
                     #(#model_ident::#variant_idents(subcommand) => subcommand.handler(ctx).await),*
                 }

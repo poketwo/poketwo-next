@@ -3,15 +3,11 @@ use std::fmt::Debug;
 use anyhow::{Error, Result};
 use futures_util::future::BoxFuture;
 use twilight_model::application::command::Command as TwilightCommand;
-use twilight_model::http::interaction::InteractionResponse;
 
 use crate::context::Context;
 
-type CommandHandlerResult = Result<InteractionResponse>;
-type CommandErrorHandlerResult = Result<Option<InteractionResponse>>;
-
-type CommandHandler<T> = fn(Context<T>) -> BoxFuture<CommandHandlerResult>;
-type CommandErrorHandler<T> = fn(Context<T>, Error) -> BoxFuture<CommandErrorHandlerResult>;
+type CommandHandler<T> = fn(Context<T>) -> BoxFuture<Result<()>>;
+type CommandErrorHandler<T> = fn(Context<T>, Error) -> BoxFuture<Result<()>>;
 
 #[derive(Clone)]
 pub struct Command<T> {

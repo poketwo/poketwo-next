@@ -114,13 +114,8 @@ impl<'a, T> CommandClient<'a, T> {
             if let Some(command) = self.commands.get(&interaction.data.name) {
                 let ctx = Context { client: self, interaction: &*interaction };
 
-                match (command.handler)(ctx.clone()).await {
-                    Ok(response) => {
-                        self.interaction.create_response(interaction.id, &interaction.token, &response).exec().await?;
-                    }
-                    Err(error) => {
-                        self.handle_command_error(command, ctx, error).await?;
-                    }
+                if let Err(error) = (command.handler)(ctx.clone()).await {
+                    self.handle_command_error(command, ctx, error).await?;
                 };
             }
         }
@@ -142,14 +137,13 @@ impl<'a, T> CommandClient<'a, T> {
 
         let response = match command.error_handler {
             Some(error_handler) => match error_handler(ctx.clone(), error).await {
-                Ok(Some(x)) => x,
-                Ok(None) => return Ok(()),
+                Ok(()) => return Ok(()),
                 Err(error) => make_error_response(error),
             },
             _ => make_error_response(error),
         };
 
-        self.interaction.create_response(ctx.interaction.id, &ctx.interaction.token, &response).exec().await?;
+        ctx.create_response(&response).exec().await?;
 
         Ok(())
     }

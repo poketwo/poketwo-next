@@ -6,7 +6,7 @@ use twilight_util::builder::embed::{EmbedBuilder, EmbedFieldBuilder};
 use crate::Context;
 
 #[command(desc = "Get started with Pokétwo.", default_permission = true)]
-pub async fn start(ctx: Context<'_>) -> Result<InteractionResponse> {
+pub async fn start(ctx: Context<'_>) -> Result<()> {
     let mut embed = EmbedBuilder::new()
         .color(0x5865f2)
         .title(ctx.locale_lookup("start-embed-title"))
@@ -23,8 +23,12 @@ pub async fn start(ctx: Context<'_>) -> Result<InteractionResponse> {
     embed = embed.field(EmbedFieldBuilder::new("Generation VII (Alola)", "Rowlet · Litten · Popplio"));
     embed = embed.field(EmbedFieldBuilder::new("Generation VIII (Galar)", "Grookey · Scorbunny · Sobble"));
 
-    Ok(InteractionResponse {
+    ctx.create_response(&InteractionResponse {
         kind: InteractionResponseType::ChannelMessageWithSource,
         data: Some(InteractionResponseData { embeds: Some(vec![embed.validate()?.build()]), ..Default::default() }),
     })
+    .exec()
+    .await?;
+
+    Ok(())
 }

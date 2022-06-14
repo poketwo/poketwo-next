@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use anyhow::{anyhow, Result};
 use inflector::Inflector;
 use poketwo_command_framework::{command, group};
@@ -100,7 +98,7 @@ fn format_variant_embed(ctx: &Context<'_>, variant: &Variant) -> Result<Embed> {
 }
 
 #[command(desc = "Search the Pokédex for a Pokémon", default_permission = true)]
-pub async fn search(ctx: Context<'_>, #[desc = "The name to search for"] query: String) -> Result<InteractionResponse> {
+pub async fn search(ctx: Context<'_>, #[desc = "The name to search for"] query: String) -> Result<()> {
     let mut state = ctx.client.state.lock().await;
 
     let variant = state
@@ -109,17 +107,19 @@ pub async fn search(ctx: Context<'_>, #[desc = "The name to search for"] query: 
         .await?
         .into_inner()
         .variant
-        .ok_or_else(|| {
-            anyhow!(ctx.locale_lookup_with_args("pokemon-not-found", &HashMap::from([("query", query.into())])))
-        })?;
+        .ok_or_else(|| anyhow!(ctx.locale_lookup_with_args("pokemon-not-found", vec![("query", query)])))?;
 
-    Ok(InteractionResponse {
+    ctx.create_response(&InteractionResponse {
         kind: InteractionResponseType::ChannelMessageWithSource,
         data: Some(InteractionResponseData {
             embeds: Some(vec![format_variant_embed(&ctx, &variant)?]),
             ..Default::default()
         }),
     })
+    .exec()
+    .await?;
+
+    Ok(())
 }
 
 #[group(desc = "Pokédex commands", default_permission = true, subcommands(search))]
