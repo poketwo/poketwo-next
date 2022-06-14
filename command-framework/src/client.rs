@@ -25,6 +25,7 @@ pub struct CommandClientOptions<T> {
     pub amqp_url: String,
     pub amqp_exchange: String,
     pub amqp_queue: String,
+    pub amqp_routing_keys_extra: Vec<String>,
     pub guild_ids: Vec<Id<GuildMarker>>,
     pub commands: Vec<Command<T>>,
 }
@@ -42,11 +43,14 @@ pub struct CommandClient<'a, T> {
 
 impl<'a, T> CommandClient<'a, T> {
     pub async fn connect(http: &'a Client, state: T, options: CommandClientOptions<T>) -> Result<CommandClient<'a, T>> {
+        let mut amqp_routing_keys = vec!["INTERACTION.APPLICATION_COMMAND.*".into()];
+        amqp_routing_keys.extend_from_slice(&options.amqp_routing_keys_extra);
+
         let gateway_options = GatewayClientOptions {
             amqp_url: options.amqp_url.clone(),
             amqp_exchange: options.amqp_exchange.clone(),
             amqp_queue: options.amqp_queue.clone(),
-            amqp_routing_key: "INTERACTION.APPLICATION_COMMAND.*".into(),
+            amqp_routing_keys,
         };
 
         let gateway = GatewayClient::connect(gateway_options).await?;

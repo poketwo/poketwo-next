@@ -15,7 +15,7 @@ pub struct GatewayClientOptions {
     pub amqp_url: String,
     pub amqp_exchange: String,
     pub amqp_queue: String,
-    pub amqp_routing_key: String,
+    pub amqp_routing_keys: Vec<String>,
 }
 
 #[derive(Debug)]
@@ -57,15 +57,17 @@ impl GatewayClient {
 
         debug!("Consume started");
 
-        channel
-            .queue_bind(
-                &options.amqp_queue,
-                &options.amqp_exchange,
-                &options.amqp_routing_key,
-                QueueBindOptions::default(),
-                FieldTable::default(),
-            )
-            .await?;
+        for routing_key in &options.amqp_routing_keys {
+            channel
+                .queue_bind(
+                    &options.amqp_queue,
+                    &options.amqp_exchange,
+                    routing_key,
+                    QueueBindOptions::default(),
+                    FieldTable::default(),
+                )
+                .await?;
+        }
 
         debug!("Queue bind successful");
         info!("Connected to AMQP");
