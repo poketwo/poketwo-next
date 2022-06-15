@@ -1,5 +1,6 @@
 use anyhow::{anyhow, Result};
 use inflector::Inflector;
+use poketwo_command_framework::poketwo_i18n::fluent_args;
 use poketwo_command_framework::{command, group};
 use poketwo_protobuf::poketwo::database::v1::get_variant_request::Query;
 use poketwo_protobuf::poketwo::database::v1::{GetVariantRequest, Species, SpeciesInfo, Variant};
@@ -107,7 +108,7 @@ pub async fn search(ctx: Context<'_>, #[desc = "The name to search for"] query: 
         .await?
         .into_inner()
         .variant
-        .ok_or_else(|| anyhow!(ctx.locale_lookup_with_args("pokemon-not-found", vec![("query", query)])))?;
+        .ok_or_else(|| anyhow!(ctx.locale_lookup_with_args("pokemon-not-found", fluent_args!["query" => query])))?;
 
     ctx.create_response(&InteractionResponse {
         kind: InteractionResponseType::ChannelMessageWithSource,

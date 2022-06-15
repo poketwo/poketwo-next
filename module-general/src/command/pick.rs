@@ -1,5 +1,6 @@
 use anyhow::{anyhow, bail, Error, Result};
 use poketwo_command_framework::command;
+use poketwo_command_framework::poketwo_i18n::fluent_args;
 use poketwo_protobuf::poketwo::database::v1::get_variant_request::Query;
 use poketwo_protobuf::poketwo::database::v1::{CreatePokemonRequest, CreateUserRequest, GetVariantRequest};
 use tonic::{Code, Status};
@@ -21,7 +22,7 @@ pub async fn pick(ctx: Context<'_>, #[desc = "The starter Pokémon of your choic
         .await?
         .into_inner()
         .variant
-        .ok_or_else(|| anyhow!(ctx.locale_lookup_with_args("pokemon-not-found", vec![("query", starter)])))?;
+        .ok_or_else(|| anyhow!(ctx.locale_lookup_with_args("pokemon-not-found", fluent_args!["query" => starter])))?;
 
     let name = variant
         .species
@@ -32,7 +33,7 @@ pub async fn pick(ctx: Context<'_>, #[desc = "The starter Pokémon of your choic
         .clone();
 
     if !STARTER_IDS.contains(&variant.id) {
-        bail!(ctx.locale_lookup_with_args("pokemon-not-starter", vec![("pokemon", name)]))
+        bail!(ctx.locale_lookup_with_args("pokemon-not-starter", fluent_args!["pokemon" => name]))
     }
 
     let user_id = ctx.interaction.author_id().ok_or_else(|| anyhow!("Missing author"))?;
@@ -47,7 +48,7 @@ pub async fn pick(ctx: Context<'_>, #[desc = "The starter Pokémon of your choic
     ctx.create_response(&InteractionResponse {
         kind: InteractionResponseType::ChannelMessageWithSource,
         data: Some(InteractionResponseData {
-            content: Some(ctx.locale_lookup_with_args("pick-response", vec![("starter", name)])),
+            content: Some(ctx.locale_lookup_with_args("pick-response", fluent_args!["starter" => name])),
             ..Default::default()
         }),
     })

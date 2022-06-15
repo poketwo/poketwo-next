@@ -1,3 +1,4 @@
+pub use fluent::fluent_args;
 use fluent_templates::fs::langid;
 pub use fluent_templates::*;
 

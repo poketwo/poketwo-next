@@ -1551,6 +1551,7 @@ dependencies = [
 name = "poketwo-i18n"
 version = "0.1.0"
 dependencies = [
+ "fluent",
  "fluent-templates",
 ]
 
@@ -1563,7 +1564,6 @@ dependencies = [
  "figment",
  "lazy_static",
  "poketwo-command-framework",
- "poketwo-i18n",
  "poketwo-protobuf",
  "serde",
  "tokio",
@@ -1585,7 +1585,6 @@ dependencies = [
  "figment",
  "lazy_static",
  "poketwo-command-framework",
- "poketwo-i18n",
  "poketwo-protobuf",
  "serde",
  "tokio",
