@@ -32,9 +32,9 @@ defmodule Poketwo.Database.Models.Pokemon do
   ]
 
   schema "pokemon" do
-    field :level, :integer, default: 1
+    field :level, :integer, autogenerate: {__MODULE__, :autogenerate_level, []}
     field :xp, :integer, default: 0
-    field :shiny, :boolean, default: false
+    field :shiny, :boolean, autogenerate: {__MODULE__, :autogenerate_shiny, []}
     field :nature, :string, autogenerate: {__MODULE__, :autogenerate_nature, []}
 
     field :iv_hp, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []}
@@ -54,13 +54,10 @@ defmodule Poketwo.Database.Models.Pokemon do
     belongs_to :original_user, Models.User
   end
 
-  def autogenerate_nature() do
-    Enum.random(@natures)
-  end
-
-  def autogenerate_iv() do
-    Enum.random(0..31)
-  end
+  def autogenerate_level(), do: :rand.normal(30, 10) |> round() |> max(1) |> min(100)
+  def autogenerate_shiny(), do: Enum.random(1..4096) == 1
+  def autogenerate_nature(), do: Enum.random(@natures)
+  def autogenerate_iv(), do: Enum.random(0..31)
 
   def changeset(user, params \\ %{}) do
     user
