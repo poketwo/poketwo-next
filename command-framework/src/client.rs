@@ -13,7 +13,9 @@ use twilight_http::Client;
 use twilight_model::application::interaction::Interaction;
 use twilight_model::channel::message::MessageFlags;
 use twilight_model::gateway::payload::incoming::InteractionCreate;
-use twilight_model::http::interaction::{InteractionResponse, InteractionResponseData, InteractionResponseType};
+use twilight_model::http::interaction::{
+    InteractionResponse, InteractionResponseData, InteractionResponseType,
+};
 use twilight_model::id::marker::GuildMarker;
 use twilight_model::id::Id;
 
@@ -42,7 +44,11 @@ pub struct CommandClient<'a, T> {
 }
 
 impl<'a, T> CommandClient<'a, T> {
-    pub async fn connect(http: &'a Client, state: T, options: CommandClientOptions<T>) -> Result<CommandClient<'a, T>> {
+    pub async fn connect(
+        http: &'a Client,
+        state: T,
+        options: CommandClientOptions<T>,
+    ) -> Result<CommandClient<'a, T>> {
         let mut amqp_routing_keys = vec!["INTERACTION.APPLICATION_COMMAND.*".into()];
         amqp_routing_keys.extend_from_slice(&options.amqp_routing_keys_extra);
 
@@ -127,7 +133,12 @@ impl<'a, T> CommandClient<'a, T> {
         Ok(())
     }
 
-    async fn handle_command_error(&self, command: &Command<T>, ctx: Context<'a, T>, error: Error) -> Result<()> {
+    async fn handle_command_error(
+        &self,
+        command: &Command<T>,
+        ctx: Context<'a, T>,
+        error: Error,
+    ) -> Result<()> {
         fn make_error_response(error: Error) -> InteractionResponse {
             InteractionResponse {
                 kind: InteractionResponseType::ChannelMessageWithSource,

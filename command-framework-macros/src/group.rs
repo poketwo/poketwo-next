@@ -65,13 +65,15 @@ pub fn group(args: AttributeArgs, input: ItemFn) -> TokenStream {
     let vis = input.vis;
 
     let ident = input.sig.ident;
-    let model_ident = Ident::new(&format!("{}Command", ident.to_string().to_pascal_case()), ident.span());
+    let model_ident =
+        Ident::new(&format!("{}Command", ident.to_string().to_pascal_case()), ident.span());
 
     let name = options.name.unwrap_or_else(|| ident.to_string());
     let desc = options.desc;
     let default_permission = options.default_permission;
 
-    let (enum_variants, variant_idents): (Vec<_>, Vec<_>) = options.subcommands.iter().map(subcommand).unzip();
+    let (enum_variants, variant_idents): (Vec<_>, Vec<_>) =
+        options.subcommands.iter().map(subcommand).unzip();
 
     quote! {
         #[derive(Debug, ::twilight_interactions::command::CreateCommand, ::twilight_interactions::command::CommandModel)]
@@ -106,7 +108,10 @@ pub fn group(args: AttributeArgs, input: ItemFn) -> TokenStream {
 
 pub fn subcommand(subcommand: &Ident) -> (TokenStream, TokenStream) {
     let name = subcommand.to_string();
-    let model_ident = Ident::new(&format!("{}Command", subcommand.to_string().to_pascal_case()), subcommand.span());
+    let model_ident = Ident::new(
+        &format!("{}Command", subcommand.to_string().to_pascal_case()),
+        subcommand.span(),
+    );
     let ident = Ident::new(&subcommand.to_string().to_pascal_case(), subcommand.span());
 
     let enum_variant = quote! {

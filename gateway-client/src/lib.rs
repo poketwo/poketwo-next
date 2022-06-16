@@ -1,14 +1,26 @@
 use anyhow::Result;
-use lapin::options::{BasicConsumeOptions, ExchangeDeclareOptions, QueueBindOptions, QueueDeclareOptions};
+use lapin::options::{
+    BasicConsumeOptions, ExchangeDeclareOptions, QueueBindOptions, QueueDeclareOptions,
+};
 use lapin::types::FieldTable;
 use lapin::{Channel, Connection, Consumer, ExchangeKind, Queue};
 use tracing::{debug, info};
 
-static EXCHANGE_DECLARE_OPTIONS: ExchangeDeclareOptions =
-    ExchangeDeclareOptions { passive: false, durable: true, auto_delete: false, internal: false, nowait: false };
+static EXCHANGE_DECLARE_OPTIONS: ExchangeDeclareOptions = ExchangeDeclareOptions {
+    passive: false,
+    durable: true,
+    auto_delete: false,
+    internal: false,
+    nowait: false,
+};
 
-static QUEUE_DECLARE_OPTIONS: QueueDeclareOptions =
-    QueueDeclareOptions { passive: false, durable: true, exclusive: false, auto_delete: true, nowait: false };
+static QUEUE_DECLARE_OPTIONS: QueueDeclareOptions = QueueDeclareOptions {
+    passive: false,
+    durable: true,
+    exclusive: false,
+    auto_delete: true,
+    nowait: false,
+};
 
 #[derive(Debug, Clone)]
 pub struct GatewayClientOptions {
@@ -28,7 +40,9 @@ pub struct GatewayClient {
 
 impl GatewayClient {
     pub async fn connect(options: GatewayClientOptions) -> Result<Self> {
-        let connection = lapin::Connection::connect(&options.amqp_url, lapin::ConnectionProperties::default()).await?;
+        let connection =
+            lapin::Connection::connect(&options.amqp_url, lapin::ConnectionProperties::default())
+                .await?;
 
         debug!("Connection established");
 
@@ -47,12 +61,19 @@ impl GatewayClient {
 
         debug!("Exchange declared");
 
-        let queue = channel.queue_declare(&options.amqp_queue, QUEUE_DECLARE_OPTIONS, FieldTable::default()).await?;
+        let queue = channel
+            .queue_declare(&options.amqp_queue, QUEUE_DECLARE_OPTIONS, FieldTable::default())
+            .await?;
 
         debug!("Queue declared");
 
         let consumer = channel
-            .basic_consume(&options.amqp_queue, "gateway-client", BasicConsumeOptions::default(), FieldTable::default())
+            .basic_consume(
+                &options.amqp_queue,
+                "gateway-client",
+                BasicConsumeOptions::default(),
+                FieldTable::default(),
+            )
             .await?;
 
         debug!("Consume started");

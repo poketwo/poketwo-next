@@ -5,7 +5,9 @@ use poketwo_command_framework::{command, group};
 use poketwo_protobuf::poketwo::database::v1::get_variant_request::Query;
 use poketwo_protobuf::poketwo::database::v1::{GetVariantRequest, Species, SpeciesInfo, Variant};
 use twilight_model::channel::embed::Embed;
-use twilight_model::http::interaction::{InteractionResponse, InteractionResponseData, InteractionResponseType};
+use twilight_model::http::interaction::{
+    InteractionResponse, InteractionResponseData, InteractionResponseType,
+};
 use twilight_util::builder::embed::{EmbedBuilder, EmbedFieldBuilder, ImageSource};
 
 use crate::Context;
@@ -71,12 +73,19 @@ fn format_names(species: &Species) -> Result<String> {
 }
 
 fn format_appearance(ctx: &Context<'_>, variant: &Variant) -> String {
-    format!("{}: {}\n{}: {}", ctx.locale_lookup("height"), variant.height, ctx.locale_lookup("weight"), variant.weight)
+    format!(
+        "{}: {}\n{}: {}",
+        ctx.locale_lookup("height"),
+        variant.height,
+        ctx.locale_lookup("weight"),
+        variant.weight
+    )
 }
 
 fn format_variant_embed(ctx: &Context<'_>, variant: &Variant) -> Result<Embed> {
     let species = variant.species.as_ref().ok_or_else(|| anyhow!("Missing species"))?;
-    let info = species.get_locale_info(&ctx.interaction.locale).ok_or_else(|| anyhow!("Missing info"))?;
+    let info =
+        species.get_locale_info(&ctx.interaction.locale).ok_or_else(|| anyhow!("Missing info"))?;
 
     let mut embed = EmbedBuilder::new()
         .title(format!("#{} — {}", variant.id, info.name))
@@ -86,29 +95,45 @@ fn format_variant_embed(ctx: &Context<'_>, variant: &Variant) -> Result<Embed> {
         embed = embed.description(flavor_text);
     }
 
-    embed = embed.field(EmbedFieldBuilder::new(ctx.locale_lookup("types"), format_types(variant)).inline());
-    embed = embed.field(EmbedFieldBuilder::new(ctx.locale_lookup("region"), format_region(species)?).inline());
-    embed = embed.field(EmbedFieldBuilder::new(ctx.locale_lookup("catchable"), "Placeholder").inline());
+    embed = embed
+        .field(EmbedFieldBuilder::new(ctx.locale_lookup("types"), format_types(variant)).inline());
+    embed = embed.field(
+        EmbedFieldBuilder::new(ctx.locale_lookup("region"), format_region(species)?).inline(),
+    );
     embed =
-        embed.field(EmbedFieldBuilder::new(ctx.locale_lookup("base-stats"), format_base_stats(ctx, variant)).inline());
-    embed = embed.field(EmbedFieldBuilder::new(ctx.locale_lookup("names"), format_names(species)?).inline());
-    embed =
-        embed.field(EmbedFieldBuilder::new(ctx.locale_lookup("appearance"), format_appearance(ctx, variant)).inline());
+        embed.field(EmbedFieldBuilder::new(ctx.locale_lookup("catchable"), "Placeholder").inline());
+    embed = embed.field(
+        EmbedFieldBuilder::new(ctx.locale_lookup("base-stats"), format_base_stats(ctx, variant))
+            .inline(),
+    );
+    embed = embed
+        .field(EmbedFieldBuilder::new(ctx.locale_lookup("names"), format_names(species)?).inline());
+    embed = embed.field(
+        EmbedFieldBuilder::new(ctx.locale_lookup("appearance"), format_appearance(ctx, variant))
+            .inline(),
+    );
 
     Ok(embed.validate()?.build())
 }
 
 #[command(desc = "Search the Pokédex for a Pokémon", default_permission = true)]
-pub async fn search(ctx: Context<'_>, #[desc = "The name to search for"] query: String) -> Result<()> {
+pub async fn search(
+    ctx: Context<'_>,
+    #[desc = "The name to search for"] query: String,
+) -> Result<()> {
     let mut state = ctx.client.state.lock().await;
 
-    let variant = state
-        .database
-        .get_variant(GetVariantRequest { query: Some(Query::Name(query.clone())) })
-        .await?
-        .into_inner()
-        .variant
-        .ok_or_else(|| anyhow!(ctx.locale_lookup_with_args("pokemon-not-found", fluent_args!["query" => query])))?;
+    let variant =
+        state
+            .database
+            .get_variant(GetVariantRequest { query: Some(Query::Name(query.clone())) })
+            .await?
+            .into_inner()
+            .variant
+            .ok_or_else(|| {
+                anyhow!(ctx
+                    .locale_lookup_with_args("pokemon-not-found", fluent_args!["query" => query]))
+            })?;
 
     ctx.create_response(&InteractionResponse {
         kind: InteractionResponseType::ChannelMessageWithSource,

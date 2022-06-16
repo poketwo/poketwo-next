@@ -32,7 +32,11 @@ impl<T> Context<'_, T> {
     }
 
     pub fn create_response<'a>(&'a self, response: &'a InteractionResponse) -> CreateResponse<'a> {
-        self.client.interaction.create_response(self.interaction.id, &self.interaction.token, response)
+        self.client.interaction.create_response(
+            self.interaction.id,
+            &self.interaction.token,
+            response,
+        )
     }
 
     pub fn create_followup(&self) -> CreateFollowup {

@@ -3,7 +3,9 @@ use poketwo_command_framework::command;
 use poketwo_i18n::fluent_args;
 use poketwo_protobuf::poketwo::database::v1::get_variant_request::Query;
 use poketwo_protobuf::poketwo::database::v1::{CreatePokemonRequest, GetVariantRequest};
-use twilight_model::http::interaction::{InteractionResponse, InteractionResponseData, InteractionResponseType};
+use twilight_model::http::interaction::{
+    InteractionResponse, InteractionResponseData, InteractionResponseType,
+};
 
 use crate::Context;
 
@@ -21,7 +23,10 @@ else
 end";
 
 #[command(desc = "Catch a Pokémon.", default_permission = true)]
-pub async fn catch(ctx: Context<'_>, #[desc = "The Pokémon to catch"] pokemon: String) -> Result<()> {
+pub async fn catch(
+    ctx: Context<'_>,
+    #[desc = "The Pokémon to catch"] pokemon: String,
+) -> Result<()> {
     let state = &mut *ctx.client.state.lock().await;
 
     let variant = state
@@ -30,7 +35,11 @@ pub async fn catch(ctx: Context<'_>, #[desc = "The Pokémon to catch"] pokemon: 
         .await?
         .into_inner()
         .variant
-        .ok_or_else(|| anyhow!(ctx.locale_lookup_with_args("pokemon-not-found", fluent_args!["query" => pokemon])))?;
+        .ok_or_else(|| {
+            anyhow!(
+                ctx.locale_lookup_with_args("pokemon-not-found", fluent_args!["query" => pokemon])
+            )
+        })?;
 
     let mut conn = state.redis.get().await?;
     let status: i32 = bb8_redis::redis::cmd("EVAL")
@@ -53,7 +62,11 @@ pub async fn catch(ctx: Context<'_>, #[desc = "The Pokémon to catch"] pokemon: 
 
     let pokemon = state
         .database
-        .create_pokemon(CreatePokemonRequest { user_id: user_id.into(), variant_id: variant.id, ..Default::default() })
+        .create_pokemon(CreatePokemonRequest {
+            user_id: user_id.into(),
+            variant_id: variant.id,
+            ..Default::default()
+        })
         .await?
         .into_inner()
         .pokemon

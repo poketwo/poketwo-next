@@ -34,7 +34,8 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
     };
 
     let ident = input.sig.ident.clone();
-    let model_ident = Ident::new(&format!("{}Command", ident.to_string().to_pascal_case()), ident.span());
+    let model_ident =
+        Ident::new(&format!("{}Command", ident.to_string().to_pascal_case()), ident.span());
 
     input.sig.ident = Ident::new("inner", input.sig.ident.span());
 

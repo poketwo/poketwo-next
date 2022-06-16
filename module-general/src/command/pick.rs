@@ -2,18 +2,31 @@ use anyhow::{anyhow, bail, Error, Result};
 use poketwo_command_framework::command;
 use poketwo_command_framework::poketwo_i18n::fluent_args;
 use poketwo_protobuf::poketwo::database::v1::get_variant_request::Query;
-use poketwo_protobuf::poketwo::database::v1::{CreatePokemonRequest, CreateUserRequest, GetVariantRequest};
+use poketwo_protobuf::poketwo::database::v1::{
+    CreatePokemonRequest, CreateUserRequest, GetVariantRequest,
+};
 use tonic::{Code, Status};
 use twilight_model::channel::message::MessageFlags;
-use twilight_model::http::interaction::{InteractionResponse, InteractionResponseData, InteractionResponseType};
+use twilight_model::http::interaction::{
+    InteractionResponse, InteractionResponseData, InteractionResponseType,
+};
 
 use crate::Context;
 
-static STARTER_IDS: &[i32] =
-    &[1, 4, 7, 152, 155, 158, 252, 255, 258, 387, 390, 393, 495, 498, 501, 650, 653, 656, 722, 725, 728, 810, 813, 816];
+static STARTER_IDS: &[i32] = &[
+    1, 4, 7, 152, 155, 158, 252, 255, 258, 387, 390, 393, 495, 498, 501, 650, 653, 656, 722, 725,
+    728, 810, 813, 816,
+];
 
-#[command(desc = "Pick a starter Pokémon.", default_permission = true, on_error = "handle_pick_error")]
-pub async fn pick(ctx: Context<'_>, #[desc = "The starter Pokémon of your choice"] starter: String) -> Result<()> {
+#[command(
+    desc = "Pick a starter Pokémon.",
+    default_permission = true,
+    on_error = "handle_pick_error"
+)]
+pub async fn pick(
+    ctx: Context<'_>,
+    #[desc = "The starter Pokémon of your choice"] starter: String,
+) -> Result<()> {
     let mut state = ctx.client.state.lock().await;
 
     let variant = state
@@ -22,7 +35,11 @@ pub async fn pick(ctx: Context<'_>, #[desc = "The starter Pokémon of your choic
         .await?
         .into_inner()
         .variant
-        .ok_or_else(|| anyhow!(ctx.locale_lookup_with_args("pokemon-not-found", fluent_args!["query" => starter])))?;
+        .ok_or_else(|| {
+            anyhow!(
+                ctx.locale_lookup_with_args("pokemon-not-found", fluent_args!["query" => starter])
+            )
+        })?;
 
     let name = variant
         .species
@@ -40,7 +57,11 @@ pub async fn pick(ctx: Context<'_>, #[desc = "The starter Pokémon of your choic
     state.database.create_user(CreateUserRequest { id: user_id.into() }).await?;
     state
         .database
-        .create_pokemon(CreatePokemonRequest { user_id: user_id.into(), variant_id: variant.id, ..Default::default() })
+        .create_pokemon(CreatePokemonRequest {
+            user_id: user_id.into(),
+            variant_id: variant.id,
+            ..Default::default()
+        })
         .await?;
 
     // TODO: Terms of Service prompt
@@ -48,7 +69,9 @@ pub async fn pick(ctx: Context<'_>, #[desc = "The starter Pokémon of your choic
     ctx.create_response(&InteractionResponse {
         kind: InteractionResponseType::ChannelMessageWithSource,
         data: Some(InteractionResponseData {
-            content: Some(ctx.locale_lookup_with_args("pick-response", fluent_args!["starter" => name])),
+            content: Some(
+                ctx.locale_lookup_with_args("pick-response", fluent_args!["starter" => name]),
+            ),
             ..Default::default()
         }),
     })
