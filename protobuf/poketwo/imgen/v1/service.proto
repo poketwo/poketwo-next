@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package poketwo.imgen.v1;
+
+import "poketwo/imgen/v1/models.proto";
+
+service Imgen {
+  rpc GetSpawnImage(GetSpawnImageRequest) returns (GetSpawnImageResponse);
+}
+
+// GetSpawnImage
+
+message GetSpawnImageRequest { int32 variant_id = 1; }
+
+message GetSpawnImageResponse {
+  ImageFormat format = 1;
+  bytes content = 2;
+}

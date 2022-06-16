@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package poketwo.imgen.v1;
+
+enum ImageFormat {
+  UNKNOWN = 0;
+  PNG = 1;
+  JPEG = 2;
+  GIF = 3;
+  WEBP = 4;
+  PNM = 5;
+  TIFF = 6;
+  TGA = 7;
+  DDS = 8;
+  BMP = 9;
+  ICO = 10;
+  HDR = 11;
+  OPENEXR = 12;
+  FARBFELD = 13;
+  AVIF = 14;
+}
