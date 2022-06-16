@@ -1,3 +1,6 @@
 [submodule "database/pokedex"]
 	path = database/pokedex
 	url = https://github.com/veekun/pokedex.git
+[submodule "images"]
+	path = images
+	url = https://github.com/poketwo/images
