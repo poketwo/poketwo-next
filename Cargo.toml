@@ -1,12 +1,28 @@
 [workspace]
 members = [
-    "command-framework",
-    "command-framework-macros",
-    "gateway",
-    "gateway-client",
-    "i18n-rust",
-    "module-catching",
-    "module-general",
-    "module-pokedex",
-    "protobuf-rust",
+  "command-framework",
+  "command-framework-macros",
+  "gateway",
+  "gateway-client",
+  "i18n-rust",
+  "imgen",
+  "module-catching",
+  "module-general",
+  "module-pokedex",
+  "protobuf-rust",
 ]
+
+[profile.dev.package.adler]
+opt-level = 3
+
+[profile.dev.package.miniz_oxide]
+opt-level = 3
+
+[profile.dev.package.png]
+opt-level = 3
+
+[profile.dev.package.image]
+opt-level = 3
+
+[profile.dev.package.imageproc]
+opt-level = 3
