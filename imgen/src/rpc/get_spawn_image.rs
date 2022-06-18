@@ -12,9 +12,9 @@ use crate::image_cache::ImageCacheRequest;
 
 fn image_to_response(img: RgbaImage) -> Result<GetSpawnImageResponse> {
     let mut bytes: Vec<u8> = Vec::new();
-    img.write_to(&mut Cursor::new(&mut bytes), ImageFormat::Jpeg)?;
+    img.write_to(&mut Cursor::new(&mut bytes), ImageFormat::Png)?;
 
-    Ok(GetSpawnImageResponse { format: ImgenImageFormat::Jpeg.into(), content: bytes })
+    Ok(GetSpawnImageResponse { format: ImgenImageFormat::Png.into(), content: bytes })
 }
 
 pub async fn get_spawn_image(

@@ -48,7 +48,7 @@ async fn main() -> Result<()> {
     let handler = ImgenHandler::new(tx);
     let service = ImgenServer::new(handler);
 
-    let address = "[::1]:50051".parse()?;
+    let address = "127.0.0.1:50051".parse()?;
     Server::builder().add_service(service).serve(address).await?;
 
     Ok(())
