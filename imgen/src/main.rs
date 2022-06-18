@@ -2,6 +2,8 @@ mod config;
 mod image_cache;
 mod rpc;
 
+use std::net::SocketAddr;
+
 use anyhow::Result;
 use image_cache::ImageCacheRequest;
 use poketwo_protobuf::poketwo::imgen::v1::imgen_server::{Imgen, ImgenServer};
@@ -48,7 +50,7 @@ async fn main() -> Result<()> {
     let handler = ImgenHandler::new(tx);
     let service = ImgenServer::new(handler);
 
-    let address = "127.0.0.1:50051".parse()?;
+    let address = SocketAddr::new("0.0.0.0".parse()?, CONFIG.port);
     Server::builder().add_service(service).serve(address).await?;
 
     Ok(())

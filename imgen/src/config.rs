@@ -7,11 +7,13 @@ use serde::Deserialize;
 
 #[derive(Deserialize, Clone)]
 pub struct Config {
+    pub port: u16,
     pub image_dir: PathBuf,
 }
 
 lazy_static! {
     pub static ref CONFIG: Config = Figment::new()
+        .merge(("port", 50051))
         .merge(Env::raw())
         .merge(Json::file("config.json"))
         .merge(Toml::file("config.toml"))
