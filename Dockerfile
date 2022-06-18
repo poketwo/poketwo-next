@@ -3,6 +3,7 @@
 ############
 
 FROM rust:1.60-slim-bullseye as rust-base
+RUN apt-get update && apt install -y --no-install-recommends ca-certificates
 RUN cargo install cargo-chef
 WORKDIR /app
 
@@ -24,7 +25,7 @@ ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
 ##############
 
 FROM elixir:1.13.4-slim as elixir-build
-RUN apt-get update && apt install -y --no-install-recommends git
+RUN apt-get update && apt install -y --no-install-recommends git ca-certificates
 RUN mix local.rebar --force && mix local.hex --force
 ENV MIX_ENV=prod
 WORKDIR /app
