@@ -107,15 +107,23 @@ impl<'a, T> CommandClient<'a, T> {
 
     pub async fn run(&mut self) -> Result<()> {
         while let Some(delivery) = self.gateway.consumer.next().await {
-            if let Err(err) = self.handle_delivery(delivery?).await {
-                error!("{:?}", err);
+            if let Err(error) = self._handle_delivery(delivery?).await {
+                error!("{:?}", error);
             }
         }
 
         Ok(())
     }
 
-    async fn handle_delivery(&self, delivery: Delivery) -> Result<()> {
+    pub async fn handle_delivery(&self, delivery: Delivery) -> Result<Result<()>, Delivery> {
+        if delivery.routing_key.as_str().starts_with("INTERACTION.APPLICATION_COMMAND") {
+            Ok(self._handle_delivery(delivery).await)
+        } else {
+            Err(delivery)
+        }
+    }
+
+    async fn _handle_delivery(&self, delivery: Delivery) -> Result<()> {
         delivery.ack(BasicAckOptions::default()).await?;
 
         let event: InteractionCreate = serde_json::from_slice(&delivery.data)?;
