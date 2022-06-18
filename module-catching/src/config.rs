@@ -13,15 +13,25 @@ pub struct Config {
 
     pub redis_url: String,
     pub database_service_url: String,
+    pub imgen_service_url: String,
+
+    pub activity_threshold: u32,
+    pub activity_rate_limit: u32,
+    pub activity_rate_limit_per_ms: u32,
 }
 
 lazy_static! {
-    pub static ref CONFIG: Config = Figment::new()
-        .merge(Env::raw())
-        .merge(Json::file("config.json"))
-        .merge(Toml::file("config.toml"))
-        .merge(Yaml::file("config.yaml"))
-        .merge(Yaml::file("config.yml"))
-        .extract()
-        .unwrap();
+    pub static ref CONFIG: Config = {
+        Figment::new()
+            .merge(("activity_threshold", 2))
+            .merge(("activity_rate_limit", 5))
+            .merge(("activity_rate_limit_per_ms", 5000))
+            .merge(Env::raw())
+            .merge(Json::file("config.json"))
+            .merge(Toml::file("config.toml"))
+            .merge(Yaml::file("config.yaml"))
+            .merge(Yaml::file("config.yml"))
+            .extract()
+            .unwrap()
+    };
 }

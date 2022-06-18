@@ -1730,7 +1730,7 @@ dependencies = [
  "hmac",
  "lazy_static",
  "rc2",
- "sha1",
+ "sha1 0.10.1",
  "yasna",
 ]
 
@@ -1961,11 +1961,15 @@ dependencies = [
  "anyhow",
  "bb8-redis",
  "figment",
+ "futures-util",
+ "lapin",
  "lazy_static",
  "poketwo-command-framework",
  "poketwo-i18n",
  "poketwo-protobuf",
+ "redis",
  "serde",
+ "serde_json",
  "tokio",
  "tonic",
  "tracing",
@@ -2318,6 +2322,7 @@ dependencies = [
  "itoa 0.4.8",
  "percent-encoding",
  "pin-project-lite",
+ "sha1 0.6.1",
  "tokio",
  "tokio-util 0.6.10",
  "url",
@@ -2596,6 +2601,15 @@ dependencies = [
 
 [[package]]
 name = "sha1"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c1da05c97445caa12d05e848c4a4fcbbea29e748ac28f7e80e9b010392063770"
+dependencies = [
+ "sha1_smol",
+]
+
+[[package]]
+name = "sha1"
 version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c77f4e7f65455545c2153c1253d25056825e77ee2533f0e41deb65a93a34852f"
@@ -2604,6 +2618,12 @@ dependencies = [
  "cpufeatures",
  "digest",
 ]
+
+[[package]]
+name = "sha1_smol"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ae1a47186c03a32177042e55dbc5fd5aee900b8e0069a8d70fba96a9375cd012"
 
 [[package]]
 name = "sharded-slab"
