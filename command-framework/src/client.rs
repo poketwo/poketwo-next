@@ -38,8 +38,8 @@ pub struct CommandClient<'a, T> {
     pub interaction: InteractionClient<'a>,
     pub gateway: GatewayClient,
     pub state: Arc<Mutex<T>>,
+    pub guild_ids: Vec<Id<GuildMarker>>,
 
-    guild_ids: Vec<Id<GuildMarker>>,
     commands: HashMap<String, Command<T>>,
 }
 

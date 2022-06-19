@@ -26,6 +26,10 @@ pub async fn handle_message(client: &CommandClient<'_, State>, delivery: Deliver
         None => return Ok(()),
     };
 
+    if !client.guild_ids.contains(&guild_id) {
+        return Ok(());
+    }
+
     if update_counter(client, guild_id).await? {
         spawn_pokemon(client, event.channel_id).await?;
     }
