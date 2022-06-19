@@ -27,8 +27,7 @@ defmodule Poketwo.Database.MixProject do
       {:postgrex, "~> 0.16.2"},
       {:csv, "~> 2.4"},
       {:grpc, github: "elixir-grpc/grpc"},
-      {:cowlib, "~> 2.9.0", override: true},
-      {:ssl_verify_fun, "~> 1.1"}
+      {:cowlib, "~> 2.9.0", override: true}
     ]
   end
 end
