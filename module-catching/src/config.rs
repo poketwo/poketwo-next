@@ -23,7 +23,7 @@ pub struct Config {
 lazy_static! {
     pub static ref CONFIG: Config = {
         Figment::new()
-            .merge(("activity_threshold", 2))
+            .merge(("activity_threshold", 10))
             .merge(("activity_rate_limit", 5))
             .merge(("activity_rate_limit_per_ms", 5000))
             .merge(Env::raw())
