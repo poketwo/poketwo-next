@@ -10,7 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: [gateway, imgen, database]
+        target:
+          - database
+          - gateway
+          - imgen
+          - module-catching
+          - module-general
+          - module-pokedex
 
     steps:
       - name: Set up Docker Buildx
