@@ -73,7 +73,7 @@ CMD ["./poketwo-imgen"]
 
 FROM rust-build AS module-catching-build
 COPY . .
-RUN cargo build --release --bin poketwo-imgen
+RUN cargo build --release --bin module-catching
 
 FROM rust-application AS module-catching
 COPY --from=module-catching-build /app/target/release/poketwo-module-catching ./poketwo-module-catching
@@ -83,7 +83,7 @@ CMD ["./poketwo-module-catching"]
 
 FROM rust-build AS module-general-build
 COPY . .
-RUN cargo build --release --bin poketwo-imgen
+RUN cargo build --release --bin module-general
 
 FROM rust-application AS module-general
 COPY --from=module-general-build /app/target/release/poketwo-module-general ./poketwo-module-general
@@ -93,7 +93,7 @@ CMD ["./poketwo-module-general"]
 
 FROM rust-build AS module-pokedex-build
 COPY . .
-RUN cargo build --release --bin poketwo-imgen
+RUN cargo build --release --bin module-pokedex
 
 FROM rust-application AS module-pokedex
 COPY --from=module-pokedex-build /app/target/release/poketwo-module-pokedex ./poketwo-module-pokedex
