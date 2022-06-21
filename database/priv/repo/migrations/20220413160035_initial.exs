@@ -2,7 +2,7 @@ defmodule Poketwo.Database.Repo.Migrations.Initial do
   use Ecto.Migration
 
   def change do
-    execute "CREATE EXTENSION IF NOT EXISTS citext", "DROP EXTENSION citext"
+    execute("CREATE EXTENSION IF NOT EXISTS citext", "DROP EXTENSION citext")
 
     create table(:languages) do
       add :iso639, :citext, null: false
