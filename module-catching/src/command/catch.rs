@@ -2,7 +2,9 @@ use anyhow::{anyhow, bail, Result};
 use poketwo_command_framework::command;
 use poketwo_i18n::fluent_args;
 use poketwo_protobuf::poketwo::database::v1::get_variant_request::Query;
-use poketwo_protobuf::poketwo::database::v1::{CreatePokemonRequest, GetVariantRequest};
+use poketwo_protobuf::poketwo::database::v1::{
+    CreatePokemonRequest, GetUserRequest, GetVariantRequest,
+};
 use twilight_model::http::interaction::{
     InteractionResponse, InteractionResponseData, InteractionResponseType,
 };
@@ -41,6 +43,16 @@ pub async fn catch(
             )
         })?;
 
+    let user_id = ctx.interaction.author_id().ok_or_else(|| anyhow!("Missing author"))?;
+
+    let _ = state
+        .database
+        .get_user(GetUserRequest { id: user_id.get() })
+        .await?
+        .into_inner()
+        .user
+        .ok_or_else(|| anyhow!("Missing user"))?;
+
     let mut conn = state.redis.get().await?;
     let status: i32 = bb8_redis::redis::cmd("EVAL")
         .arg(REDIS_HCAD)
@@ -50,8 +62,6 @@ pub async fn catch(
         .arg(variant.id)
         .query_async(&mut *conn)
         .await?;
-
-    let user_id = ctx.interaction.author_id().ok_or_else(|| anyhow!("Missing author"))?;
 
     match status {
         1 => {}
