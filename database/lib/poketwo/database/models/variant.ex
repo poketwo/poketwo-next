@@ -21,6 +21,7 @@ defmodule Poketwo.Database.Models.Variant do
     field :is_enabled, :boolean
     field :is_catchable, :boolean
     field :is_redeemable, :boolean
+    field :spawn_weight, :integer
 
     has_many :info, Models.VariantInfo
     many_to_many :types, Models.Type, join_through: "pokemon_variant_types"
