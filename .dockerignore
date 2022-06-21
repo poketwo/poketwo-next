@@ -7,7 +7,7 @@ Dockerfile
 
 ## Gitignore
 
-/.env
+.env
 config.json
 config.toml
 config.yaml
@@ -15,16 +15,18 @@ config.yml
 
 # Elixir
 
-_build/
-cover/
-deps/
-doc/
-.fetch
-erl_crash.dump
-*.ez
-*.beam
-config/*.secret.exs
-.elixir_ls/
+# Need to add **/ otherwise assumes root
+
+**/_build/
+**/cover/
+**/deps/
+**/doc/
+**/.fetch
+**/erl_crash.dump
+**/*.ez
+**/*.beam
+**/config/*.secret.exs
+**/.elixir_ls/
 
 # Rust
 
