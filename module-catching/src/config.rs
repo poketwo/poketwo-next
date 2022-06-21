@@ -15,17 +15,14 @@ pub struct Config {
     pub database_service_url: String,
     pub imgen_service_url: String,
 
-    pub activity_threshold: u32,
-    pub activity_rate_limit: u32,
-    pub activity_rate_limit_per_ms: u32,
+    pub activity_threshold: Option<u32>,
+    pub activity_rate_limit: Option<u32>,
+    pub activity_rate_limit_per_ms: Option<u32>,
 }
 
 lazy_static! {
     pub static ref CONFIG: Config = {
         Figment::new()
-            .merge(("activity_threshold", 10))
-            .merge(("activity_rate_limit", 5))
-            .merge(("activity_rate_limit_per_ms", 5000))
             .merge(Env::raw())
             .merge(Json::file("config.json"))
             .merge(Toml::file("config.toml"))

@@ -1,8 +1,9 @@
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use bb8_redis::redis::AsyncCommands;
 use lapin::message::Delivery;
 use poketwo_command_framework::client::CommandClient;
 use poketwo_i18n::{Loader, LOCALES, US_ENGLISH};
+use poketwo_protobuf::poketwo::database::v1::GetRandomSpawnRequest;
 use poketwo_protobuf::poketwo::imgen::v1::GetSpawnImageRequest;
 use twilight_model::channel::embed::Embed;
 use twilight_model::gateway::payload::incoming::MessageCreate;
@@ -52,29 +53,23 @@ async fn update_counter(
         // Set expiration
         .cmd("PEXPIRE")
         .arg(&rate_limit_key)
-        .arg(CONFIG.activity_rate_limit_per_ms)
+        .arg(CONFIG.activity_rate_limit_per_ms.unwrap_or(5000))
         .arg("NX")
         .query_async(&mut *conn)
         .await?;
 
-    if result > CONFIG.activity_rate_limit {
+    if result > CONFIG.activity_rate_limit.unwrap_or(5) {
         return Ok(false);
     }
 
     let counter_key = format!("guild_counter:{}", guild_id);
     let val: u32 = conn.incr(&counter_key, 1).await?;
 
-    if val >= CONFIG.activity_threshold {
+    if val >= CONFIG.activity_threshold.unwrap_or(10) {
         Ok(conn.del(&counter_key).await?)
     } else {
         Ok(false)
     }
-}
-
-async fn get_spawn_image(client: &CommandClient<'_, State>, variant_id: i32) -> Result<Vec<u8>> {
-    let mut state = client.state.lock().await;
-    let response = state.imgen.get_spawn_image(GetSpawnImageRequest { variant_id }).await?;
-    Ok(response.into_inner().content)
 }
 
 fn make_spawn_embed() -> Result<Embed> {
@@ -92,12 +87,25 @@ async fn spawn_pokemon(
     client: &CommandClient<'_, State>,
     channel_id: Id<ChannelMarker>,
 ) -> Result<()> {
-    let variant_id = 192;
-    let image = get_spawn_image(client, variant_id).await?;
+    let mut state = client.state.lock().await;
 
-    let state = client.state.lock().await;
+    let variant = state
+        .database
+        .get_random_spawn(GetRandomSpawnRequest {})
+        .await?
+        .into_inner()
+        .variant
+        .ok_or_else(|| anyhow!("Missing variant"))?;
+
+    let image = state
+        .imgen
+        .get_spawn_image(GetSpawnImageRequest { variant_id: variant.id })
+        .await?
+        .into_inner()
+        .content;
+
     let mut conn = state.redis.get().await?;
-    conn.hset("wild", channel_id.get(), variant_id).await?;
+    conn.hset("wild", channel_id.get(), variant.id).await?;
 
     client
         .http
