@@ -11,6 +11,7 @@ service Database {
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
   rpc GetPokemon(GetPokemonRequest) returns (GetPokemonResponse);
   rpc GetPokemonList(GetPokemonListRequest) returns (GetPokemonListResponse);
+  rpc GetRandomSpawn(GetRandomSpawnRequest) returns (GetRandomSpawnResponse);
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc CreatePokemon(CreatePokemonRequest) returns (CreatePokemonResponse);
 }
@@ -36,6 +37,11 @@ message GetVariantRequest {
 }
 
 message GetVariantResponse { Variant variant = 1; }
+
+// GetRandomSpawn
+
+message GetRandomSpawnRequest {}
+message GetRandomSpawnResponse { Variant variant = 1; }
 
 // GetUser
 message GetUserRequest { uint64 id = 1; }

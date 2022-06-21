@@ -52,6 +52,26 @@ defmodule Poketwo.Database.V1.GetVariantResponse do
 
   field :variant, 1, type: Poketwo.Database.V1.Variant
 end
+defmodule Poketwo.Database.V1.GetRandomSpawnRequest do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{}
+
+  defstruct []
+end
+defmodule Poketwo.Database.V1.GetRandomSpawnResponse do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          variant: Poketwo.Database.V1.Variant.t() | nil
+        }
+
+  defstruct variant: nil
+
+  field :variant, 1, type: Poketwo.Database.V1.Variant
+end
 defmodule Poketwo.Database.V1.GetUserRequest do
   @moduledoc false
   use Protobuf, syntax: :proto3
@@ -223,6 +243,10 @@ defmodule Poketwo.Database.V1.Database.Service do
   rpc :GetPokemonList,
       Poketwo.Database.V1.GetPokemonListRequest,
       Poketwo.Database.V1.GetPokemonListResponse
+
+  rpc :GetRandomSpawn,
+      Poketwo.Database.V1.GetRandomSpawnRequest,
+      Poketwo.Database.V1.GetRandomSpawnResponse
 
   rpc :CreateUser, Poketwo.Database.V1.CreateUserRequest, Poketwo.Database.V1.CreateUserResponse
 
