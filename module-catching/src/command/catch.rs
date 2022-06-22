@@ -26,22 +26,21 @@ end";
 
 #[command(desc = "Catch a Pokémon.", default_permission = true)]
 pub async fn catch(
-    ctx: Context<'_>,
-    #[desc = "The Pokémon to catch"] pokemon: String,
+    ctx: Context<'_>, #[desc = "The Pokémon to catch"] guess: String
 ) -> Result<()> {
     let state = &mut *ctx.client.state.lock().await;
 
-    let variant = state
-        .database
-        .get_variant(GetVariantRequest { query: Some(Query::Name(pokemon.clone())) })
-        .await?
-        .into_inner()
-        .variant
-        .ok_or_else(|| {
-            anyhow!(
-                ctx.locale_lookup_with_args("pokemon-not-found", fluent_args!["query" => pokemon])
-            )
-        })?;
+    let variant =
+        state
+            .database
+            .get_variant(GetVariantRequest { query: Some(Query::Name(guess.clone())) })
+            .await?
+            .into_inner()
+            .variant
+            .ok_or_else(|| {
+                anyhow!(ctx
+                    .locale_lookup_with_args("pokemon-not-found", fluent_args!["query" => guess]))
+            })?;
 
     let user_id = ctx.interaction.author_id().ok_or_else(|| anyhow!("Missing author"))?;
 
