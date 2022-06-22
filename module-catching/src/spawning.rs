@@ -97,7 +97,7 @@ async fn spawn_pokemon(
         .variant
         .ok_or_else(|| anyhow!("Missing variant"))?;
 
-    let image = state
+    let img = state
         .imgen
         .get_spawn_image(GetSpawnImageRequest { variant_id: variant.id })
         .await?
@@ -110,7 +110,7 @@ async fn spawn_pokemon(
     client
         .http
         .create_message(channel_id)
-        .attachments(&[Attachment::from_bytes("pokemon.png".into(), image, 0)])?
+        .attachments(&[Attachment::from_bytes("pokemon.png".into(), img, 0)])?
         .embeds(&[make_spawn_embed()?])?
         .exec()
         .await?;

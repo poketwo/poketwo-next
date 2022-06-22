@@ -5,6 +5,7 @@ use std::path::{Path, PathBuf};
 use image::io::Reader;
 use image::RgbaImage;
 use tokio::sync::{mpsc, oneshot};
+use tracing::error;
 
 pub struct ImageCacheRequest {
     pub path: PathBuf,
@@ -25,20 +26,30 @@ impl ImageCache {
 
     pub async fn listen(&mut self) {
         while let Some(message) = self.rx.recv().await {
-            let image = self.get(message.path);
-            let _ = message.resp.send(image.cloned());
+            let img = self.get(message.path).await;
+            let _ = message.resp.send(img.cloned());
         }
     }
 
-    fn get<P: AsRef<Path>>(&mut self, path: P) -> Option<&RgbaImage> {
+    async fn get<P: AsRef<Path>>(&mut self, path: P) -> Option<&RgbaImage> {
         let path = path.as_ref();
         match self.cache.entry(path.to_owned()) {
             Entry::Occupied(e) => Some(e.into_mut()),
-            Entry::Vacant(e) => Some(e.insert(Self::load(self.root.join(path))?)),
+            Entry::Vacant(e) => {
+                let img = Self::load(self.root.join(path)).await?;
+                Some(e.insert(img))
+            }
         }
     }
 
-    fn load<P: AsRef<Path>>(path: P) -> Option<RgbaImage> {
-        Some(Reader::open(path).ok()?.decode().ok()?.to_rgba8())
+    async fn load(path: PathBuf) -> Option<RgbaImage> {
+        let load_fn = || Some(Reader::open(path).ok()?.decode().ok()?.to_rgba8());
+        match tokio::task::spawn_blocking(load_fn).await {
+            Ok(img) => img,
+            Err(error) => {
+                error!("error loading image {:?}", error);
+                None
+            }
+        }
     }
 }
