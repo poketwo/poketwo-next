@@ -2,19 +2,21 @@ use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
+use anyhow::{anyhow, Result};
 use image::io::Reader;
-use image::RgbaImage;
+use image::DynamicImage;
 use tokio::sync::{mpsc, oneshot};
 use tracing::error;
 
+#[derive(Debug)]
 pub struct ImageCacheRequest {
     pub path: PathBuf,
-    pub resp: oneshot::Sender<Option<RgbaImage>>,
+    pub resp: oneshot::Sender<Option<DynamicImage>>,
 }
 
 pub struct ImageCache {
     root: PathBuf,
-    cache: HashMap<PathBuf, RgbaImage>,
+    cache: HashMap<PathBuf, DynamicImage>,
     rx: mpsc::Receiver<ImageCacheRequest>,
 }
 
@@ -24,26 +26,32 @@ impl ImageCache {
         (tx, Self { root, cache: HashMap::new(), rx })
     }
 
+    pub async fn get(tx: mpsc::Sender<ImageCacheRequest>, path: PathBuf) -> Result<DynamicImage> {
+        let (resp, rx) = oneshot::channel();
+        tx.send(ImageCacheRequest { path, resp }).await?;
+        rx.await?.ok_or_else(|| anyhow!("no image found for given variant_id"))
+    }
+
     pub async fn listen(&mut self) {
         while let Some(message) = self.rx.recv().await {
-            let img = self.get(message.path).await;
+            let img = self._get(message.path).await;
             let _ = message.resp.send(img.cloned());
         }
     }
 
-    async fn get<P: AsRef<Path>>(&mut self, path: P) -> Option<&RgbaImage> {
+    async fn _get<P: AsRef<Path>>(&mut self, path: P) -> Option<&DynamicImage> {
         let path = path.as_ref();
         match self.cache.entry(path.to_owned()) {
             Entry::Occupied(e) => Some(e.into_mut()),
             Entry::Vacant(e) => {
-                let img = Self::load(self.root.join(path)).await?;
+                let img = Self::_load(self.root.join(path)).await?;
                 Some(e.insert(img))
             }
         }
     }
 
-    async fn load(path: PathBuf) -> Option<RgbaImage> {
-        let load_fn = || Some(Reader::open(path).ok()?.decode().ok()?.to_rgba8());
+    async fn _load(path: PathBuf) -> Option<DynamicImage> {
+        let load_fn = || Reader::open(path).ok()?.decode().ok();
         match tokio::task::spawn_blocking(load_fn).await {
             Ok(img) => img,
             Err(error) => {

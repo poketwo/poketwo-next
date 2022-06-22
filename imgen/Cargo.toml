@@ -12,6 +12,7 @@ image = "0.24.2"
 imageproc = "0.23.0"
 lazy_static = "1.4.0"
 poketwo-protobuf = { version = "0.1.0", path = "../protobuf-rust" }
+rand = "0.8.5"
 serde = { version = "1.0.137", features = ["derive"] }
 tokio = { version = "1.19.2", features = ["macros", "rt-multi-thread"] }
 tonic = "0.7.2"
