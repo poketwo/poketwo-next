@@ -52,13 +52,8 @@ defmodule Poketwo.Database.V1.Database.Server do
     end
   end
 
-  def get_pokemon(%V1.GetPokemonRequest{} = request, _stream) do
-    pokemon =
-      Models.Pokemon.query(id: request.id)
-      |> Repo.one()
-      |> Models.Pokemon.to_protobuf()
-
-    V1.GetPokemonResponse.new(pokemon: pokemon)
+  def get_pokemon(request, stream) do
+    V1.Database.GetPokemon.get_pokemon(request, stream)
   end
 
   def create_pokemon(%V1.CreatePokemonRequest{} = request, _stream) do

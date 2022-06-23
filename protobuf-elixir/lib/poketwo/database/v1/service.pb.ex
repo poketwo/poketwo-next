@@ -125,12 +125,15 @@ defmodule Poketwo.Database.V1.GetPokemonRequest do
   use Protobuf, syntax: :proto3
 
   @type t :: %__MODULE__{
-          id: non_neg_integer
+          query: {:id, non_neg_integer} | {:user_id, non_neg_integer}
         }
 
-  defstruct id: 0
+  defstruct query: nil
 
-  field :id, 1, type: :uint64
+  oneof :query, 0
+
+  field :id, 2, type: :uint64, oneof: 0
+  field :user_id, 3, type: :uint64, json_name: "userId", oneof: 0
 end
 defmodule Poketwo.Database.V1.GetPokemonResponse do
   @moduledoc false
