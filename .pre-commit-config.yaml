@@ -35,3 +35,10 @@ repos:
         entry: protoc --elixir_out=plugins=grpc:./protobuf-elixir/lib/ --proto_path=./protobuf
         language: system
         files: \.proto$
+
+      - id: compile-protos-elixir
+        name: Compile Protobufs (Rust)
+        description: This hook compiles protobufs for Rust.
+        entry: cd protobuf-rust && touch build.rs && cargo build
+        language: system
+        files: \.proto$
