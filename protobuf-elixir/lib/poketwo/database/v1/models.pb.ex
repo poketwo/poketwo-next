@@ -272,16 +272,19 @@ defmodule Poketwo.Database.V1.User do
   @type t :: %__MODULE__{
           id: non_neg_integer,
           inserted_at: Google.Protobuf.Timestamp.t() | nil,
-          updated_at: Google.Protobuf.Timestamp.t() | nil
+          updated_at: Google.Protobuf.Timestamp.t() | nil,
+          selected_pokemon_id: non_neg_integer
         }
 
   defstruct id: 0,
             inserted_at: nil,
-            updated_at: nil
+            updated_at: nil,
+            selected_pokemon_id: 0
 
   field :id, 1, type: :uint64
   field :inserted_at, 2, type: Google.Protobuf.Timestamp, json_name: "insertedAt"
   field :updated_at, 3, type: Google.Protobuf.Timestamp, json_name: "updatedAt"
+  field :selected_pokemon_id, 4, type: :uint64, json_name: "selectedPokemonId"
 end
 defmodule Poketwo.Database.V1.PokedexEntry do
   @moduledoc false

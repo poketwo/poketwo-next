@@ -6,6 +6,7 @@ defmodule Poketwo.Database.Models.User do
   schema "users" do
     timestamps(type: :utc_datetime)
 
+    belongs_to :selected_pokemon, Models.Pokemon
     has_many :pokemon, Models.Pokemon
     has_many :pokedex_entries, Models.PokedexEntry
   end
@@ -26,7 +27,8 @@ defmodule Poketwo.Database.Models.User do
     V1.User.new(
       id: user.id,
       inserted_at: user.inserted_at,
-      updated_at: user.updated_at
+      updated_at: user.updated_at,
+      selected_pokemon_id: user.selected_pokemon_id
     )
   end
 
