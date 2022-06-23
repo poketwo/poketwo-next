@@ -1,6 +1,7 @@
 defmodule Poketwo.Database.Models.Pokemon do
   use Ecto.Schema
   import Ecto.{Changeset, Query}
+  require Poketwo.Database.Utils
   alias Poketwo.Database.{Models, V1, Utils}
 
   @natures [
@@ -95,7 +96,20 @@ defmodule Poketwo.Database.Models.Pokemon do
   @spec query([{:id, integer}] | [{:user_id, integer}]) :: Ecto.Query.t()
   def query(id: id) do
     from p in Models.Pokemon,
-      where: p.id == ^id
+      where: p.id == ^id,
+      preload: [
+        variant: [
+          types: [info: ^Utils.from_info(Models.TypeInfo)],
+          info: ^Utils.from_info(Models.VariantInfo),
+          species: [
+            generation: [
+              info: ^Utils.from_info(Models.GenerationInfo),
+              main_region: [info: ^Utils.from_info(Models.RegionInfo)]
+            ],
+            info: ^Utils.from_info(Models.SpeciesInfo)
+          ]
+        ]
+      ]
   end
 
   def query(user_id: user_id) do
