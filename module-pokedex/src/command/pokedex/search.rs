@@ -1,7 +1,7 @@
 use anyhow::{anyhow, Result};
 use inflector::Inflector;
+use poketwo_command_framework::command;
 use poketwo_command_framework::poketwo_i18n::fluent_args;
-use poketwo_command_framework::{command, group};
 use poketwo_protobuf::poketwo::database::v1::get_variant_request::Query;
 use poketwo_protobuf::poketwo::database::v1::{GetVariantRequest, Species, SpeciesInfo, Variant};
 use twilight_model::channel::embed::Embed;
@@ -154,6 +154,3 @@ pub async fn search(
 
     Ok(())
 }
-
-#[group(desc = "Pokédex commands", default_permission = true, subcommands(search))]
-pub fn pokedex(_ctx: Context<'_>) {}
