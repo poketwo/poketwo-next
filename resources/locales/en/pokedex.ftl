@@ -1,3 +1,5 @@
+# Pokédex Embed (/pokedex search)
+
 types = Types
 region = Region
 catchable = Catchable
@@ -7,3 +9,13 @@ appearance = Appearance
 
 height = Height
 weight = Weight
+
+# Pokémon Embed (/pokemon info)
+
+details = Details
+xp = XP
+nature = Nature
+
+stats = Stats
+iv = IV
+total-iv = Total IV
