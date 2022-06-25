@@ -2,7 +2,7 @@ defmodule Poketwo.Database.Models.Pokemon do
   use Ecto.Schema
   import Ecto.{Changeset, Query}
   require Poketwo.Database.Utils
-  alias Poketwo.Database.{Models, V1, Utils}
+  alias Poketwo.Database.{Models, V1, Repo, Utils}
 
   @natures [
     "Adamant",
@@ -47,6 +47,8 @@ defmodule Poketwo.Database.Models.Pokemon do
 
     field :favorite, :boolean, default: false
     field :nickname, :string
+
+    field :idx, :integer
 
     timestamps(type: :utc_datetime)
 
@@ -93,28 +95,56 @@ defmodule Poketwo.Database.Models.Pokemon do
     |> validate_length(:nickname, max: 100)
   end
 
-  @spec query([{:id, integer}] | [{:user_id, integer}]) :: Ecto.Query.t()
-  def query(id: id) do
-    from p in Models.Pokemon,
-      where: p.id == ^id,
-      preload: [
-        variant: [
-          types: [info: ^Utils.from_info(Models.TypeInfo)],
-          info: ^Utils.from_info(Models.VariantInfo),
-          species: [
-            generation: [
-              info: ^Utils.from_info(Models.GenerationInfo),
-              main_region: [info: ^Utils.from_info(Models.RegionInfo)]
-            ],
-            info: ^Utils.from_info(Models.SpeciesInfo)
-          ]
+  defp preload() do
+    [
+      variant: [
+        types: [info: Utils.from_info(Models.TypeInfo)],
+        info: Utils.from_info(Models.VariantInfo),
+        species: [
+          generation: [
+            info: Utils.from_info(Models.GenerationInfo),
+            main_region: [info: Utils.from_info(Models.RegionInfo)]
+          ],
+          info: Utils.from_info(Models.SpeciesInfo)
         ]
       ]
+    ]
+  end
+
+  defp inner_query(user_id: user_id) do
+    from p in Models.Pokemon,
+      select: %{p | idx: row_number() |> over(order_by: p.id)},
+      where: p.user_id == ^user_id
+  end
+
+  def query(id: id) do
+    user_id_query =
+      from p in Models.Pokemon,
+        where: p.id == ^id,
+        select: p.user_id
+
+    case Repo.one(user_id_query) do
+      nil -> nil
+      user_id -> query(user_id: user_id, id: id)
+    end
+  end
+
+  def query(user_id: user_id, id: id) do
+    from p in subquery(inner_query(user_id: user_id)),
+      where: p.id == ^id,
+      preload: ^preload()
+  end
+
+  def query(user_id: user_id, idx: idx) do
+    from p in subquery(inner_query(user_id: user_id)),
+      where: p.idx == ^idx,
+      preload: ^preload()
   end
 
   def query(user_id: user_id) do
     from p in Models.Pokemon,
-      where: p.user_id == ^user_id
+      where: p.user_id == ^user_id,
+      preload: ^preload()
   end
 
   @spec to_protobuf(any) :: V1.Pokemon.t() | nil
@@ -137,7 +167,8 @@ defmodule Poketwo.Database.Models.Pokemon do
       favorite: pokemon.favorite,
       nickname: pokemon.nickname,
       inserted_at: pokemon.inserted_at,
-      updated_at: pokemon.updated_at
+      updated_at: pokemon.updated_at,
+      idx: pokemon.idx
     )
   end
 

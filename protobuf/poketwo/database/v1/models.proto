@@ -133,4 +133,6 @@ message Pokemon {
 
   google.protobuf.Timestamp inserted_at = 16;
   google.protobuf.Timestamp updated_at = 17;
+
+  uint64 idx = 18;
 }

@@ -331,7 +331,8 @@ defmodule Poketwo.Database.V1.Pokemon do
           favorite: boolean,
           nickname: Google.Protobuf.StringValue.t() | nil,
           inserted_at: Google.Protobuf.Timestamp.t() | nil,
-          updated_at: Google.Protobuf.Timestamp.t() | nil
+          updated_at: Google.Protobuf.Timestamp.t() | nil,
+          idx: non_neg_integer
         }
 
   defstruct id: 0,
@@ -350,7 +351,8 @@ defmodule Poketwo.Database.V1.Pokemon do
             favorite: false,
             nickname: nil,
             inserted_at: nil,
-            updated_at: nil
+            updated_at: nil,
+            idx: 0
 
   field :id, 1, type: :uint64
   field :user, 2, type: Poketwo.Database.V1.User
@@ -369,4 +371,5 @@ defmodule Poketwo.Database.V1.Pokemon do
   field :nickname, 15, type: Google.Protobuf.StringValue
   field :inserted_at, 16, type: Google.Protobuf.Timestamp, json_name: "insertedAt"
   field :updated_at, 17, type: Google.Protobuf.Timestamp, json_name: "updatedAt"
+  field :idx, 18, type: :uint64
 end

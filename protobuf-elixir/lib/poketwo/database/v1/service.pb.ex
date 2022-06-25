@@ -120,20 +120,71 @@ defmodule Poketwo.Database.V1.CreateUserResponse do
 
   field :user, 1, type: Poketwo.Database.V1.User
 end
+defmodule Poketwo.Database.V1.GetPokemonRequest.Id do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          id: non_neg_integer
+        }
+
+  defstruct id: 0
+
+  field :id, 1, type: :uint64
+end
+defmodule Poketwo.Database.V1.GetPokemonRequest.UserId do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          user_id: non_neg_integer
+        }
+
+  defstruct user_id: 0
+
+  field :user_id, 1, type: :uint64, json_name: "userId"
+end
+defmodule Poketwo.Database.V1.GetPokemonRequest.UserIdAndIdx do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          user_id: non_neg_integer,
+          idx: non_neg_integer
+        }
+
+  defstruct user_id: 0,
+            idx: 0
+
+  field :user_id, 1, type: :uint64, json_name: "userId"
+  field :idx, 2, type: :uint64
+end
 defmodule Poketwo.Database.V1.GetPokemonRequest do
   @moduledoc false
   use Protobuf, syntax: :proto3
 
   @type t :: %__MODULE__{
-          query: {:id, non_neg_integer} | {:user_id, non_neg_integer}
+          query:
+            {:id, Poketwo.Database.V1.GetPokemonRequest.Id.t() | nil}
+            | {:user_id, Poketwo.Database.V1.GetPokemonRequest.UserId.t() | nil}
+            | {:user_id_and_idx, Poketwo.Database.V1.GetPokemonRequest.UserIdAndIdx.t() | nil}
         }
 
   defstruct query: nil
 
   oneof :query, 0
 
-  field :id, 2, type: :uint64, oneof: 0
-  field :user_id, 3, type: :uint64, json_name: "userId", oneof: 0
+  field :id, 4, type: Poketwo.Database.V1.GetPokemonRequest.Id, oneof: 0
+
+  field :user_id, 5,
+    type: Poketwo.Database.V1.GetPokemonRequest.UserId,
+    json_name: "userId",
+    oneof: 0
+
+  field :user_id_and_idx, 6,
+    type: Poketwo.Database.V1.GetPokemonRequest.UserIdAndIdx,
+    json_name: "userIdAndIdx",
+    oneof: 0
 end
 defmodule Poketwo.Database.V1.GetPokemonResponse do
   @moduledoc false

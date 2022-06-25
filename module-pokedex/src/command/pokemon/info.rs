@@ -1,6 +1,6 @@
 use anyhow::{anyhow, Result};
 use poketwo_command_framework::command;
-use poketwo_protobuf::poketwo::database::v1::get_pokemon_request::Query;
+use poketwo_protobuf::poketwo::database::v1::get_pokemon_request::{Query, UserId, UserIdAndIdx};
 use poketwo_protobuf::poketwo::database::v1::{GetPokemonRequest, Pokemon};
 use twilight_model::channel::embed::{Embed, EmbedField};
 use twilight_model::http::interaction::{
@@ -92,11 +92,11 @@ pub async fn info(
 ) -> Result<()> {
     let mut state = ctx.client.state.lock().await;
 
+    let user_id = ctx.interaction.author_id().ok_or_else(|| anyhow!("Missing author"))?.get();
+
     let query = match index {
-        Some(index) => Query::Id(index as u64),
-        None => Query::UserId(
-            ctx.interaction.author_id().ok_or_else(|| anyhow!("Missing author"))?.get(),
-        ),
+        Some(index) => Query::UserIdAndIdx(UserIdAndIdx { user_id, idx: index as u64 }),
+        None => Query::UserId(UserId { user_id }),
     };
 
     let pokemon = state

@@ -53,12 +53,22 @@ message CreateUserRequest { uint64 id = 1; }
 message CreateUserResponse { User user = 1; }
 
 // GetPokemon
+
 message GetPokemonRequest {
   oneof query {
-    uint64 id = 2;
-    uint64 user_id = 3;
+    Id id = 4;
+    UserId user_id = 5;
+    UserIdAndIdx user_id_and_idx = 6;
+  }
+
+  message Id { uint64 id = 1; }
+  message UserId { uint64 user_id = 1; }
+  message UserIdAndIdx {
+    uint64 user_id = 1;
+    uint64 idx = 2;
   }
 }
+
 message GetPokemonResponse { Pokemon pokemon = 1; }
 
 // GetPokemonList
