@@ -40,22 +40,22 @@ fn format_region(species: &Species) -> Result<String> {
     Ok(region.identifier.to_title_case())
 }
 
-fn format_base_stats(ctx: &Context<'_>, variant: &Variant) -> String {
-    format!(
+fn format_base_stats(ctx: &Context<'_>, variant: &Variant) -> Result<String> {
+    Ok(format!(
         "**{}:** {}\n**{}:** {}\n**{}:** {}\n**{}:** {}\n**{}:** {}\n**{}:** {}",
-        ctx.locale_lookup("hp"),
+        ctx.locale_lookup("hp")?,
         variant.base_hp,
-        ctx.locale_lookup("atk"),
+        ctx.locale_lookup("atk")?,
         variant.base_atk,
-        ctx.locale_lookup("def"),
+        ctx.locale_lookup("def")?,
         variant.base_def,
-        ctx.locale_lookup("satk"),
+        ctx.locale_lookup("satk")?,
         variant.base_satk,
-        ctx.locale_lookup("sdef"),
+        ctx.locale_lookup("sdef")?,
         variant.base_sdef,
-        ctx.locale_lookup("spd"),
+        ctx.locale_lookup("spd")?,
         variant.base_spd,
-    )
+    ))
 }
 
 fn format_name(info: &SpeciesInfo) -> Result<String> {
@@ -72,14 +72,14 @@ fn format_names(species: &Species) -> Result<String> {
     Ok(result)
 }
 
-fn format_appearance(ctx: &Context<'_>, variant: &Variant) -> String {
-    format!(
+fn format_appearance(ctx: &Context<'_>, variant: &Variant) -> Result<String> {
+    Ok(format!(
         "{}: {}\n{}: {}",
-        ctx.locale_lookup("height"),
+        ctx.locale_lookup("height")?,
         variant.height,
-        ctx.locale_lookup("weight"),
+        ctx.locale_lookup("weight")?,
         variant.weight
-    )
+    ))
 }
 
 fn format_variant_embed(ctx: &Context<'_>, variant: &Variant) -> Result<Embed> {
@@ -103,20 +103,21 @@ fn format_variant_embed(ctx: &Context<'_>, variant: &Variant) -> Result<Embed> {
     }
 
     embed = embed
-        .field(EmbedFieldBuilder::new(ctx.locale_lookup("types"), format_types(variant)).inline());
+        .field(EmbedFieldBuilder::new(ctx.locale_lookup("types")?, format_types(variant)).inline());
     embed = embed.field(
-        EmbedFieldBuilder::new(ctx.locale_lookup("region"), format_region(species)?).inline(),
-    );
-    embed =
-        embed.field(EmbedFieldBuilder::new(ctx.locale_lookup("catchable"), "Placeholder").inline());
-    embed = embed.field(
-        EmbedFieldBuilder::new(ctx.locale_lookup("base-stats"), format_base_stats(ctx, variant))
-            .inline(),
+        EmbedFieldBuilder::new(ctx.locale_lookup("region")?, format_region(species)?).inline(),
     );
     embed = embed
-        .field(EmbedFieldBuilder::new(ctx.locale_lookup("names"), format_names(species)?).inline());
+        .field(EmbedFieldBuilder::new(ctx.locale_lookup("catchable")?, "Placeholder").inline());
     embed = embed.field(
-        EmbedFieldBuilder::new(ctx.locale_lookup("appearance"), format_appearance(ctx, variant))
+        EmbedFieldBuilder::new(ctx.locale_lookup("base-stats")?, format_base_stats(ctx, variant)?)
+            .inline(),
+    );
+    embed = embed.field(
+        EmbedFieldBuilder::new(ctx.locale_lookup("names")?, format_names(species)?).inline(),
+    );
+    embed = embed.field(
+        EmbedFieldBuilder::new(ctx.locale_lookup("appearance")?, format_appearance(ctx, variant)?)
             .inline(),
     );
 
@@ -130,17 +131,17 @@ pub async fn search(
 ) -> Result<()> {
     let mut state = ctx.client.state.lock().await;
 
-    let variant =
-        state
-            .database
-            .get_variant(GetVariantRequest { query: Some(Query::Name(query.clone())) })
-            .await?
-            .into_inner()
-            .variant
-            .ok_or_else(|| {
-                anyhow!(ctx
-                    .locale_lookup_with_args("pokemon-not-found", fluent_args!["query" => query]))
-            })?;
+    let variant = state
+        .database
+        .get_variant(GetVariantRequest { query: Some(Query::Name(query.clone())) })
+        .await?
+        .into_inner()
+        .variant
+        .ok_or_else(|| {
+            anyhow!(ctx
+                .locale_lookup_with_args("pokemon-not-found", fluent_args!["query" => query])
+                .unwrap_or_else(|_| "Unable to localize error message.".into()))
+        })?;
 
     ctx.create_response(&InteractionResponse {
         kind: InteractionResponseType::ChannelMessageWithSource,

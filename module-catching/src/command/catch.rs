@@ -30,17 +30,17 @@ pub async fn catch(
 ) -> Result<()> {
     let state = &mut *ctx.client.state.lock().await;
 
-    let variant =
-        state
-            .database
-            .get_variant(GetVariantRequest { query: Some(Query::Name(guess.clone())) })
-            .await?
-            .into_inner()
-            .variant
-            .ok_or_else(|| {
-                anyhow!(ctx
-                    .locale_lookup_with_args("pokemon-not-found", fluent_args!["query" => guess]))
-            })?;
+    let variant = state
+        .database
+        .get_variant(GetVariantRequest { query: Some(Query::Name(guess.clone())) })
+        .await?
+        .into_inner()
+        .variant
+        .ok_or_else(|| {
+            anyhow!(ctx
+                .locale_lookup_with_args("pokemon-not-found", fluent_args!["query" => guess])
+                .unwrap_or_else(|_| "Unable to localize error message.".into()))
+        })?;
 
     let user_id = ctx.interaction.author_id().ok_or_else(|| anyhow!("Missing author"))?;
 
@@ -64,8 +64,8 @@ pub async fn catch(
 
     match status {
         1 => {}
-        0 => bail!(ctx.locale_lookup("wrong-wild-pokemon")),
-        -1 => bail!(ctx.locale_lookup("no-wild-pokemon")),
+        0 => bail!(ctx.locale_lookup("wrong-wild-pokemon")?),
+        -1 => bail!(ctx.locale_lookup("no-wild-pokemon")?),
         _ => bail!("Unexpected return value"),
     }
 
@@ -93,11 +93,11 @@ pub async fn catch(
         "user-mention" => format!("<@{}>", user_id),
         "level" => pokemon.level.to_string(),
         "pokemon" => name
-    ]);
+    ])?;
 
     if pokemon.shiny {
         message.push_str("\n\n");
-        message.push_str(&ctx.locale_lookup("pokemon-caught-shiny"));
+        message.push_str(&ctx.locale_lookup("pokemon-caught-shiny")?);
     }
 
     ctx.create_response(&InteractionResponse {

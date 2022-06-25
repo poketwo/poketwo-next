@@ -24,7 +24,7 @@ fn format_pokemon_line(ctx: &Context<'_>, pokemon: &Pokemon, idx_len: usize) -> 
 
     Ok(format!(
         "`{idx:idx_len$}` **{name}** • {level_label} {level} • {iv_total:.2}%",
-        level_label = ctx.locale_lookup_with_args("level", fluent_args!["length" => "short"]),
+        level_label = ctx.locale_lookup_with_args("level", fluent_args!["length" => "short"])?,
         idx = pokemon.idx,
         name = variant_name,
         level = pokemon.level,
@@ -43,7 +43,7 @@ fn format_pokemon_list_embed(ctx: &Context<'_>, pokemon: &[Pokemon]) -> Result<E
     }
 
     Ok(EmbedBuilder::new()
-        .title(ctx.locale_lookup("pokemon-list-embed-title"))
+        .title(ctx.locale_lookup("pokemon-list-embed-title")?)
         .description(description)
         .validate()?
         .build())

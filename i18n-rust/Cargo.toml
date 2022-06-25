@@ -7,6 +7,6 @@ edition = "2021"
 
 [dependencies]
 fluent = "0.16.0"
-fluent-templates = "0.7.1"
+fluent-templates = { git = "https://github.com/XAMPPRocky/fluent-templates.git", version = "0.7.1" }
 
 [features]

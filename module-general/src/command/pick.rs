@@ -36,9 +36,9 @@ pub async fn pick(
         .into_inner()
         .variant
         .ok_or_else(|| {
-            anyhow!(
-                ctx.locale_lookup_with_args("pokemon-not-found", fluent_args!["query" => starter])
-            )
+            anyhow!(ctx
+                .locale_lookup_with_args("pokemon-not-found", fluent_args!["query" => starter])
+                .unwrap_or_else(|_| "Unable to localize error message.".into()))
         })?;
 
     let name = variant
@@ -50,7 +50,7 @@ pub async fn pick(
         .clone();
 
     if !STARTER_IDS.contains(&variant.id) {
-        bail!(ctx.locale_lookup_with_args("pokemon-not-starter", fluent_args!["pokemon" => name]))
+        bail!(ctx.locale_lookup_with_args("pokemon-not-starter", fluent_args!["pokemon" => name])?)
     }
 
     let user_id = ctx.interaction.author_id().ok_or_else(|| anyhow!("Missing author"))?;
@@ -72,7 +72,7 @@ pub async fn pick(
         kind: InteractionResponseType::ChannelMessageWithSource,
         data: Some(InteractionResponseData {
             content: Some(
-                ctx.locale_lookup_with_args("pick-response", fluent_args!["starter" => name]),
+                ctx.locale_lookup_with_args("pick-response", fluent_args!["starter" => name])?,
             ),
             ..Default::default()
         }),
@@ -89,7 +89,7 @@ pub async fn handle_pick_error(ctx: Context<'_>, error: Error) -> Result<()> {
             ctx.create_response(&InteractionResponse {
                 kind: InteractionResponseType::ChannelMessageWithSource,
                 data: Some(InteractionResponseData {
-                    content: Some(ctx.locale_lookup("account-exists")),
+                    content: Some(ctx.locale_lookup("account-exists")?),
                     flags: Some(MessageFlags::EPHEMERAL),
                     ..Default::default()
                 }),

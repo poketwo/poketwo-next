@@ -11,25 +11,25 @@ use twilight_util::builder::embed::{EmbedBuilder, EmbedFieldBuilder, ImageSource
 
 use crate::Context;
 
-fn format_details_field(ctx: &Context<'_>, pokemon: &Pokemon) -> EmbedField {
-    EmbedFieldBuilder::new(
-        ctx.locale_lookup("details"),
+fn format_details_field(ctx: &Context<'_>, pokemon: &Pokemon) -> Result<EmbedField> {
+    Ok(EmbedFieldBuilder::new(
+        ctx.locale_lookup("details")?,
         format!(
             "**{xp_label}:** {xp}/{max_xp}\n\
              **{nature_label}:** {nature}",
-            xp_label = ctx.locale_lookup("xp"),
+            xp_label = ctx.locale_lookup("xp")?,
             xp = pokemon.xp,
             max_xp = pokemon.max_xp(),
-            nature_label = ctx.locale_lookup("nature"),
+            nature_label = ctx.locale_lookup("nature")?,
             nature = pokemon.nature
         ),
     )
-    .build()
+    .build())
 }
 
 fn format_stats_field(ctx: &Context<'_>, pokemon: &Pokemon) -> Result<EmbedField> {
     let field = EmbedFieldBuilder::new(
-        ctx.locale_lookup("stats"),
+        ctx.locale_lookup("stats")?,
         format!(
             "**{hp_label}:** {hp} – {iv_label}: {iv_hp}/31\n\
              **{atk_label}:** {atk} – {iv_label}: {iv_atk}/31\n\
@@ -38,14 +38,14 @@ fn format_stats_field(ctx: &Context<'_>, pokemon: &Pokemon) -> Result<EmbedField
              **{sdef_label}:** {sdef} – {iv_label}: {iv_sdef}/31\n\
              **{spd_label}:** {spd} – {iv_label}: {iv_spd}/31\n\
              **{iv_total_label}:** {iv_total:.2}%",
-            hp_label = ctx.locale_lookup("hp"),
-            atk_label = ctx.locale_lookup("atk"),
-            def_label = ctx.locale_lookup("def"),
-            satk_label = ctx.locale_lookup("satk"),
-            sdef_label = ctx.locale_lookup("sdef"),
-            spd_label = ctx.locale_lookup("spd"),
-            iv_label = ctx.locale_lookup("iv"),
-            iv_total_label = ctx.locale_lookup("total-iv"),
+            hp_label = ctx.locale_lookup("hp")?,
+            atk_label = ctx.locale_lookup("atk")?,
+            def_label = ctx.locale_lookup("def")?,
+            satk_label = ctx.locale_lookup("satk")?,
+            sdef_label = ctx.locale_lookup("sdef")?,
+            spd_label = ctx.locale_lookup("spd")?,
+            iv_label = ctx.locale_lookup("iv")?,
+            iv_total_label = ctx.locale_lookup("total-iv")?,
             hp = pokemon.hp()?,
             atk = pokemon.atk()?,
             def = pokemon.def()?,
@@ -79,13 +79,13 @@ fn format_pokemon_embed(ctx: &Context<'_>, pokemon: &Pokemon) -> Result<Embed> {
     let mut embed = EmbedBuilder::new()
         .title(format!(
             "{} {} {}",
-            ctx.locale_lookup_with_args("level", fluent_args!["length" => "long"]),
+            ctx.locale_lookup_with_args("level", fluent_args!["length" => "long"])?,
             pokemon.level,
             variant_name
         ))
         .image(ImageSource::url(format!("https://assets.poketwo.net/images/{}.png", variant.id))?);
 
-    embed = embed.field(format_details_field(ctx, pokemon));
+    embed = embed.field(format_details_field(ctx, pokemon)?);
     embed = embed.field(format_stats_field(ctx, pokemon)?);
 
     Ok(embed.validate()?.build())

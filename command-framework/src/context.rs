@@ -1,3 +1,4 @@
+use anyhow::{anyhow, Result};
 use poketwo_i18n::fluent_bundle::FluentArgs;
 use poketwo_i18n::{LanguageIdentifier, Loader, LOCALES, US_ENGLISH};
 use twilight_http::request::application::interaction::{CreateFollowup, CreateResponse};
@@ -23,12 +24,14 @@ impl<T> Context<'_, T> {
         self.interaction.locale.parse().unwrap_or(US_ENGLISH)
     }
 
-    pub fn locale_lookup(&self, text_id: &str) -> String {
-        LOCALES.lookup(&self.get_langid(), text_id)
+    pub fn locale_lookup(&self, text_id: &str) -> Result<String> {
+        LOCALES.lookup(&self.get_langid(), text_id).ok_or_else(|| anyhow!("Missing localization"))
     }
 
-    pub fn locale_lookup_with_args(&self, text_id: &str, args: FluentArgs) -> String {
-        LOCALES.lookup_with_args(&self.get_langid(), text_id, &args.into_iter().collect())
+    pub fn locale_lookup_with_args(&self, text_id: &str, args: FluentArgs) -> Result<String> {
+        LOCALES
+            .lookup_with_args(&self.get_langid(), text_id, &args.into_iter().collect())
+            .ok_or_else(|| anyhow!("Missing localization"))
     }
 
     pub fn create_response<'a>(&'a self, response: &'a InteractionResponse) -> CreateResponse<'a> {

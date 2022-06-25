@@ -12,6 +12,17 @@ members = [
   "protobuf-rust",
 ]
 
+[patch.crates-io]
+fluent-bundle = { git = 'https://github.com/oliver-ni/fluent-rs' }
+fluent-cli = { git = 'https://github.com/oliver-ni/fluent-rs' }
+fluent-fallback = { git = 'https://github.com/oliver-ni/fluent-rs' }
+fluent-pseudo = { git = 'https://github.com/oliver-ni/fluent-rs' }
+fluent-resmgr = { git = 'https://github.com/oliver-ni/fluent-rs' }
+fluent-syntax = { git = 'https://github.com/oliver-ni/fluent-rs' }
+fluent-testing = { git = 'https://github.com/oliver-ni/fluent-rs' }
+fluent = { git = 'https://github.com/oliver-ni/fluent-rs' }
+intl-memoizer = { git = 'https://github.com/oliver-ni/fluent-rs' }
+
 [profile.dev.package.adler]
 opt-level = 3
 

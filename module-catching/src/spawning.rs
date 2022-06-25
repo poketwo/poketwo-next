@@ -76,8 +76,16 @@ fn make_spawn_embed() -> Result<Embed> {
     // TODO: Localize message
 
     let embed = EmbedBuilder::new()
-        .title(LOCALES.lookup(&US_ENGLISH, "pokemon-spawn-title"))
-        .description(LOCALES.lookup(&US_ENGLISH, "pokemon-spawn-description"))
+        .title(
+            LOCALES
+                .lookup(&US_ENGLISH, "pokemon-spawn-title")
+                .ok_or_else(|| anyhow!("Missing localization"))?,
+        )
+        .description(
+            LOCALES
+                .lookup(&US_ENGLISH, "pokemon-spawn-description")
+                .ok_or_else(|| anyhow!("Missing localization"))?,
+        )
         .image(ImageSource::attachment("pokemon.png")?);
 
     Ok(embed.validate()?.build())
