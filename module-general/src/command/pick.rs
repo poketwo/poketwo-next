@@ -54,13 +54,15 @@ pub async fn pick(
     }
 
     let user_id = ctx.interaction.author_id().ok_or_else(|| anyhow!("Missing author"))?;
-    state.database.create_user(CreateUserRequest { id: user_id.into() }).await?;
     state
         .database
-        .create_pokemon(CreatePokemonRequest {
-            user_id: user_id.into(),
-            variant_id: variant.id,
-            ..Default::default()
+        .create_user(CreateUserRequest {
+            id: user_id.into(),
+            starter_pokemon: Some(CreatePokemonRequest {
+                user_id: user_id.get(),
+                variant_id: variant.id,
+                ..Default::default()
+            }),
         })
         .await?;
 

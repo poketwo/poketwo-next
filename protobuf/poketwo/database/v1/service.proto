@@ -49,7 +49,10 @@ message GetUserResponse { User user = 1; }
 
 // CreateUser
 
-message CreateUserRequest { uint64 id = 1; }
+message CreateUserRequest {
+  uint64 id = 1;
+  CreatePokemonRequest starter_pokemon = 2;
+}
 message CreateUserResponse { User user = 1; }
 
 // GetPokemon

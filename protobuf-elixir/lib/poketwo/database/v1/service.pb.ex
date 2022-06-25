@@ -101,12 +101,18 @@ defmodule Poketwo.Database.V1.CreateUserRequest do
   use Protobuf, syntax: :proto3
 
   @type t :: %__MODULE__{
-          id: non_neg_integer
+          id: non_neg_integer,
+          starter_pokemon: Poketwo.Database.V1.CreatePokemonRequest.t() | nil
         }
 
-  defstruct id: 0
+  defstruct id: 0,
+            starter_pokemon: nil
 
   field :id, 1, type: :uint64
+
+  field :starter_pokemon, 2,
+    type: Poketwo.Database.V1.CreatePokemonRequest,
+    json_name: "starterPokemon"
 end
 defmodule Poketwo.Database.V1.CreateUserResponse do
   @moduledoc false

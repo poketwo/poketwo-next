@@ -13,8 +13,9 @@ defmodule Poketwo.Database.Models.User do
 
   def changeset(user, params \\ %{}) do
     user
-    |> Ecto.Changeset.cast(params, [:id])
+    |> Ecto.Changeset.cast(params, [:id, :selected_pokemon_id])
     |> Ecto.Changeset.unique_constraint(:id, name: :users_pkey)
+    |> Ecto.Changeset.foreign_key_constraint(:selected_pokemon_id)
   end
 
   @spec query([{:id, integer}]) :: Ecto.Query.t()
