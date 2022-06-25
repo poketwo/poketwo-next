@@ -142,8 +142,7 @@ defmodule Poketwo.Database.Models.Pokemon do
   end
 
   def query(user_id: user_id) do
-    from p in Models.Pokemon,
-      where: p.user_id == ^user_id,
+    from p in subquery(inner_query(user_id: user_id)),
       preload: ^preload()
   end
 

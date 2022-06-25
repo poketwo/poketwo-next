@@ -1,5 +1,6 @@
 use anyhow::{anyhow, Result};
 use poketwo_command_framework::command;
+use poketwo_command_framework::poketwo_i18n::fluent_args;
 use poketwo_protobuf::poketwo::database::v1::get_pokemon_request::{Query, UserId, UserIdAndIdx};
 use poketwo_protobuf::poketwo::database::v1::{GetPokemonRequest, Pokemon};
 use twilight_model::channel::embed::{Embed, EmbedField};
@@ -76,7 +77,12 @@ fn format_pokemon_embed(ctx: &Context<'_>, pokemon: &Pokemon) -> Result<Embed> {
         .unwrap_or(&info.name);
 
     let mut embed = EmbedBuilder::new()
-        .title(format!("{} {} {}", ctx.locale_lookup("level"), pokemon.level, variant_name))
+        .title(format!(
+            "{} {} {}",
+            ctx.locale_lookup_with_args("level", fluent_args!["length" => "long"]),
+            pokemon.level,
+            variant_name
+        ))
         .image(ImageSource::url(format!("https://assets.poketwo.net/images/{}.png", variant.id))?);
 
     embed = embed.field(format_details_field(ctx, pokemon));

@@ -10,13 +10,20 @@ appearance = Appearance
 height = Height
 weight = Weight
 
-# Pokémon Embed (/pokemon info)
+# Pokémon Info Embed (/pokemon info)
 
 details = Details
-level = Level
+level = {$length ->
+   *[long] Level
+    [short] Lvl.
+}
 xp = XP
 nature = Nature
 
 stats = Stats
 iv = IV
 total-iv = Total IV
+
+# Pokémon List Embed (/pokemon /list)
+
+pokemon-list-embed-title = Your Pokémon

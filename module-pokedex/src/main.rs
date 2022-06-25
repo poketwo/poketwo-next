@@ -1,3 +1,5 @@
+#![feature(iter_intersperse)]
+
 mod command;
 mod config;
 mod state;
