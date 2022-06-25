@@ -15,7 +15,7 @@ fn format_details_field(ctx: &Context<'_>, pokemon: &Pokemon) -> EmbedField {
     EmbedFieldBuilder::new(
         ctx.locale_lookup("details"),
         format!(
-            "**{xp_label}:** {xp}/{max_xp}
+            "**{xp_label}:** {xp}/{max_xp}\n\
              **{nature_label}:** {nature}",
             xp_label = ctx.locale_lookup("xp"),
             xp = pokemon.xp,
@@ -31,12 +31,12 @@ fn format_stats_field(ctx: &Context<'_>, pokemon: &Pokemon) -> Result<EmbedField
     let field = EmbedFieldBuilder::new(
         ctx.locale_lookup("stats"),
         format!(
-            "**{hp_label}:** {hp} – {iv_label}: {iv_hp}/31
-             **{atk_label}:** {atk} – {iv_label}: {iv_atk}/31
-             **{def_label}:** {def} – {iv_label}: {iv_def}/31
-             **{satk_label}:** {satk} – {iv_label}: {iv_satk}/31
-             **{sdef_label}:** {sdef} – {iv_label}: {iv_sdef}/31
-             **{spd_label}:** {spd} – {iv_label}: {iv_spd}/31
+            "**{hp_label}:** {hp} – {iv_label}: {iv_hp}/31\n\
+             **{atk_label}:** {atk} – {iv_label}: {iv_atk}/31\n\
+             **{def_label}:** {def} – {iv_label}: {iv_def}/31\n\
+             **{satk_label}:** {satk} – {iv_label}: {iv_satk}/31\n\
+             **{sdef_label}:** {sdef} – {iv_label}: {iv_sdef}/31\n\
+             **{spd_label}:** {spd} – {iv_label}: {iv_spd}/31\n\
              **{iv_total_label}:** {iv_total:.2}%",
             hp_label = ctx.locale_lookup("hp"),
             atk_label = ctx.locale_lookup("atk"),
