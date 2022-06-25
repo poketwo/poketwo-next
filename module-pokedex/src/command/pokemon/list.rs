@@ -35,15 +35,16 @@ fn format_pokemon_line(ctx: &Context<'_>, pokemon: &Pokemon, idx_len: usize) -> 
 fn format_pokemon_list_embed(ctx: &Context<'_>, pokemon: &[Pokemon]) -> Result<Embed> {
     let idx_len = pokemon.iter().map(|p| p.idx).max().unwrap_or(0).to_string().len();
 
+    let mut description = String::new();
+
+    for p in pokemon {
+        description.push('\n');
+        description.push_str(&format_pokemon_line(ctx, p, idx_len)?);
+    }
+
     Ok(EmbedBuilder::new()
         .title(ctx.locale_lookup("pokemon-list-embed-title"))
-        .description(
-            pokemon
-                .iter()
-                .filter_map(|p| format_pokemon_line(ctx, p, idx_len).ok())
-                .intersperse("\n".into())
-                .collect::<String>(),
-        )
+        .description(description)
         .validate()?
         .build())
 }
