@@ -15,7 +15,7 @@ weight = Weight
 details = Details
 level = {$length ->
    *[long] Level
-    [short] Lvl.
+    [short] Lv.
 }
 xp = XP
 nature = Nature
