@@ -17,7 +17,7 @@ defmodule Poketwo.Database.V1.Database.GetRandomSpawn do
     |> Map.new()
   end
 
-  def get_random_spawn(%V1.GetRandomSpawnRequest{}, _stream) do
+  def handle(%V1.GetRandomSpawnRequest{}, _stream) do
     variants = variants_expanded()
 
     idx = Enum.random(1..map_size(variants))

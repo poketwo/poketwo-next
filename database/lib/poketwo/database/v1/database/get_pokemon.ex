@@ -1,7 +1,7 @@
 defmodule Poketwo.Database.V1.Database.GetPokemon do
   alias Poketwo.Database.{Models, V1, Repo}
 
-  def get_pokemon(%V1.GetPokemonRequest{query: query}, _stream) do
+  def handle(%V1.GetPokemonRequest{query: query}, _stream) do
     pokemon =
       case query do
         {:id, %{id: id}} ->
