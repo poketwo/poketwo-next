@@ -13,6 +13,7 @@ weight = Weight
 # Pokémon Embed (/pokemon info)
 
 details = Details
+level = Level
 xp = XP
 nature = Nature
 

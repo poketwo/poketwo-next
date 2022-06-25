@@ -76,7 +76,7 @@ fn format_pokemon_embed(ctx: &Context<'_>, pokemon: &Pokemon) -> Result<Embed> {
         .unwrap_or(&info.name);
 
     let mut embed = EmbedBuilder::new()
-        .title(format!("Level {} {}", pokemon.level, variant_name))
+        .title(format!("{} {} {}", ctx.locale_lookup("level"), pokemon.level, variant_name))
         .image(ImageSource::url(format!("https://assets.poketwo.net/images/{}.png", variant.id))?);
 
     embed = embed.field(format_details_field(ctx, pokemon));
