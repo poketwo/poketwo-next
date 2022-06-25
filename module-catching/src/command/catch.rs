@@ -1,6 +1,7 @@
 use anyhow::{anyhow, bail, Result};
 use poketwo_command_framework::command;
 use poketwo_i18n::fluent_args;
+use poketwo_i18n::fluent_bundle::types::{FluentNumber, FluentNumberKind, FluentNumberOptions};
 use poketwo_protobuf::poketwo::database::v1::get_variant_request::Query;
 use poketwo_protobuf::poketwo::database::v1::{
     CreatePokemonRequest, GetUserRequest, GetVariantRequest,
@@ -69,17 +70,19 @@ pub async fn catch(
         _ => bail!("Unexpected return value"),
     }
 
-    let pokemon = state
+    let response = state
         .database
         .create_pokemon(CreatePokemonRequest {
             user_id: user_id.into(),
             variant_id: variant.id,
+            update_pokedex: true,
             ..Default::default()
         })
         .await?
-        .into_inner()
-        .pokemon
-        .ok_or_else(|| anyhow!("Missing pokemon"))?;
+        .into_inner();
+
+    let pokemon = response.pokemon.ok_or_else(|| anyhow!("Missing pokemon"))?;
+    let pokedex_entry = response.pokedex_entry.ok_or_else(|| anyhow!("Missing pokedex entry"))?;
 
     let name = variant
         .species
@@ -92,8 +95,24 @@ pub async fn catch(
     let mut message = ctx.locale_lookup_with_args("pokemon-caught", fluent_args![
         "user-mention" => format!("<@{}>", user_id),
         "level" => pokemon.level.to_string(),
-        "pokemon" => name
+        "pokemon" => name.as_str()
     ])?;
+
+    if pokedex_entry.count == 1 {
+        message.push(' ');
+        message.push_str(&ctx.locale_lookup("pokemon-caught-new")?);
+    }
+
+    if pokedex_entry.count % 10 == 0 {
+        message.push(' ');
+        message.push_str(&ctx.locale_lookup_with_args("pokemon-caught-nth", fluent_args![
+            "count" => FluentNumber::new(pokedex_entry.count as f64, FluentNumberOptions {
+                kind: FluentNumberKind::Ordinal,
+                ..Default::default()
+            }),
+            "pokemon" => name.as_str()
+        ])?);
+    }
 
     if pokemon.shiny {
         message.push_str("\n\n");

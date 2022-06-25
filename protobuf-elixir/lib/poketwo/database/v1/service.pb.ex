@@ -247,7 +247,8 @@ defmodule Poketwo.Database.V1.CreatePokemonRequest do
           iv_def: Google.Protobuf.Int32Value.t() | nil,
           iv_satk: Google.Protobuf.Int32Value.t() | nil,
           iv_sdef: Google.Protobuf.Int32Value.t() | nil,
-          iv_spd: Google.Protobuf.Int32Value.t() | nil
+          iv_spd: Google.Protobuf.Int32Value.t() | nil,
+          update_pokedex: boolean
         }
 
   defstruct user_id: 0,
@@ -261,7 +262,8 @@ defmodule Poketwo.Database.V1.CreatePokemonRequest do
             iv_def: nil,
             iv_satk: nil,
             iv_sdef: nil,
-            iv_spd: nil
+            iv_spd: nil,
+            update_pokedex: false
 
   field :user_id, 1, type: :uint64, json_name: "userId"
   field :variant_id, 2, type: :int32, json_name: "variantId"
@@ -275,18 +277,22 @@ defmodule Poketwo.Database.V1.CreatePokemonRequest do
   field :iv_satk, 11, type: Google.Protobuf.Int32Value, json_name: "ivSatk"
   field :iv_sdef, 12, type: Google.Protobuf.Int32Value, json_name: "ivSdef"
   field :iv_spd, 13, type: Google.Protobuf.Int32Value, json_name: "ivSpd"
+  field :update_pokedex, 14, type: :bool, json_name: "updatePokedex"
 end
 defmodule Poketwo.Database.V1.CreatePokemonResponse do
   @moduledoc false
   use Protobuf, syntax: :proto3
 
   @type t :: %__MODULE__{
-          pokemon: Poketwo.Database.V1.Pokemon.t() | nil
+          pokemon: Poketwo.Database.V1.Pokemon.t() | nil,
+          pokedex_entry: Poketwo.Database.V1.PokedexEntry.t() | nil
         }
 
-  defstruct pokemon: nil
+  defstruct pokemon: nil,
+            pokedex_entry: nil
 
   field :pokemon, 1, type: Poketwo.Database.V1.Pokemon
+  field :pokedex_entry, 2, type: Poketwo.Database.V1.PokedexEntry, json_name: "pokedexEntry"
 end
 defmodule Poketwo.Database.V1.Database.Service do
   @moduledoc false

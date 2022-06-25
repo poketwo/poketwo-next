@@ -98,6 +98,11 @@ message CreatePokemonRequest {
   google.protobuf.Int32Value iv_satk = 11;
   google.protobuf.Int32Value iv_sdef = 12;
   google.protobuf.Int32Value iv_spd = 13;
+
+  bool update_pokedex = 14;
 }
 
-message CreatePokemonResponse { Pokemon pokemon = 1; }
+message CreatePokemonResponse {
+  Pokemon pokemon = 1;
+  PokedexEntry pokedex_entry = 2;
+}

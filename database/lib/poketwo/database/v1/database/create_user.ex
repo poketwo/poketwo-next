@@ -14,11 +14,9 @@ defmodule Poketwo.Database.V1.Database.CreateUser do
       |> Ecto.Multi.insert(:user, Models.User.changeset(%Models.User{}, %{id: request.id}))
       |> Ecto.Multi.insert(:pokemon, Models.Pokemon.changeset(%Models.Pokemon{}, pokemon))
       |> Ecto.Multi.update(:update_user, fn %{user: user, pokemon: pokemon} ->
-        IO.inspect(pokemon)
         Models.User.changeset(user, %{selected_pokemon_id: pokemon.id})
       end)
       |> Repo.transaction()
-      |> IO.inspect()
 
     case result do
       {:ok, %{update_user: u}} -> V1.CreateUserResponse.new(user: Models.User.to_protobuf(u))
