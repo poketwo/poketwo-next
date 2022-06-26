@@ -4,6 +4,10 @@ defmodule Poketwo.Database.Models.User do
   alias Poketwo.Database.{Models, V1}
 
   schema "users" do
+    field :pokecoin_balance, :integer, default: 0
+    field :shard_balance, :integer, default: 0
+    field :redeem_balance, :integer, default: 0
+
     timestamps(type: :utc_datetime)
 
     belongs_to :selected_pokemon, Models.Pokemon
@@ -27,9 +31,12 @@ defmodule Poketwo.Database.Models.User do
   def to_protobuf(%Models.User{} = user) do
     V1.User.new(
       id: user.id,
+      pokecoin_balance: user.pokecoin_balance,
+      shard_balance: user.shard_balance,
+      redeem_balance: user.redeem_balance,
+      selected_pokemon_id: user.selected_pokemon_id,
       inserted_at: user.inserted_at,
-      updated_at: user.updated_at,
-      selected_pokemon_id: user.selected_pokemon_id
+      updated_at: user.updated_at
     )
   end
 

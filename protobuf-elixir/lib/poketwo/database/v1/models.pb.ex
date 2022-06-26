@@ -271,20 +271,29 @@ defmodule Poketwo.Database.V1.User do
 
   @type t :: %__MODULE__{
           id: non_neg_integer,
+          pokecoin_balance: integer,
+          shard_balance: integer,
+          redeem_balance: integer,
+          selected_pokemon_id: non_neg_integer,
           inserted_at: Google.Protobuf.Timestamp.t() | nil,
-          updated_at: Google.Protobuf.Timestamp.t() | nil,
-          selected_pokemon_id: non_neg_integer
+          updated_at: Google.Protobuf.Timestamp.t() | nil
         }
 
   defstruct id: 0,
+            pokecoin_balance: 0,
+            shard_balance: 0,
+            redeem_balance: 0,
+            selected_pokemon_id: 0,
             inserted_at: nil,
-            updated_at: nil,
-            selected_pokemon_id: 0
+            updated_at: nil
 
   field :id, 1, type: :uint64
+  field :pokecoin_balance, 5, type: :int32, json_name: "pokecoinBalance"
+  field :shard_balance, 6, type: :int32, json_name: "shardBalance"
+  field :redeem_balance, 7, type: :int32, json_name: "redeemBalance"
+  field :selected_pokemon_id, 4, type: :uint64, json_name: "selectedPokemonId"
   field :inserted_at, 2, type: Google.Protobuf.Timestamp, json_name: "insertedAt"
   field :updated_at, 3, type: Google.Protobuf.Timestamp, json_name: "updatedAt"
-  field :selected_pokemon_id, 4, type: :uint64, json_name: "selectedPokemonId"
 end
 defmodule Poketwo.Database.V1.PokedexEntry do
   @moduledoc false
