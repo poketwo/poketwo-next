@@ -1874,6 +1874,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "poketwo-emojis"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "lazy_static",
+]
+
+[[package]]
 name = "poketwo-gateway"
 version = "0.1.0"
 dependencies = [
@@ -1984,6 +1992,7 @@ dependencies = [
  "figment",
  "lazy_static",
  "poketwo-command-framework",
+ "poketwo-emojis",
  "poketwo-protobuf",
  "serde",
  "tokio",
@@ -3634,26 +3643,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "346d34a236c9d3e5f3b9b74563f238f955bbd05fa0b8b4efa53c130c43982f4c"
 
 [[patch.unused]]
-name = "fluent-cli"
-version = "0.0.1"
-source = "git+https://github.com/oliver-ni/fluent-rs#73c815a39c52b77f327feef3a6b011ad866f52ed"
-
-[[patch.unused]]
 name = "fluent-fallback"
 version = "0.6.0"
-source = "git+https://github.com/oliver-ni/fluent-rs#73c815a39c52b77f327feef3a6b011ad866f52ed"
-
-[[patch.unused]]
-name = "fluent-pseudo"
-version = "0.3.1"
-source = "git+https://github.com/oliver-ni/fluent-rs#73c815a39c52b77f327feef3a6b011ad866f52ed"
-
-[[patch.unused]]
-name = "fluent-resmgr"
-version = "0.0.5"
-source = "git+https://github.com/oliver-ni/fluent-rs#73c815a39c52b77f327feef3a6b011ad866f52ed"
-
-[[patch.unused]]
-name = "fluent-testing"
-version = "0.2.0"
 source = "git+https://github.com/oliver-ni/fluent-rs#73c815a39c52b77f327feef3a6b011ad866f52ed"

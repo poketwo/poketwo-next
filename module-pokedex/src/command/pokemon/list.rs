@@ -1,6 +1,7 @@
 use anyhow::{anyhow, Result};
 use poketwo_command_framework::command;
 use poketwo_command_framework::poketwo_i18n::fluent_args;
+use poketwo_emojis::EMOJIS;
 use poketwo_protobuf::poketwo::database::v1::{GetPokemonListRequest, Pokemon};
 use twilight_model::channel::embed::Embed;
 use twilight_model::http::interaction::{
@@ -23,9 +24,10 @@ fn format_pokemon_line(ctx: &Context<'_>, pokemon: &Pokemon, idx_len: usize) -> 
         .unwrap_or(&info.name);
 
     Ok(format!(
-        "`{idx:idx_len$}` **{name}** • {level_label} {level} • {iv_total:.2}%",
+        "`{idx:idx_len$}` {emoji} **{name}** • {level_label} {level} • {iv_total:.2}%",
         level_label = ctx.locale_lookup_with_args("level", fluent_args!["length" => "short"])?,
         idx = pokemon.idx,
+        emoji = EMOJIS.species(species.id)?,
         name = variant_name,
         level = pokemon.level,
         iv_total = pokemon.iv_total() as f64 / 186.0 * 100.0

@@ -11,6 +11,7 @@ anyhow = "1.0.57"
 figment = { version = "0.10.6", features = ["env", "toml", "json", "yaml"] }
 lazy_static = "1.4.0"
 poketwo-command-framework = { version = "0.1.0", path = "../command-framework" }
+poketwo-emojis = { version = "0.1.0", path = "../emojis" }
 poketwo-protobuf = { version = "0.1.0", path = "../protobuf-rust" }
 serde = "1.0.137"
 tokio = { version = "1.18.1", features = ["macros", "rt-multi-thread"] }
