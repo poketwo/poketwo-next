@@ -76,6 +76,7 @@ pub async fn catch(
             user_id: user_id.into(),
             variant_id: variant.id,
             update_pokedex: true,
+            reward_pokecoins: true,
             ..Default::default()
         })
         .await?
@@ -100,10 +101,8 @@ pub async fn catch(
 
     if pokedex_entry.count == 1 {
         message.push(' ');
-        message.push_str(&ctx.locale_lookup("pokemon-caught-new")?);
-    }
-
-    if pokedex_entry.count % 10 == 0 {
+        message.push_str(&ctx.locale_lookup("pokemon-caught-new")?)
+    } else {
         message.push(' ');
         message.push_str(&ctx.locale_lookup_with_args("pokemon-caught-nth", fluent_args![
             "count" => FluentNumber::new(pokedex_entry.count as f64, FluentNumberOptions {
@@ -111,6 +110,15 @@ pub async fn catch(
                 ..Default::default()
             }),
             "pokemon" => name.as_str()
+        ])?)
+    }
+
+    // TODO: Fix number formatting since fluent-rs doesn't yet support NumberFormat
+
+    if response.pokecoins_rewarded > 0 {
+        message.push(' ');
+        message.push_str(&ctx.locale_lookup_with_args("pokecoins-received", fluent_args![
+            "pokecoins" => response.pokecoins_rewarded
         ])?);
     }
 

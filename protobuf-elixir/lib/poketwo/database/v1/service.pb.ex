@@ -248,7 +248,8 @@ defmodule Poketwo.Database.V1.CreatePokemonRequest do
           iv_satk: Google.Protobuf.Int32Value.t() | nil,
           iv_sdef: Google.Protobuf.Int32Value.t() | nil,
           iv_spd: Google.Protobuf.Int32Value.t() | nil,
-          update_pokedex: boolean
+          update_pokedex: boolean,
+          reward_pokecoins: boolean
         }
 
   defstruct user_id: 0,
@@ -263,7 +264,8 @@ defmodule Poketwo.Database.V1.CreatePokemonRequest do
             iv_satk: nil,
             iv_sdef: nil,
             iv_spd: nil,
-            update_pokedex: false
+            update_pokedex: false,
+            reward_pokecoins: false
 
   field :user_id, 1, type: :uint64, json_name: "userId"
   field :variant_id, 2, type: :int32, json_name: "variantId"
@@ -278,6 +280,7 @@ defmodule Poketwo.Database.V1.CreatePokemonRequest do
   field :iv_sdef, 12, type: Google.Protobuf.Int32Value, json_name: "ivSdef"
   field :iv_spd, 13, type: Google.Protobuf.Int32Value, json_name: "ivSpd"
   field :update_pokedex, 14, type: :bool, json_name: "updatePokedex"
+  field :reward_pokecoins, 15, type: :bool, json_name: "rewardPokecoins"
 end
 defmodule Poketwo.Database.V1.CreatePokemonResponse do
   @moduledoc false
@@ -285,14 +288,17 @@ defmodule Poketwo.Database.V1.CreatePokemonResponse do
 
   @type t :: %__MODULE__{
           pokemon: Poketwo.Database.V1.Pokemon.t() | nil,
-          pokedex_entry: Poketwo.Database.V1.PokedexEntry.t() | nil
+          pokedex_entry: Poketwo.Database.V1.PokedexEntry.t() | nil,
+          pokecoins_rewarded: integer
         }
 
   defstruct pokemon: nil,
-            pokedex_entry: nil
+            pokedex_entry: nil,
+            pokecoins_rewarded: 0
 
   field :pokemon, 1, type: Poketwo.Database.V1.Pokemon
   field :pokedex_entry, 2, type: Poketwo.Database.V1.PokedexEntry, json_name: "pokedexEntry"
+  field :pokecoins_rewarded, 3, type: :int32, json_name: "pokecoinsRewarded"
 end
 defmodule Poketwo.Database.V1.Database.Service do
   @moduledoc false

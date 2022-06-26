@@ -38,9 +38,33 @@ defmodule Poketwo.Database.V1.Database.CreatePokemon do
         multi
       end
 
-    result = Repo.transaction(multi)
+    multi =
+      if request.update_pokedex and request.reward_pokecoins do
+        Ecto.Multi.update_all(
+          multi,
+          :user,
+          fn %{pokedex_entry: entry} ->
+            reward = calculate_pokecoins(entry.count)
+
+            from u in Models.User,
+              where: u.id == ^entry.user_id,
+              select: type(^reward, :integer),
+              update: [inc: [pokecoin_balance: ^reward]]
+          end,
+          []
+        )
+      end
+
+    result = Repo.transaction(multi) |> IO.inspect()
 
     case result do
+      {:ok, %{pokemon: pokemon, pokedex_entry: entry, user: {1, [pokecoins_rewarded]}}} ->
+        V1.CreatePokemonResponse.new(
+          pokemon: Models.Pokemon.to_protobuf(pokemon),
+          pokedex_entry: Models.PokedexEntry.to_protobuf(entry),
+          pokecoins_rewarded: pokecoins_rewarded
+        )
+
       {:ok, %{pokemon: pokemon, pokedex_entry: entry}} ->
         V1.CreatePokemonResponse.new(
           pokemon: Models.Pokemon.to_protobuf(pokemon),
@@ -57,4 +81,8 @@ defmodule Poketwo.Database.V1.Database.CreatePokemon do
         raise GRPC.RPCError, status: GRPC.Status.unknown()
     end
   end
+
+  defp calculate_pokecoins(1), do: 35
+  defp calculate_pokecoins(c) when rem(c, 10) != 0, do: 0
+  defp calculate_pokecoins(c), do: div(c, 10) |> calculate_pokecoins() |> Kernel.*(10)
 end
