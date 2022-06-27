@@ -22,10 +22,9 @@ defmodule Poketwo.Database.Models.User do
     |> Ecto.Changeset.foreign_key_constraint(:selected_pokemon_id)
   end
 
-  @spec query([{:id, integer}]) :: Ecto.Query.t()
-  def query(id: id) do
-    from u in Models.User,
-      where: u.id == ^id
+  def with(query, id: id) do
+    query
+    |> where([u], u.id == ^id)
   end
 
   def to_protobuf(%Models.User{} = user) do

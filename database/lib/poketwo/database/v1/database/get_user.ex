@@ -4,7 +4,8 @@ defmodule Poketwo.Database.V1.Database.GetUser do
 
   def handle(%V1.GetUserRequest{} = request, _stream) do
     user =
-      Models.User.query(id: request.id)
+      Models.User
+      |> Models.User.with(id: request.id)
       |> Repo.one()
       |> Models.User.to_protobuf()
 

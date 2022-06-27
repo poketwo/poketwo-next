@@ -19,7 +19,7 @@ defmodule Poketwo.Database.V1.Database.GetPokemon do
 
   def query(user_id: %{user_id: user_id}) do
     Ecto.Multi.new()
-    |> Ecto.Multi.one(:user, Models.User.query(id: user_id))
+    |> Ecto.Multi.one(:user, Models.User |> Models.User.with(id: user_id))
     |> Ecto.Multi.one(:pokemon, fn
       %{user: nil} ->
         Models.Pokemon |> where(false)
