@@ -3,6 +3,7 @@ syntax = "proto3";
 package poketwo.database.v1;
 
 import "google/protobuf/wrappers.proto";
+import "poketwo/database/v1/filters.proto";
 import "poketwo/database/v1/models.proto";
 
 service Database {
@@ -75,7 +76,12 @@ message GetPokemonRequest {
 message GetPokemonResponse { Pokemon pokemon = 1; }
 
 // GetPokemonList
-message GetPokemonListRequest { uint64 user_id = 1; }
+
+message GetPokemonListRequest {
+  uint64 user_id = 1;
+  PokemonFilter filter = 2;
+}
+
 message GetPokemonListResponse {
   repeated Pokemon pokemon = 1;
   int32 count = 2;

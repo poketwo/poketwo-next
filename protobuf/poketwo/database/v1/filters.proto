@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package poketwo.database.v1;
+
+import "google/protobuf/wrappers.proto";
+
+enum Order {
+  ASC = 0;
+  DESC = 1;
+}
+
+message SharedFilter {
+  google.protobuf.StringValue name = 1;
+  google.protobuf.StringValue type = 2;
+  google.protobuf.StringValue region = 3;
+
+  google.protobuf.BoolValue shiny = 4;
+  google.protobuf.BoolValue mythical = 5;
+  google.protobuf.BoolValue legendary = 6;
+  google.protobuf.BoolValue ultra_beast = 7;
+  google.protobuf.BoolValue alolan = 8;
+  google.protobuf.BoolValue galarian = 9;
+  google.protobuf.BoolValue hisuian = 10;
+  google.protobuf.BoolValue event = 11;
+  google.protobuf.BoolValue mega = 12;
+
+  google.protobuf.StringValue level = 13;
+  google.protobuf.StringValue iv_total = 14;
+
+  google.protobuf.StringValue iv_hp = 15;
+  google.protobuf.StringValue iv_atk = 16;
+  google.protobuf.StringValue iv_def = 17;
+  google.protobuf.StringValue iv_satk = 18;
+  google.protobuf.StringValue iv_sdef = 19;
+  google.protobuf.StringValue iv_spd = 20;
+
+  google.protobuf.StringValue iv_triple = 21;
+  google.protobuf.StringValue iv_quadruple = 22;
+  google.protobuf.StringValue iv_quintuple = 23;
+  google.protobuf.StringValue iv_sextuple = 24;
+}
+
+message PokemonFilter {
+  google.protobuf.BoolValue favorite = 1;
+  google.protobuf.StringValue nickname = 2;
+  OrderBy order_by = 3;
+  Order order = 4;
+
+  enum OrderBy {
+    DEFAULT = 0;
+    IDX = 1;
+    LEVEL = 2;
+    POKEDEX = 3;
+    IV_TOTAL = 4;
+  }
+}

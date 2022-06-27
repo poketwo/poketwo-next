@@ -209,12 +209,15 @@ defmodule Poketwo.Database.V1.GetPokemonListRequest do
   use Protobuf, syntax: :proto3
 
   @type t :: %__MODULE__{
-          user_id: non_neg_integer
+          user_id: non_neg_integer,
+          filter: Poketwo.Database.V1.PokemonFilter.t() | nil
         }
 
-  defstruct user_id: 0
+  defstruct user_id: 0,
+            filter: nil
 
   field :user_id, 1, type: :uint64, json_name: "userId"
+  field :filter, 2, type: Poketwo.Database.V1.PokemonFilter
 end
 defmodule Poketwo.Database.V1.GetPokemonListResponse do
   @moduledoc false
