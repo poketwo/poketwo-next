@@ -4,6 +4,7 @@ defmodule Poketwo.Database.V1.Database.GetPokemonList do
   def handle(%V1.GetPokemonListRequest{} = request, _stream) do
     pokemon =
       Models.Pokemon.query(user_id: request.user_id)
+      |> Models.Pokemon.preload()
       |> Repo.all()
       |> Enum.map(&Models.Pokemon.to_protobuf/1)
 

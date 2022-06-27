@@ -2,7 +2,7 @@ defmodule Poketwo.Database.Models.Pokemon do
   use Ecto.Schema
   import Ecto.{Changeset, Query}
   require Poketwo.Database.Utils
-  alias Poketwo.Database.{Models, V1, Repo, Utils}
+  alias Poketwo.Database.{Models, V1, Utils}
 
   @natures [
     "Adamant",
@@ -48,7 +48,7 @@ defmodule Poketwo.Database.Models.Pokemon do
     field :favorite, :boolean, default: false
     field :nickname, :string
 
-    field :idx, :integer
+    field :idx, :integer, virtual: true
 
     timestamps(type: :utc_datetime)
 
@@ -95,59 +95,36 @@ defmodule Poketwo.Database.Models.Pokemon do
     |> validate_length(:nickname, max: 100)
   end
 
-  defp preload() do
-    [
+  def preload(query) do
+    query
+    |> preload(
       variant: [
-        types: [info: Utils.from_info(Models.TypeInfo)],
-        info: Utils.from_info(Models.VariantInfo),
+        types: [info: ^Utils.from_info(Models.TypeInfo)],
+        info: ^Utils.from_info(Models.VariantInfo),
         species: [
           generation: [
-            info: Utils.from_info(Models.GenerationInfo),
-            main_region: [info: Utils.from_info(Models.RegionInfo)]
+            info: ^Utils.from_info(Models.GenerationInfo),
+            main_region: [info: ^Utils.from_info(Models.RegionInfo)]
           ],
-          info: Utils.from_info(Models.SpeciesInfo)
+          info: ^Utils.from_info(Models.SpeciesInfo)
         ]
       ]
-    ]
+    )
   end
 
-  defp inner_query(user_id: user_id) do
-    from p in Models.Pokemon,
-      select: %{p | idx: row_number() |> over(order_by: p.id)},
-      where: p.user_id == ^user_id
-  end
-
-  def query(id: id) do
-    user_id_query =
-      from p in Models.Pokemon,
-        where: p.id == ^id,
-        select: p.user_id
-
-    case Repo.one(user_id_query) do
-      nil -> nil
-      user_id -> query(user_id: user_id, id: id)
-    end
-  end
-
-  def query(user_id: user_id, id: id) do
-    from p in subquery(inner_query(user_id: user_id)),
-      where: p.id == ^id,
-      preload: ^preload()
-  end
-
-  def query(user_id: user_id, idx: idx) do
-    from p in subquery(inner_query(user_id: user_id)),
-      where: p.idx == ^idx,
-      preload: ^preload()
-  end
+  # query
 
   def query(user_id: user_id) do
-    from p in subquery(inner_query(user_id: user_id)),
-      preload: ^preload()
+    Models.Pokemon
+    |> where([p], p.user_id == ^user_id)
+    |> select([p], %{p | idx: row_number() |> over(order_by: p.id)})
+    |> subquery()
   end
 
-  @spec to_protobuf(any) :: V1.Pokemon.t() | nil
-  def to_protobuf(_)
+  def with(query, id: id), do: query |> where([p], p.id == ^id)
+  def with(query, idx: idx), do: query |> where([p], p.idx == ^idx)
+
+  # to_protobuf
 
   def to_protobuf(%Models.Pokemon{} = pokemon) do
     V1.Pokemon.new(
