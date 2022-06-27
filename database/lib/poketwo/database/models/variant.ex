@@ -28,52 +28,57 @@ defmodule Poketwo.Database.Models.Variant do
     belongs_to :species, Models.Species
   end
 
-  @spec query([{:id, any}] | [{:name, any}]) :: Ecto.Query.t()
-  def query(opts)
-
-  def query(id: id) do
-    from v in Models.Variant,
-      where: v.id == ^id,
-      preload: [
-        types: [info: ^Utils.from_info(Models.TypeInfo)],
-        info: ^Utils.from_info(Models.VariantInfo),
-        species: [
-          generation: [
-            info: ^Utils.from_info(Models.GenerationInfo),
-            main_region: [info: ^Utils.from_info(Models.RegionInfo)]
-          ],
-          info: ^Utils.from_info(Models.SpeciesInfo)
-        ]
+  def preload(query) do
+    query
+    |> preload(
+      types: [info: ^Utils.from_info(Models.TypeInfo)],
+      info: ^Utils.from_info(Models.VariantInfo),
+      species: [
+        generation: [
+          info: ^Utils.from_info(Models.GenerationInfo),
+          main_region: [info: ^Utils.from_info(Models.RegionInfo)]
+        ],
+        info: ^Utils.from_info(Models.SpeciesInfo)
       ]
+    )
   end
 
-  def query(name: name) do
-    from v in Models.Variant,
-      left_join: i in assoc(v, :info),
-      left_join: s in assoc(v, :species),
-      left_join: si in assoc(s, :info),
-      where:
-        v.identifier == ^name or
-          i.variant_name == ^name or
-          i.pokemon_name == ^name or
-          (v.is_default and s.identifier == ^name) or
-          (v.is_default and si.name == ^name),
-      preload: [
-        types: [info: ^Utils.from_info(Models.TypeInfo)],
-        info: ^Utils.from_info(Models.VariantInfo),
-        species: [
-          generation: [
-            info: ^Utils.from_info(Models.GenerationInfo),
-            main_region: [info: ^Utils.from_info(Models.RegionInfo)]
-          ],
-          info: ^Utils.from_info(Models.SpeciesInfo)
-        ]
-      ],
-      limit: 1
+  def query() do
+    Models.Variant
+    |> from(as: :variant)
   end
 
-  @spec to_protobuf(any) :: V1.Variant.t() | nil
-  def to_protobuf(_)
+  def join_info(query) do
+    if has_named_binding?(query, :variant_info),
+      do: query,
+      else: join(query, :left, [variant: v], i in assoc(v, :info), as: :variant_info)
+  end
+
+  def join_species(query) do
+    if has_named_binding?(query, :species),
+      do: query,
+      else: join(query, :left, [variant: v], i in assoc(v, :species), as: :species)
+  end
+
+  def with(query, id: id) do
+    query
+    |> where([variant: v], v.id == ^id)
+  end
+
+  def with(query, name: name) do
+    query
+    |> join_info()
+    |> join_species()
+    |> Models.Species.join_info()
+    |> where(
+      [variant: v, variant_info: i, species: s, species_info: si],
+      v.identifier == ^name or
+        i.variant_name == ^name or
+        i.pokemon_name == ^name or
+        (v.is_default and s.identifier == ^name) or
+        (v.is_default and si.name == ^name)
+    )
+  end
 
   def to_protobuf(%Models.Variant{} = variant) do
     V1.Variant.new(

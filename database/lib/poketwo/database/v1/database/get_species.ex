@@ -1,13 +1,21 @@
 defmodule Poketwo.Database.V1.Database.GetSpecies do
-  use Memoize
+  import Ecto.Query
   alias Poketwo.Database.{Models, V1, Repo}
 
   def handle(%V1.GetSpeciesRequest{} = request, _stream) do
-    species =
+    query =
+      Models.Species.query()
+      |> limit(1)
+      |> Models.Species.preload()
+
+    query =
       case request.query do
-        {:id, id} -> Models.Species.query(id: id)
-        {:name, name} -> Models.Species.query(name: name)
+        {:id, id} -> query |> Models.Species.with(id: id)
+        {:name, name} -> query |> Models.Species.with(name: name)
       end
+
+    species =
+      query
       |> Repo.one()
       |> Models.Species.to_protobuf()
 

@@ -1,13 +1,21 @@
 defmodule Poketwo.Database.V1.Database.GetVariant do
-  use Memoize
+  import Ecto.Query
   alias Poketwo.Database.{Models, V1, Repo}
 
   def handle(%V1.GetVariantRequest{} = request, _stream) do
-    variant =
+    query =
+      Models.Variant.query()
+      |> limit(1)
+      |> Models.Variant.preload()
+
+    query =
       case request.query do
-        {:id, id} -> Models.Variant.query(id: id)
-        {:name, name} -> Models.Variant.query(name: name)
+        {:id, id} -> query |> Models.Variant.with(id: id)
+        {:name, name} -> query |> Models.Variant.with(name: name)
       end
+
+    variant =
+      query
       |> Repo.one()
       |> Models.Variant.to_protobuf()
 
