@@ -11,9 +11,6 @@ defmodule Poketwo.Database.Models.VariantInfo do
     belongs_to :language, Models.Language
   end
 
-  @spec to_protobuf(any) :: V1.VariantInfo.t() | nil
-  def to_protobuf(_)
-
   def to_protobuf(%Models.VariantInfo{} = info) do
     V1.VariantInfo.new(
       variant_name: Utils.string_value(info.variant_name),

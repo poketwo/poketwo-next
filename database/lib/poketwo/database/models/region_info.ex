@@ -10,9 +10,6 @@ defmodule Poketwo.Database.Models.RegionInfo do
     belongs_to :language, Models.Language
   end
 
-  @spec to_protobuf(any) :: V1.RegionInfo.t() | nil
-  def to_protobuf(_)
-
   def to_protobuf(%Models.RegionInfo{} = info) do
     V1.RegionInfo.new(
       name: info.name,

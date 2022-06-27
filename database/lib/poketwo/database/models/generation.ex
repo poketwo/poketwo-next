@@ -9,9 +9,6 @@ defmodule Poketwo.Database.Models.Generation do
     belongs_to :main_region, Models.Region
   end
 
-  @spec to_protobuf(any) :: V1.Generation.t() | nil
-  def to_protobuf(_)
-
   def to_protobuf(%Models.Generation{} = generation) do
     V1.Generation.new(
       id: generation.id,

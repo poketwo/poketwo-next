@@ -9,9 +9,6 @@ defmodule Poketwo.Database.Models.Type do
     belongs_to :generation, Models.Generation
   end
 
-  @spec to_protobuf(any) :: V1.Type.t() | nil
-  def to_protobuf(_)
-
   def to_protobuf(%Models.Type{} = type) do
     V1.Type.new(
       id: type.id,

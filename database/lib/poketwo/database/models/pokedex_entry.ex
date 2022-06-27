@@ -20,9 +20,6 @@ defmodule Poketwo.Database.Models.PokedexEntry do
     |> Ecto.Changeset.foreign_key_constraint(:variant_id)
   end
 
-  @spec to_protobuf(any) :: V1.PokedexEntry.t() | nil
-  def to_protobuf(_)
-
   def to_protobuf(%Models.PokedexEntry{} = entry) do
     V1.PokedexEntry.new(
       user: Utils.if_loaded(entry.user, &Models.User.to_protobuf/1),

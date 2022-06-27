@@ -11,9 +11,6 @@ defmodule Poketwo.Database.Models.Language do
     field :enabled, :boolean
   end
 
-  @spec to_protobuf(any) :: V1.Language.t() | nil
-  def to_protobuf(_)
-
   def to_protobuf(%Models.Language{} = language) do
     V1.Language.new(
       id: language.id,
