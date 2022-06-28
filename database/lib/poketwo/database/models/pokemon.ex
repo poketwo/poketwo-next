@@ -157,55 +157,40 @@ defmodule Poketwo.Database.Models.Pokemon do
     |> where([pokemon: p], p.shiny == ^shiny)
   end
 
-  def with_filter(query, mythical: mythical) when mythical != nil do
+  def with_filter(query, [{key, value}])
+      when value != nil and key in [:mythical, :legendary, :ultra_beast] do
+    field =
+      case key do
+        :mythical -> :is_mythical
+        :legendary -> :is_legendary
+        :ultra_beast -> :is_ultra_beast
+  end
+
     query
     |> join_variant()
     |> Models.Variant.join_species()
-    |> where([species: s], s.is_mythical == ^mythical)
+    |> where([species: s], field(s, ^field) == ^value)
   end
 
-  def with_filter(query, legendary: legendary) when legendary != nil do
-    query
-    |> join_variant()
-    |> Models.Variant.join_species()
-    |> where([species: s], s.is_legendary == ^legendary)
+  def with_filter(query, [{key, value}])
+      when value != nil and key in [:alolan, :galarian, :hisuian, :mega] do
+    pattern =
+      case key do
+        :alolan -> "%-alolan"
+        :galarian -> "%-galarian"
+        :hisuian -> "%-hisuian"
+        :mega -> "%-mega"
   end
 
-  def with_filter(query, ultra_beast: ultra_beast) when ultra_beast != nil do
     query
     |> join_variant()
-    |> Models.Variant.join_species()
-    |> where([species: s], s.is_ultra_beast == ^ultra_beast)
-  end
-
-  def with_filter(query, alolan: alolan) when alolan != nil do
-    query
-    |> join_variant()
-    |> where([variant: v], like(v.identifier, "%-alolan"))
-  end
-
-  def with_filter(query, galarian: galarian) when galarian != nil do
-    query
-    |> join_variant()
-    |> where([variant: v], like(v.identifier, "%-galarian"))
-  end
-
-  def with_filter(query, hisuian: hisuian) when hisuian != nil do
-    query
-    |> join_variant()
-    |> where([variant: v], like(v.identifier, "%-hisuian"))
+    |> where([variant: v], like(v.identifier, ^pattern))
   end
 
   def with_filter(query, event: event) when event != nil do
     query
     |> join_variant()
     |> where([variant: v], v.id >= 50000)
-  end
-
-  def with_filter(query, mega: mega) when mega != nil do
-    query
-    |> join_variant()
-    |> where([variant: v], like(v.identifier, "%-mega"))
   end
 
   def with_filter(query, [{key, value}])

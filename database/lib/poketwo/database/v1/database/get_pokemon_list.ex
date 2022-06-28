@@ -14,6 +14,7 @@ defmodule Poketwo.Database.V1.Database.GetPokemonList do
 
     query =
       request.filter
+      |> Kernel.||(%V1.SharedFilter{})
       |> Utils.unwrap()
       |> Enum.reduce(query, fn elem, query ->
         query |> Models.Pokemon.with_filter([elem])
