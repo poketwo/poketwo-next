@@ -2,7 +2,9 @@ use anyhow::{anyhow, Result};
 use poketwo_command_framework::command;
 use poketwo_command_framework::poketwo_i18n::fluent_args;
 use poketwo_emojis::EMOJIS;
-use poketwo_protobuf::poketwo::database::v1::{GetPokemonListRequest, Pokemon};
+use poketwo_protobuf::poketwo::database::v1::{
+    GetPokemonListRequest, Pokemon, PokemonFilter, SharedFilter,
+};
 use twilight_model::channel::embed::Embed;
 use twilight_model::http::interaction::{
     InteractionResponse, InteractionResponseData, InteractionResponseType,
@@ -51,15 +53,79 @@ fn format_pokemon_list_embed(ctx: &Context<'_>, pokemon: &[Pokemon]) -> Result<E
         .build())
 }
 
+#[allow(clippy::too_many_arguments)]
 #[command(desc = "Show a list of the Pokémon you own.", default_permission = true)]
-pub async fn list(ctx: Context<'_>) -> Result<()> {
+pub async fn list(
+    ctx: Context<'_>,
+    #[desc = "Filter by species or variant"] name: Option<String>,
+    #[name = "type"]
+    #[desc = "Filter by type"]
+    r#type: Option<String>,
+    #[desc = "Filter by region"] region: Option<String>,
+    #[desc = "Filter by shiny"] shiny: Option<bool>,
+    #[desc = "Filter by rarity"] mythical: Option<bool>,
+    #[desc = "Filter by rarity"] legendary: Option<bool>,
+    #[desc = "Filter by rarity"] ultra_beast: Option<bool>,
+    #[desc = "Filter Alolan variants"] alolan: Option<bool>,
+    #[desc = "Filter Galarian variants"] galarian: Option<bool>,
+    #[desc = "Filter Hisuian variants"] hisuian: Option<bool>,
+    #[desc = "Filter event Pokémon"] event: Option<bool>,
+    #[desc = "Filter mega-evolved Pokémon"] mega: Option<bool>,
+    #[desc = "Filter by level"] level: Option<String>,
+    #[name = "iv"]
+    #[desc = "Filter by IV"]
+    iv_total: Option<String>,
+    #[desc = "Filter by HP IV"] iv_hp: Option<String>,
+    #[desc = "Filter by Attack IV"] iv_atk: Option<String>,
+    #[desc = "Filter by Defense IV"] iv_def: Option<String>,
+    #[desc = "Filter by Sp. Atk IV"] iv_satk: Option<String>,
+    #[desc = "Filter by Sp. Def IV"] iv_sdef: Option<String>,
+    #[desc = "Filter by Speed IV"] iv_spd: Option<String>,
+    #[desc = "Filter by double IVs"] iv_double: Option<i64>,
+    #[desc = "Filter by triple IVs"] iv_triple: Option<i64>,
+    #[desc = "Filter by quadruple IVs"] iv_quadruple: Option<i64>,
+    #[desc = "Filter by quintuple IVs"] iv_quintuple: Option<i64>,
+    #[desc = "Filter by sextuple IVs"] iv_sextuple: Option<i64>,
+) -> Result<()> {
     let mut state = ctx.client.state.lock().await;
 
     let user_id = ctx.interaction.author_id().ok_or_else(|| anyhow!("Missing author"))?.get();
 
+    let filter = SharedFilter {
+        name,
+        r#type,
+        region,
+        shiny,
+        mythical,
+        legendary,
+        ultra_beast,
+        alolan,
+        galarian,
+        hisuian,
+        event,
+        mega,
+        level,
+        iv_total,
+        iv_hp,
+        iv_atk,
+        iv_def,
+        iv_satk,
+        iv_sdef,
+        iv_spd,
+        iv_double,
+        iv_triple,
+        iv_quadruple,
+        iv_quintuple,
+        iv_sextuple,
+    };
+
     let pokemon = state
         .database
-        .get_pokemon_list(GetPokemonListRequest { user_id })
+        .get_pokemon_list(GetPokemonListRequest {
+            user_id,
+            filter: Some(filter),
+            pokemon_filter: Some(PokemonFilter { ..Default::default() }),
+        })
         .await?
         .into_inner()
         .pokemon;

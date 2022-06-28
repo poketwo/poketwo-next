@@ -11,13 +11,27 @@ defmodule Poketwo.Database.V1.PokemonFilter.OrderBy do
   @moduledoc false
   use Protobuf, enum: true, syntax: :proto3
 
-  @type t :: integer | :DEFAULT | :IDX | :LEVEL | :POKEDEX | :IV_TOTAL
+  @type t ::
+          integer
+          | :DEFAULT
+          | :IDX_ASC
+          | :IDX_DES
+          | :LEVEL_ASC
+          | :LEVEL_DESC
+          | :POKEDEX_ASC
+          | :POKEDEX_DESC
+          | :IV_TOTAL_ASC
+          | :IV_TOTAL_DESC
 
   field :DEFAULT, 0
-  field :IDX, 1
-  field :LEVEL, 2
-  field :POKEDEX, 3
-  field :IV_TOTAL, 4
+  field :IDX_ASC, 1
+  field :IDX_DES, 2
+  field :LEVEL_ASC, 3
+  field :LEVEL_DESC, 4
+  field :POKEDEX_ASC, 5
+  field :POKEDEX_DESC, 6
+  field :IV_TOTAL_ASC, 7
+  field :IV_TOTAL_DESC, 8
 end
 defmodule Poketwo.Database.V1.SharedFilter do
   @moduledoc false
@@ -44,11 +58,11 @@ defmodule Poketwo.Database.V1.SharedFilter do
           iv_satk: Google.Protobuf.StringValue.t() | nil,
           iv_sdef: Google.Protobuf.StringValue.t() | nil,
           iv_spd: Google.Protobuf.StringValue.t() | nil,
-          iv_double: Google.Protobuf.Int32Value.t() | nil,
-          iv_triple: Google.Protobuf.Int32Value.t() | nil,
-          iv_quadruple: Google.Protobuf.Int32Value.t() | nil,
-          iv_quintuple: Google.Protobuf.Int32Value.t() | nil,
-          iv_sextuple: Google.Protobuf.Int32Value.t() | nil
+          iv_double: Google.Protobuf.Int64Value.t() | nil,
+          iv_triple: Google.Protobuf.Int64Value.t() | nil,
+          iv_quadruple: Google.Protobuf.Int64Value.t() | nil,
+          iv_quintuple: Google.Protobuf.Int64Value.t() | nil,
+          iv_sextuple: Google.Protobuf.Int64Value.t() | nil
         }
 
   defstruct name: nil,
@@ -97,11 +111,11 @@ defmodule Poketwo.Database.V1.SharedFilter do
   field :iv_satk, 18, type: Google.Protobuf.StringValue, json_name: "ivSatk"
   field :iv_sdef, 19, type: Google.Protobuf.StringValue, json_name: "ivSdef"
   field :iv_spd, 20, type: Google.Protobuf.StringValue, json_name: "ivSpd"
-  field :iv_double, 21, type: Google.Protobuf.Int32Value, json_name: "ivDouble"
-  field :iv_triple, 22, type: Google.Protobuf.Int32Value, json_name: "ivTriple"
-  field :iv_quadruple, 23, type: Google.Protobuf.Int32Value, json_name: "ivQuadruple"
-  field :iv_quintuple, 24, type: Google.Protobuf.Int32Value, json_name: "ivQuintuple"
-  field :iv_sextuple, 25, type: Google.Protobuf.Int32Value, json_name: "ivSextuple"
+  field :iv_double, 21, type: Google.Protobuf.Int64Value, json_name: "ivDouble"
+  field :iv_triple, 22, type: Google.Protobuf.Int64Value, json_name: "ivTriple"
+  field :iv_quadruple, 23, type: Google.Protobuf.Int64Value, json_name: "ivQuadruple"
+  field :iv_quintuple, 24, type: Google.Protobuf.Int64Value, json_name: "ivQuintuple"
+  field :iv_sextuple, 25, type: Google.Protobuf.Int64Value, json_name: "ivSextuple"
 end
 defmodule Poketwo.Database.V1.PokemonFilter do
   @moduledoc false
@@ -110,14 +124,12 @@ defmodule Poketwo.Database.V1.PokemonFilter do
   @type t :: %__MODULE__{
           favorite: Google.Protobuf.BoolValue.t() | nil,
           nickname: Google.Protobuf.StringValue.t() | nil,
-          order_by: Poketwo.Database.V1.PokemonFilter.OrderBy.t(),
-          order: Poketwo.Database.V1.Order.t()
+          order_by: Poketwo.Database.V1.PokemonFilter.OrderBy.t()
         }
 
   defstruct favorite: nil,
             nickname: nil,
-            order_by: :DEFAULT,
-            order: :ASC
+            order_by: :DEFAULT
 
   field :favorite, 1, type: Google.Protobuf.BoolValue
   field :nickname, 2, type: Google.Protobuf.StringValue
@@ -126,6 +138,4 @@ defmodule Poketwo.Database.V1.PokemonFilter do
     type: Poketwo.Database.V1.PokemonFilter.OrderBy,
     json_name: "orderBy",
     enum: true
-
-  field :order, 4, type: Poketwo.Database.V1.Order, enum: true
 end

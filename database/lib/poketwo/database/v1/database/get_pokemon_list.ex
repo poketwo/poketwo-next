@@ -3,14 +3,18 @@ defmodule Poketwo.Database.V1.Database.GetPokemonList do
   alias Poketwo.Database.{Models, Utils, V1, Repo}
 
   def handle(%V1.GetPokemonListRequest{} = request, _stream) do
-    # request.pokemon_filter
-    # |> Utils.unwrap()
-    # |> Enum.map(&IO.inspect/1)
-
     query =
       Models.Pokemon.query(user_id: request.user_id)
       |> distinct([p], p.id)
       |> Models.Pokemon.preload()
+
+    query =
+      request.pokemon_filter
+      |> Kernel.||(%V1.PokemonFilter{})
+      |> Utils.unwrap()
+      |> Enum.reduce(query, fn elem, query ->
+        query |> Models.Pokemon.with_filter([elem])
+      end)
 
     query =
       request.filter

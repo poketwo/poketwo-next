@@ -50,6 +50,7 @@ defmodule Poketwo.Database.Models.Pokemon do
     field :nickname, :string
 
     field :idx, :integer, virtual: true
+    field :iv_total, :integer, virtual: true
 
     timestamps(type: :utc_datetime)
 
@@ -113,6 +114,12 @@ defmodule Poketwo.Database.Models.Pokemon do
     )
   end
 
+  defmacrop iv_total() do
+    quote do
+      p.iv_hp + p.iv_atk + p.iv_def + p.iv_satk + p.iv_sdef + p.iv_spd
+    end
+  end
+
   def query(user_id: user_id) do
     Models.Pokemon
     |> where([p], p.user_id == ^user_id)
@@ -152,9 +159,10 @@ defmodule Poketwo.Database.Models.Pokemon do
     |> Models.Region.with(name: region)
   end
 
-  def with_filter(query, shiny: shiny) when shiny != nil do
+  def with_filter(query, [{key, value}])
+      when value != nil and key in [:shiny, :favorite, :nickname] do
     query
-    |> where([pokemon: p], p.shiny == ^shiny)
+    |> where([pokemon: p], field(p, ^key) == ^value)
   end
 
   def with_filter(query, [{key, value}])
@@ -164,7 +172,7 @@ defmodule Poketwo.Database.Models.Pokemon do
         :mythical -> :is_mythical
         :legendary -> :is_legendary
         :ultra_beast -> :is_ultra_beast
-  end
+      end
 
     query
     |> join_variant()
@@ -180,7 +188,7 @@ defmodule Poketwo.Database.Models.Pokemon do
         :galarian -> "%-galarian"
         :hisuian -> "%-hisuian"
         :mega -> "%-mega"
-  end
+      end
 
     query
     |> join_variant()
@@ -196,11 +204,21 @@ defmodule Poketwo.Database.Models.Pokemon do
   def with_filter(query, [{key, value}])
       when value != nil and key in [:level, :iv_hp, :iv_atk, :iv_def, :iv_satk, :iv_sdef, :iv_spd] do
     case Numeric.parse(value) do
-      {:<, value} -> query |> where([pokemon: p], fragment("? < ?", field(p, ^key), ^value))
-      {:<=, value} -> query |> where([pokemon: p], fragment("? <= ?", field(p, ^key), ^value))
-      {:>, value} -> query |> where([pokemon: p], fragment("? > ?", field(p, ^key), ^value))
-      {:>=, value} -> query |> where([pokemon: p], fragment("? >= ?", field(p, ^key), ^value))
-      {:=, value} -> query |> where([pokemon: p], fragment("? = ?", field(p, ^key), ^value))
+      {:<, value} -> query |> where([pokemon: p], field(p, ^key) < ^value)
+      {:<=, value} -> query |> where([pokemon: p], field(p, ^key) <= ^value)
+      {:>, value} -> query |> where([pokemon: p], field(p, ^key) > ^value)
+      {:>=, value} -> query |> where([pokemon: p], field(p, ^key) >= ^value)
+      {:=, value} -> query |> where([pokemon: p], field(p, ^key) == ^value)
+    end
+  end
+
+  def with_filter(query, iv_total: iv_total) when iv_total != nil do
+    case Numeric.parse(iv_total, 186 / 100) do
+      {:<, value} -> query |> where([pokemon: p], iv_total() < ^value)
+      {:<=, value} -> query |> where([pokemon: p], iv_total() <= ^value)
+      {:>, value} -> query |> where([pokemon: p], iv_total() > ^value)
+      {:>=, value} -> query |> where([pokemon: p], iv_total() >= ^value)
+      {:=, value} -> query |> where([pokemon: p], iv_total() == ^value)
     end
   end
 
@@ -226,6 +244,10 @@ defmodule Poketwo.Database.Models.Pokemon do
         fragment("CAST(? = ? as int)", p.iv_sdef, ^value) +
         fragment("CAST(? = ? as int)", p.iv_spd, ^value) >= ^target
     )
+  end
+
+  def with_filter(query, order_by: _order_by) do
+    query
   end
 
   def to_protobuf(%Models.Pokemon{} = pokemon) do

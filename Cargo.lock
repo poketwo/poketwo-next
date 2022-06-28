@@ -3641,8 +3641,3 @@ name = "yasna"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "346d34a236c9d3e5f3b9b74563f238f955bbd05fa0b8b4efa53c130c43982f4c"
-
-[[patch.unused]]
-name = "fluent-fallback"
-version = "0.6.0"
-source = "git+https://github.com/oliver-ni/fluent-rs#73c815a39c52b77f327feef3a6b011ad866f52ed"
