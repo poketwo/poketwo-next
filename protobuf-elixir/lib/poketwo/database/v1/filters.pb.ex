@@ -42,14 +42,9 @@ defmodule Poketwo.Database.V1.SharedFilter do
           type: Google.Protobuf.StringValue.t() | nil,
           region: Google.Protobuf.StringValue.t() | nil,
           shiny: Google.Protobuf.BoolValue.t() | nil,
-          mythical: Google.Protobuf.BoolValue.t() | nil,
-          legendary: Google.Protobuf.BoolValue.t() | nil,
-          ultra_beast: Google.Protobuf.BoolValue.t() | nil,
-          alolan: Google.Protobuf.BoolValue.t() | nil,
-          galarian: Google.Protobuf.BoolValue.t() | nil,
-          hisuian: Google.Protobuf.BoolValue.t() | nil,
+          rarity: Google.Protobuf.StringValue.t() | nil,
+          form: Google.Protobuf.StringValue.t() | nil,
           event: Google.Protobuf.BoolValue.t() | nil,
-          mega: Google.Protobuf.BoolValue.t() | nil,
           level: Google.Protobuf.StringValue.t() | nil,
           iv_total: Google.Protobuf.StringValue.t() | nil,
           iv_hp: Google.Protobuf.StringValue.t() | nil,
@@ -58,7 +53,6 @@ defmodule Poketwo.Database.V1.SharedFilter do
           iv_satk: Google.Protobuf.StringValue.t() | nil,
           iv_sdef: Google.Protobuf.StringValue.t() | nil,
           iv_spd: Google.Protobuf.StringValue.t() | nil,
-          iv_double: Google.Protobuf.StringValue.t() | nil,
           iv_triple: Google.Protobuf.StringValue.t() | nil,
           iv_quadruple: Google.Protobuf.StringValue.t() | nil,
           iv_quintuple: Google.Protobuf.StringValue.t() | nil,
@@ -69,14 +63,9 @@ defmodule Poketwo.Database.V1.SharedFilter do
             type: nil,
             region: nil,
             shiny: nil,
-            mythical: nil,
-            legendary: nil,
-            ultra_beast: nil,
-            alolan: nil,
-            galarian: nil,
-            hisuian: nil,
+            rarity: nil,
+            form: nil,
             event: nil,
-            mega: nil,
             level: nil,
             iv_total: nil,
             iv_hp: nil,
@@ -85,7 +74,6 @@ defmodule Poketwo.Database.V1.SharedFilter do
             iv_satk: nil,
             iv_sdef: nil,
             iv_spd: nil,
-            iv_double: nil,
             iv_triple: nil,
             iv_quadruple: nil,
             iv_quintuple: nil,
@@ -95,14 +83,9 @@ defmodule Poketwo.Database.V1.SharedFilter do
   field :type, 2, type: Google.Protobuf.StringValue
   field :region, 3, type: Google.Protobuf.StringValue
   field :shiny, 4, type: Google.Protobuf.BoolValue
-  field :mythical, 5, type: Google.Protobuf.BoolValue
-  field :legendary, 6, type: Google.Protobuf.BoolValue
-  field :ultra_beast, 7, type: Google.Protobuf.BoolValue, json_name: "ultraBeast"
-  field :alolan, 8, type: Google.Protobuf.BoolValue
-  field :galarian, 9, type: Google.Protobuf.BoolValue
-  field :hisuian, 10, type: Google.Protobuf.BoolValue
+  field :rarity, 5, type: Google.Protobuf.StringValue
+  field :form, 8, type: Google.Protobuf.StringValue
   field :event, 11, type: Google.Protobuf.BoolValue
-  field :mega, 12, type: Google.Protobuf.BoolValue
   field :level, 13, type: Google.Protobuf.StringValue
   field :iv_total, 14, type: Google.Protobuf.StringValue, json_name: "ivTotal"
   field :iv_hp, 15, type: Google.Protobuf.StringValue, json_name: "ivHp"
@@ -111,7 +94,6 @@ defmodule Poketwo.Database.V1.SharedFilter do
   field :iv_satk, 18, type: Google.Protobuf.StringValue, json_name: "ivSatk"
   field :iv_sdef, 19, type: Google.Protobuf.StringValue, json_name: "ivSdef"
   field :iv_spd, 20, type: Google.Protobuf.StringValue, json_name: "ivSpd"
-  field :iv_double, 21, type: Google.Protobuf.StringValue, json_name: "ivDouble"
   field :iv_triple, 22, type: Google.Protobuf.StringValue, json_name: "ivTriple"
   field :iv_quadruple, 23, type: Google.Protobuf.StringValue, json_name: "ivQuadruple"
   field :iv_quintuple, 24, type: Google.Protobuf.StringValue, json_name: "ivQuintuple"

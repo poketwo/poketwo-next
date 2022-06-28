@@ -173,34 +173,47 @@ defmodule Poketwo.Database.Models.Pokemon do
     |> where([pokemon: p], field(p, ^key) == ^value)
   end
 
-  def with_filter(query, [{key, value}])
-      when value != nil and key in [:mythical, :legendary, :ultra_beast] do
-    field =
-      case key do
-        :mythical -> :is_mythical
-        :legendary -> :is_legendary
-        :ultra_beast -> :is_ultra_beast
-      end
+  def with_filter(query, rarity: rarity) when rarity != nil do
+    rarity
+    |> Utils.split()
+    |> Enum.map(&String.downcase/1)
+    |> Enum.map(fn
+      "mythical" -> :is_mythical
+      "legendary" -> :is_legendary
+      "ultra_beast" -> :is_ultra_beast
+      _ -> nil
+    end)
+    |> Enum.reject(&is_nil/1)
+    |> Enum.uniq()
+    |> Enum.reduce(nil, fn
+      item, nil ->
+        query
+        |> join_variant()
+        |> Models.Variant.join_species()
+        |> where([species: s], field(s, ^item))
 
-    query
-    |> join_variant()
-    |> Models.Variant.join_species()
-    |> where([species: s], field(s, ^field) == ^value)
+      item, acc ->
+        acc |> or_where([species: s], field(s, ^item))
+    end)
   end
 
-  def with_filter(query, [{key, value}])
-      when value != nil and key in [:alolan, :galarian, :hisuian, :mega] do
-    pattern =
-      case key do
-        :alolan -> "%-alolan"
-        :galarian -> "%-galarian"
-        :hisuian -> "%-hisuian"
-        :mega -> "%-mega"
-      end
-
-    query
-    |> join_variant()
-    |> where([variant: v], like(v.identifier, ^pattern))
+  def with_filter(query, form: form) when form != nil do
+    form
+    |> Utils.split()
+    |> Enum.map(&String.downcase/1)
+    |> Enum.map(fn
+      "alolan" -> "%-alolan"
+      "galarian" -> "%-galarian"
+      "hisuian" -> "%-hisuian"
+      "mega" -> "%-mega"
+      _ -> nil
+    end)
+    |> Enum.reject(&is_nil/1)
+    |> Enum.uniq()
+    |> Enum.reduce(nil, fn
+      item, nil -> query |> join_variant() |> where([variant: v], like(v.identifier, ^item))
+      item, acc -> acc |> or_where([variant: v], like(v.identifier, ^item))
+    end)
   end
 
   def with_filter(query, event: event) when event != nil do
@@ -231,11 +244,9 @@ defmodule Poketwo.Database.Models.Pokemon do
   end
 
   def with_filter(query, [{key, value}])
-      when value != nil and
-             key in [:iv_double, :iv_triple, :iv_quadruple, :iv_quintuple, :iv_sextuple] do
+      when value != nil and key in [:iv_triple, :iv_quadruple, :iv_quintuple, :iv_sextuple] do
     target =
       case key do
-        :iv_double -> 2
         :iv_triple -> 3
         :iv_quadruple -> 4
         :iv_quintuple -> 5

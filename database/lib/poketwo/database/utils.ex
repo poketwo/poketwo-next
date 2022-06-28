@@ -7,6 +7,10 @@ defmodule Poketwo.Database.Utils do
   def if_loaded(val, func), do: func.(val)
   def map_if_loaded(val, func), do: if_loaded(val, fn x -> Enum.map(x, func) end)
 
+  def split(s) do
+    String.split(s, ~r/[\s,]+/)
+  end
+
   def unwrap(%mod{value: value})
       when mod in [
              Google.Protobuf.Int32Value,

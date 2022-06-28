@@ -15,14 +15,9 @@ message SharedFilter {
   google.protobuf.StringValue region = 3;
 
   google.protobuf.BoolValue shiny = 4;
-  google.protobuf.BoolValue mythical = 5;
-  google.protobuf.BoolValue legendary = 6;
-  google.protobuf.BoolValue ultra_beast = 7;
-  google.protobuf.BoolValue alolan = 8;
-  google.protobuf.BoolValue galarian = 9;
-  google.protobuf.BoolValue hisuian = 10;
+  google.protobuf.StringValue rarity = 5;
+  google.protobuf.StringValue form = 8;
   google.protobuf.BoolValue event = 11;
-  google.protobuf.BoolValue mega = 12;
 
   google.protobuf.StringValue level = 13;
   google.protobuf.StringValue iv_total = 14;
@@ -34,7 +29,6 @@ message SharedFilter {
   google.protobuf.StringValue iv_sdef = 19;
   google.protobuf.StringValue iv_spd = 20;
 
-  google.protobuf.StringValue iv_double = 21;
   google.protobuf.StringValue iv_triple = 22;
   google.protobuf.StringValue iv_quadruple = 23;
   google.protobuf.StringValue iv_quintuple = 24;
