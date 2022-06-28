@@ -114,10 +114,18 @@ defmodule Poketwo.Database.Models.Pokemon do
     )
   end
 
-  defmacrop iv_total() do
-    quote do
-      p.iv_hp + p.iv_atk + p.iv_def + p.iv_satk + p.iv_sdef + p.iv_spd
-    end
+  defmacrop iv_total(var) do
+    quote(do: [iv_hp, iv_atk, iv_def, iv_satk, iv_sdef, iv_spd])
+    |> Enum.map(fn field -> quote do: unquote(var).unquote(field) end)
+    |> Enum.reduce(fn item, acc -> {:+, [], [item, acc]} end)
+  end
+
+  defmacrop count_iv_with(var, op, value) when op in [:<, :<=, :>, :>=, :==] do
+    quote(do: [iv_hp, iv_atk, iv_def, iv_satk, iv_sdef, iv_spd])
+    |> Enum.map(fn field -> quote(do: unquote(var).unquote(field)) end)
+    |> Enum.map(fn field -> {op, [], [field, value]} end)
+    |> Enum.map(fn field -> quote do: fragment("CAST(? as int)", unquote(field)) end)
+    |> Enum.reduce(fn item, acc -> {:+, [], [item, acc]} end)
   end
 
   def query(user_id: user_id) do
@@ -208,17 +216,17 @@ defmodule Poketwo.Database.Models.Pokemon do
       {:<=, value} -> query |> where([pokemon: p], field(p, ^key) <= ^value)
       {:>, value} -> query |> where([pokemon: p], field(p, ^key) > ^value)
       {:>=, value} -> query |> where([pokemon: p], field(p, ^key) >= ^value)
-      {:=, value} -> query |> where([pokemon: p], field(p, ^key) == ^value)
+      {:==, value} -> query |> where([pokemon: p], field(p, ^key) == ^value)
     end
   end
 
   def with_filter(query, iv_total: iv_total) when iv_total != nil do
     case Numeric.parse(iv_total, 186 / 100) do
-      {:<, value} -> query |> where([pokemon: p], iv_total() < ^value)
-      {:<=, value} -> query |> where([pokemon: p], iv_total() <= ^value)
-      {:>, value} -> query |> where([pokemon: p], iv_total() > ^value)
-      {:>=, value} -> query |> where([pokemon: p], iv_total() >= ^value)
-      {:=, value} -> query |> where([pokemon: p], iv_total() == ^value)
+      {:<, value} -> query |> where([pokemon: p], iv_total(p) < ^value)
+      {:<=, value} -> query |> where([pokemon: p], iv_total(p) <= ^value)
+      {:>, value} -> query |> where([pokemon: p], iv_total(p) > ^value)
+      {:>=, value} -> query |> where([pokemon: p], iv_total(p) >= ^value)
+      {:==, value} -> query |> where([pokemon: p], iv_total(p) == ^value)
     end
   end
 
@@ -234,16 +242,13 @@ defmodule Poketwo.Database.Models.Pokemon do
         :iv_sextuple -> 6
       end
 
-    query
-    |> where(
-      [pokemon: p],
-      fragment("CAST(? = ? as int)", p.iv_hp, ^value) +
-        fragment("CAST(? = ? as int)", p.iv_atk, ^value) +
-        fragment("CAST(? = ? as int)", p.iv_def, ^value) +
-        fragment("CAST(? = ? as int)", p.iv_satk, ^value) +
-        fragment("CAST(? = ? as int)", p.iv_sdef, ^value) +
-        fragment("CAST(? = ? as int)", p.iv_spd, ^value) >= ^target
-    )
+    case Numeric.parse(value) do
+      {:<, value} -> query |> where([pokemon: p], count_iv_with(p, :<, ^value) >= ^target)
+      {:<=, value} -> query |> where([pokemon: p], count_iv_with(p, :<=, ^value) >= ^target)
+      {:>, value} -> query |> where([pokemon: p], count_iv_with(p, :>, ^value) >= ^target)
+      {:>=, value} -> query |> where([pokemon: p], count_iv_with(p, :>=, ^value) >= ^target)
+      {:==, value} -> query |> where([pokemon: p], count_iv_with(p, :==, ^value) >= ^target)
+    end
   end
 
   def with_filter(query, order_by: _order_by) do

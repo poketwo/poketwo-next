@@ -72,20 +72,18 @@ pub async fn list(
     #[desc = "Filter event Pokémon"] event: Option<bool>,
     #[desc = "Filter mega-evolved Pokémon"] mega: Option<bool>,
     #[desc = "Filter by level"] level: Option<String>,
-    #[name = "iv"]
-    #[desc = "Filter by IV"]
-    iv_total: Option<String>,
+    #[desc = "Filter by IV"] iv_total: Option<String>,
     #[desc = "Filter by HP IV"] iv_hp: Option<String>,
     #[desc = "Filter by Attack IV"] iv_atk: Option<String>,
     #[desc = "Filter by Defense IV"] iv_def: Option<String>,
     #[desc = "Filter by Sp. Atk IV"] iv_satk: Option<String>,
     #[desc = "Filter by Sp. Def IV"] iv_sdef: Option<String>,
     #[desc = "Filter by Speed IV"] iv_spd: Option<String>,
-    #[desc = "Filter by double IVs"] iv_double: Option<i64>,
-    #[desc = "Filter by triple IVs"] iv_triple: Option<i64>,
-    #[desc = "Filter by quadruple IVs"] iv_quadruple: Option<i64>,
-    #[desc = "Filter by quintuple IVs"] iv_quintuple: Option<i64>,
-    #[desc = "Filter by sextuple IVs"] iv_sextuple: Option<i64>,
+    #[desc = "Filter by double IVs"] iv_double: Option<String>,
+    #[desc = "Filter by triple IVs"] iv_triple: Option<String>,
+    #[desc = "Filter by quadruple IVs"] iv_quadruple: Option<String>,
+    #[desc = "Filter by quintuple IVs"] iv_quintuple: Option<String>,
+    #[desc = "Filter by sextuple IVs"] iv_sextuple: Option<String>,
 ) -> Result<()> {
     let mut state = ctx.client.state.lock().await;
 

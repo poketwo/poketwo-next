@@ -58,11 +58,11 @@ defmodule Poketwo.Database.V1.SharedFilter do
           iv_satk: Google.Protobuf.StringValue.t() | nil,
           iv_sdef: Google.Protobuf.StringValue.t() | nil,
           iv_spd: Google.Protobuf.StringValue.t() | nil,
-          iv_double: Google.Protobuf.Int64Value.t() | nil,
-          iv_triple: Google.Protobuf.Int64Value.t() | nil,
-          iv_quadruple: Google.Protobuf.Int64Value.t() | nil,
-          iv_quintuple: Google.Protobuf.Int64Value.t() | nil,
-          iv_sextuple: Google.Protobuf.Int64Value.t() | nil
+          iv_double: Google.Protobuf.StringValue.t() | nil,
+          iv_triple: Google.Protobuf.StringValue.t() | nil,
+          iv_quadruple: Google.Protobuf.StringValue.t() | nil,
+          iv_quintuple: Google.Protobuf.StringValue.t() | nil,
+          iv_sextuple: Google.Protobuf.StringValue.t() | nil
         }
 
   defstruct name: nil,
@@ -111,11 +111,11 @@ defmodule Poketwo.Database.V1.SharedFilter do
   field :iv_satk, 18, type: Google.Protobuf.StringValue, json_name: "ivSatk"
   field :iv_sdef, 19, type: Google.Protobuf.StringValue, json_name: "ivSdef"
   field :iv_spd, 20, type: Google.Protobuf.StringValue, json_name: "ivSpd"
-  field :iv_double, 21, type: Google.Protobuf.Int64Value, json_name: "ivDouble"
-  field :iv_triple, 22, type: Google.Protobuf.Int64Value, json_name: "ivTriple"
-  field :iv_quadruple, 23, type: Google.Protobuf.Int64Value, json_name: "ivQuadruple"
-  field :iv_quintuple, 24, type: Google.Protobuf.Int64Value, json_name: "ivQuintuple"
-  field :iv_sextuple, 25, type: Google.Protobuf.Int64Value, json_name: "ivSextuple"
+  field :iv_double, 21, type: Google.Protobuf.StringValue, json_name: "ivDouble"
+  field :iv_triple, 22, type: Google.Protobuf.StringValue, json_name: "ivTriple"
+  field :iv_quadruple, 23, type: Google.Protobuf.StringValue, json_name: "ivQuadruple"
+  field :iv_quintuple, 24, type: Google.Protobuf.StringValue, json_name: "ivQuintuple"
+  field :iv_sextuple, 25, type: Google.Protobuf.StringValue, json_name: "ivSextuple"
 end
 defmodule Poketwo.Database.V1.PokemonFilter do
   @moduledoc false

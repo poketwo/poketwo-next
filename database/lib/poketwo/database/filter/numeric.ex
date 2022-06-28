@@ -12,6 +12,6 @@ defmodule Poketwo.Database.Filter.Numeric do
   defp parse_op("<" <> rest), do: {:<, rest}
   defp parse_op(">=" <> rest), do: {:>=, rest}
   defp parse_op(">" <> rest), do: {:>, rest}
-  defp parse_op("=" <> rest), do: {:=, rest}
-  defp parse_op(rest), do: {:=, rest}
+  defp parse_op("=" <> rest), do: {:==, rest}
+  defp parse_op(rest), do: {:==, rest}
 end

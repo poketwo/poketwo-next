@@ -34,11 +34,11 @@ message SharedFilter {
   google.protobuf.StringValue iv_sdef = 19;
   google.protobuf.StringValue iv_spd = 20;
 
-  google.protobuf.Int64Value iv_double = 21;
-  google.protobuf.Int64Value iv_triple = 22;
-  google.protobuf.Int64Value iv_quadruple = 23;
-  google.protobuf.Int64Value iv_quintuple = 24;
-  google.protobuf.Int64Value iv_sextuple = 25;
+  google.protobuf.StringValue iv_double = 21;
+  google.protobuf.StringValue iv_triple = 22;
+  google.protobuf.StringValue iv_quadruple = 23;
+  google.protobuf.StringValue iv_quintuple = 24;
+  google.protobuf.StringValue iv_sextuple = 25;
 }
 
 message PokemonFilter {
