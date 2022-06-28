@@ -5,6 +5,7 @@ use inflector::Inflector;
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;
 use quote::quote;
+use syn::ext::IdentExt;
 use syn::fold::fold_type;
 use syn::{AttributeArgs, FnArg, Ident, ItemFn, NestedMeta};
 
@@ -66,9 +67,9 @@ pub fn group(args: AttributeArgs, input: ItemFn) -> TokenStream {
 
     let ident = input.sig.ident;
     let model_ident =
-        Ident::new(&format!("{}Command", ident.to_string().to_pascal_case()), ident.span());
+        Ident::new(&format!("{}Command", ident.unraw().to_string().to_pascal_case()), ident.span());
 
-    let name = options.name.unwrap_or_else(|| ident.to_string());
+    let name = options.name.unwrap_or_else(|| ident.unraw().to_string());
     let desc = options.desc;
     let default_permission = options.default_permission;
 
@@ -107,12 +108,12 @@ pub fn group(args: AttributeArgs, input: ItemFn) -> TokenStream {
 }
 
 pub fn subcommand(subcommand: &Ident) -> (TokenStream, TokenStream) {
-    let name = subcommand.to_string();
+    let name = subcommand.unraw().to_string();
     let model_ident = Ident::new(
-        &format!("{}Command", subcommand.to_string().to_pascal_case()),
+        &format!("{}Command", subcommand.unraw().to_string().to_pascal_case()),
         subcommand.span(),
     );
-    let ident = Ident::new(&subcommand.to_string().to_pascal_case(), subcommand.span());
+    let ident = Ident::new(&subcommand.unraw().to_string().to_pascal_case(), subcommand.span());
 
     let enum_variant = quote! {
         #[command(name = #name)]

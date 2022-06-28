@@ -3,6 +3,7 @@ use inflector::Inflector;
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;
 use quote::quote;
+use syn::ext::IdentExt;
 use syn::fold::fold_type;
 use syn::{AttributeArgs, FnArg, Ident, ItemFn, NestedMeta, Pat, Visibility};
 
@@ -35,14 +36,14 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
 
     let ident = input.sig.ident.clone();
     let model_ident =
-        Ident::new(&format!("{}Command", ident.to_string().to_pascal_case()), ident.span());
+        Ident::new(&format!("{}Command", ident.unraw().to_string().to_pascal_case()), ident.span());
 
     input.sig.ident = Ident::new("inner", input.sig.ident.span());
 
     let vis = input.vis.clone();
     input.vis = Visibility::Inherited;
 
-    let name = options.name.unwrap_or_else(|| ident.to_string());
+    let name = options.name.unwrap_or_else(|| ident.unraw().to_string());
     let desc = options.desc;
     let default_permission = options.default_permission;
 
@@ -132,7 +133,7 @@ pub fn command_argument(arg: &mut FnArg) -> (TokenStream, TokenStream) {
         Err(e) => return (e.write_errors(), TokenStream::new()),
     };
 
-    let name = options.name.unwrap_or_else(|| ident.ident.to_string());
+    let name = options.name.unwrap_or_else(|| ident.ident.unraw().to_string());
     let desc = options.desc;
     let autocomplete = options.autocomplete;
     let channel_types = options.channel_types;

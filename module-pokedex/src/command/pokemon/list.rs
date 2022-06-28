@@ -58,9 +58,7 @@ fn format_pokemon_list_embed(ctx: &Context<'_>, pokemon: &[Pokemon]) -> Result<E
 pub async fn list(
     ctx: Context<'_>,
     #[desc = "Filter by species or variant"] name: Option<String>,
-    #[name = "type"]
-    #[desc = "Filter by type"]
-    r#type: Option<String>,
+    #[desc = "Filter by type"] r#type: Option<String>,
     #[desc = "Filter by region"] region: Option<String>,
     #[desc = "Filter by shiny"] shiny: Option<bool>,
     #[desc = "Filter by rarity"] mythical: Option<bool>,
