@@ -79,7 +79,8 @@ message GetPokemonResponse { Pokemon pokemon = 1; }
 
 message GetPokemonListRequest {
   uint64 user_id = 1;
-  PokemonFilter filter = 2;
+  SharedFilter filter = 2;
+  PokemonFilter pokemon_filter = 3;
 }
 
 message GetPokemonListResponse {

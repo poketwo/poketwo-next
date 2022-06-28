@@ -57,7 +57,13 @@ defmodule Poketwo.Database.Models.Variant do
   def join_species(query) do
     if has_named_binding?(query, :species),
       do: query,
-      else: join(query, :left, [variant: v], i in assoc(v, :species), as: :species)
+      else: join(query, :left, [variant: v], s in assoc(v, :species), as: :species)
+  end
+
+  def join_type(query) do
+    if has_named_binding?(query, :type),
+      do: query,
+      else: join(query, :left, [variant: v], t in assoc(v, :types), as: :type)
   end
 
   def with(query, id: id) do

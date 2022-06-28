@@ -10,9 +10,9 @@ defmodule Poketwo.Database.Models.Species do
     field :is_mythical, :boolean
     field :is_ultra_beast, :boolean
 
-    has_many(:info, Models.SpeciesInfo)
-    has_many(:variants, Models.Variant)
-    belongs_to(:generation, Models.Generation)
+    has_many :info, Models.SpeciesInfo
+    has_many :variants, Models.Variant
+    belongs_to :generation, Models.Generation
   end
 
   def preload(query) do
@@ -36,6 +36,12 @@ defmodule Poketwo.Database.Models.Species do
     if has_named_binding?(query, :species_info),
       do: query,
       else: join(query, :left, [species: s], i in assoc(s, :info), as: :species_info)
+  end
+
+  def join_generation(query) do
+    if has_named_binding?(query, :generation),
+      do: query,
+      else: join(query, :left, [species: s], g in assoc(s, :generation), as: :generation)
   end
 
   def with(query, id: id) do

@@ -4,7 +4,7 @@ defmodule Poketwo.Database.V1.Database.GetPokemon do
 
   def query(id: %{id: id}) do
     Ecto.Multi.new()
-    |> Ecto.Multi.one(:pokemon_no_idx, Models.Pokemon |> Models.Pokemon.with(id: id))
+    |> Ecto.Multi.one(:pokemon_no_idx, Models.Pokemon |> where([p], p.id == ^id))
     |> Ecto.Multi.one(:pokemon, fn
       %{pokemon_no_idx: nil} ->
         Models.Pokemon |> where(false)
