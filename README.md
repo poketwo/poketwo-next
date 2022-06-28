@@ -4,7 +4,7 @@
 
 Pokétwo brings the Pokémon experience to Discord. Catch randomly-spawning pokémon in your servers, trade them to expand your collection, battle with your friends to win rewards, and more.
 
-This repository hosts the code for Pokétwo's rewrite, which is still in progress. Looking for the stable version of Pokétwo? [Click here.](https://github.com/poketwo/poketwo)
+This repository hosts the code for Pokétwo's rewrite, which is still in progress, expected to be released in August 2022. Looking for the stable version of Pokétwo? [Click here.](https://github.com/poketwo/poketwo)
 
 ## Components
 
@@ -36,20 +36,20 @@ These services consume Discord events from RabbitMQ, including commands and mess
 These components are shared code used by other services.
 
 - [`command-framework`](command-framework) — primary slash command handler framework
-- [`command-framework-macros](command-framework-macros) — macros used for the command framework
+- [`command-framework-macros`](command-framework-macros) — macros used for the command framework
 - [`emojis`](emojis) — Pokétwo's custom emoji library
 - [`gateway-client`](gateway-client) — client that consumes events from RabbitMQ
-- [`i18n-rust`] — enables localization of messages
-- [`protobuf`] — Protobuf declarations shared across all components
-- [`protobuf-elixir`] — generated Protobuf code for Elixir
-- [`protobuf-rust`] — generated Protobuf code for Rust
-- [`resources`] — folder for translations and other static files
+- [`i18n-rust`](i18n-rust) — enables localization of messages
+- [`protobuf`](protobuf) — Protobuf declarations shared across all components
+- [`protobuf-elixir`](protobuf-elixir) — generated Protobuf code for Elixir
+- [`protobuf-rust`](protobuf-rust) — generated Protobuf code for Rust
+- [`resources`](resources) — folder for translations and other static files
 
 ## Deploying
 
 Deploying Pokétwo is not simple, and is not meant to be. We do not recommend attempting to build or host Pokétwo by yourself. Instead, [use this link](https://invite.poketwo.net/) to add the production Pokétwo instance to your Discord server.
 
-If you would still like to run your own instance, perhaps for development purposes, and you know what you are doing, a sample `docker-compose.yml` is provided. As of now, however, there is no other documentation or instructions for building, and no support whatsoever will be provided.
+If you would still like to run your own instance, perhaps for development purposes, and you know what you are doing, a sample [`docker-compose.yml`](docker-compose.yml) is provided. As of now, however, there is no other documentation or instructions for building, and no support whatsoever will be provided.
 
 ## License
 
