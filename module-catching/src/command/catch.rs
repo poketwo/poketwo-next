@@ -1,4 +1,6 @@
-use anyhow::{anyhow, bail, Result};
+use std::fmt::Display;
+
+use anyhow::{anyhow, bail, Error, Result};
 use poketwo_command_framework::command;
 use poketwo_i18n::fluent_args;
 use poketwo_i18n::fluent_bundle::types::{FluentNumber, FluentNumberKind, FluentNumberOptions};
@@ -11,6 +13,17 @@ use twilight_model::http::interaction::{
 };
 
 use crate::Context;
+
+#[derive(Debug)]
+pub struct CatchError(String);
+
+impl Display for CatchError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl std::error::Error for CatchError {}
 
 const REDIS_HCAD: &str = "if #KEYS ~= 1 then error('Wrong number of keys') end
 if #KEYS ~= 1 then error('Wrong number of keys') end
@@ -25,7 +38,7 @@ else
     return -1
 end";
 
-#[command(desc = "Catch a Pokémon.", default_permission = true)]
+#[command(desc = "Catch a Pokémon.", default_permission = true, on_error = "handle_catch_error")]
 pub async fn catch(
     ctx: Context<'_>, #[desc = "The Pokémon to catch"] guess: String
 ) -> Result<()> {
@@ -38,9 +51,10 @@ pub async fn catch(
         .into_inner()
         .variant
         .ok_or_else(|| {
-            anyhow!(ctx
-                .locale_lookup_with_args("pokemon-not-found", fluent_args!["query" => guess])
-                .unwrap_or_else(|_| "Unable to localize error message.".into()))
+            CatchError(
+                ctx.locale_lookup_with_args("pokemon-not-found", fluent_args!["query" => guess])
+                    .unwrap_or_else(|_| "Unable to localize error message.".into()),
+            )
         })?;
 
     let user_id = ctx.interaction.author_id().ok_or_else(|| anyhow!("Missing author"))?;
@@ -65,8 +79,8 @@ pub async fn catch(
 
     match status {
         1 => {}
-        0 => bail!(ctx.locale_lookup("wrong-wild-pokemon")?),
-        -1 => bail!(ctx.locale_lookup("no-wild-pokemon")?),
+        0 => return Err(Error::new(CatchError(ctx.locale_lookup("wrong-wild-pokemon")?))),
+        -1 => return Err(Error::new(CatchError(ctx.locale_lookup("no-wild-pokemon")?))),
         _ => bail!("Unexpected return value"),
     }
 
@@ -135,4 +149,22 @@ pub async fn catch(
     .await?;
 
     Ok(())
+}
+
+pub async fn handle_catch_error(ctx: Context<'_>, error: Error) -> Result<()> {
+    if let Some(x) = error.downcast_ref::<CatchError>() {
+        ctx.create_response(&InteractionResponse {
+            kind: InteractionResponseType::ChannelMessageWithSource,
+            data: Some(InteractionResponseData {
+                content: Some(x.0.clone()),
+                ..Default::default()
+            }),
+        })
+        .exec()
+        .await?;
+
+        return Ok(());
+    }
+
+    Err(error)
 }
