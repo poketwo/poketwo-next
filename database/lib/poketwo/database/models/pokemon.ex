@@ -224,23 +224,31 @@ defmodule Poketwo.Database.Models.Pokemon do
 
   def with_filter(query, [{key, value}])
       when value != nil and key in [:level, :iv_hp, :iv_atk, :iv_def, :iv_satk, :iv_sdef, :iv_spd] do
-    case Numeric.parse(value) do
-      {:<, value} -> query |> where([pokemon: p], field(p, ^key) < ^value)
-      {:<=, value} -> query |> where([pokemon: p], field(p, ^key) <= ^value)
-      {:>, value} -> query |> where([pokemon: p], field(p, ^key) > ^value)
-      {:>=, value} -> query |> where([pokemon: p], field(p, ^key) >= ^value)
-      {:==, value} -> query |> where([pokemon: p], field(p, ^key) == ^value)
-    end
+    value
+    |> String.split(",")
+    |> Enum.map(&String.trim/1)
+    |> Enum.map(&Numeric.parse/1)
+    |> Enum.reduce(query, fn
+      {:<, value}, query -> query |> where([pokemon: p], field(p, ^key) < ^value)
+      {:<=, value}, query -> query |> where([pokemon: p], field(p, ^key) <= ^value)
+      {:>, value}, query -> query |> where([pokemon: p], field(p, ^key) > ^value)
+      {:>=, value}, query -> query |> where([pokemon: p], field(p, ^key) >= ^value)
+      {:==, value}, query -> query |> where([pokemon: p], field(p, ^key) == ^value)
+    end)
   end
 
   def with_filter(query, iv_total: iv_total) when iv_total != nil do
-    case Numeric.parse(iv_total, 186 / 100) do
-      {:<, value} -> query |> where([pokemon: p], iv_total(p) < ^value)
-      {:<=, value} -> query |> where([pokemon: p], iv_total(p) <= ^value)
-      {:>, value} -> query |> where([pokemon: p], iv_total(p) > ^value)
-      {:>=, value} -> query |> where([pokemon: p], iv_total(p) >= ^value)
-      {:==, value} -> query |> where([pokemon: p], iv_total(p) == ^value)
-    end
+    iv_total
+    |> String.split(",")
+    |> Enum.map(&String.trim/1)
+    |> Enum.map(&Numeric.parse(&1, 186 / 100))
+    |> Enum.reduce(query, fn
+      {:<, value}, query -> query |> where([pokemon: p], iv_total(p) < ^value)
+      {:<=, value}, query -> query |> where([pokemon: p], iv_total(p) <= ^value)
+      {:>, value}, query -> query |> where([pokemon: p], iv_total(p) > ^value)
+      {:>=, value}, query -> query |> where([pokemon: p], iv_total(p) >= ^value)
+      {:==, value}, query -> query |> where([pokemon: p], iv_total(p) == ^value)
+    end)
   end
 
   def with_filter(query, [{key, value}])
