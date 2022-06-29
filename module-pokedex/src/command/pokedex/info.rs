@@ -92,9 +92,9 @@ fn format_variant_embed(ctx: &Context<'_>, variant: &Variant) -> Result<Embed> {
         .and_then(|x| x.pokemon_name.as_ref().or(x.variant_name.as_ref()))
         .unwrap_or(&info.name);
 
-    let mut embed = EmbedBuilder::new()
-        .title(format!("#{} — {}", variant.id, variant_name))
-        .image(ImageSource::url(format!("https://assets.poketwo.net/images/{}.png", variant.id))?);
+    let mut embed = EmbedBuilder::new().title(format!("#{} — {}", variant.id, variant_name)).image(
+        ImageSource::url(format!("https://cdn.poketwo.net/images/normal/{}.png", variant.id))?,
+    );
 
     if variant.is_default {
         if let Some(flavor_text) = &info.flavor_text {

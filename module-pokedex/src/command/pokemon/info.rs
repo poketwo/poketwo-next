@@ -83,7 +83,10 @@ fn format_pokemon_embed(ctx: &Context<'_>, pokemon: &Pokemon) -> Result<Embed> {
             pokemon.level,
             variant_name
         ))
-        .image(ImageSource::url(format!("https://assets.poketwo.net/images/{}.png", variant.id))?);
+        .image(ImageSource::url(format!(
+            "https://cdn.poketwo.net/images/normal/{}.png",
+            variant.id
+        ))?);
 
     embed = embed.field(format_details_field(ctx, pokemon)?);
     embed = embed.field(format_stats_field(ctx, pokemon)?);
