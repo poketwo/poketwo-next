@@ -38,16 +38,15 @@ message SharedFilter {
 message PokemonFilter {
   google.protobuf.BoolValue favorite = 1;
   google.protobuf.StringValue nickname = 2;
-  OrderBy order_by = 3;
 
   enum OrderBy {
     DEFAULT = 0;
     IDX_ASC = 1;
-    IDX_DES = 2;
+    IDX_DESC = 2;
     LEVEL_ASC = 3;
     LEVEL_DESC = 4;
-    POKEDEX_ASC = 5;
-    POKEDEX_DESC = 6;
+    SPECIES_ASC = 5;
+    SPECIES_DESC = 6;
     IV_TOTAL_ASC = 7;
     IV_TOTAL_DESC = 8;
   }

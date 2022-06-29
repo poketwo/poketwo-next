@@ -1,7 +1,8 @@
-use anyhow::{anyhow, Result};
+use anyhow::{anyhow, bail, Result};
 use poketwo_command_framework::command;
 use poketwo_command_framework::poketwo_i18n::fluent_args;
 use poketwo_emojis::EMOJIS;
+use poketwo_protobuf::poketwo::database::v1::pokemon_filter::OrderBy;
 use poketwo_protobuf::poketwo::database::v1::{
     GetPokemonListRequest, Pokemon, PokemonFilter, SharedFilter,
 };
@@ -76,6 +77,10 @@ pub async fn list(
     #[desc = "Filter by quadruple IVs"] iv_quadruple: Option<String>,
     #[desc = "Filter by quintuple IVs"] iv_quintuple: Option<String>,
     #[desc = "Filter by sextuple IVs"] iv_sextuple: Option<String>,
+
+    #[desc = "Filter by favorite"] favorite: Option<bool>,
+    #[desc = "Filter by nickname"] nickname: Option<String>,
+    #[desc = "Order results"] order_by: Option<String>,
 ) -> Result<()> {
     let mut state = ctx.client.state.lock().await;
 
@@ -103,12 +108,27 @@ pub async fn list(
         iv_sextuple,
     };
 
+    let pokemon_filter = PokemonFilter { favorite, nickname };
+
     let pokemon = state
         .database
         .get_pokemon_list(GetPokemonListRequest {
             user_id,
             filter: Some(filter),
-            pokemon_filter: Some(PokemonFilter { ..Default::default() }),
+            pokemon_filter: Some(pokemon_filter),
+            order_by: match order_by.map(|s| s.to_lowercase()).as_deref() {
+                Some("index+") | Some("index") => OrderBy::IdxAsc,
+                Some("index-") => OrderBy::IdxDesc,
+                Some("level+") | Some("level") => OrderBy::LevelAsc,
+                Some("level-") => OrderBy::LevelDesc,
+                Some("species+") | Some("species") => OrderBy::SpeciesAsc,
+                Some("species-") => OrderBy::SpeciesDesc,
+                Some("iv+") => OrderBy::IvTotalAsc,
+                Some("iv-") | Some("iv") => OrderBy::IvTotalDesc,
+                None => OrderBy::Default,
+                _ => bail!(ctx.locale_lookup("invalid-order")?),
+            }
+            .into(),
         })
         .await?
         .into_inner()

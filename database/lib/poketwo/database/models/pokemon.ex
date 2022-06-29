@@ -34,23 +34,23 @@ defmodule Poketwo.Database.Models.Pokemon do
   ]
 
   schema "pokemon" do
-    field :level, :integer, autogenerate: {__MODULE__, :autogenerate_level, []}
-    field :xp, :integer, default: 0
-    field :shiny, :boolean, autogenerate: {__MODULE__, :autogenerate_shiny, []}
-    field :nature, :string, autogenerate: {__MODULE__, :autogenerate_nature, []}
+    field(:level, :integer, autogenerate: {__MODULE__, :autogenerate_level, []})
+    field(:xp, :integer, default: 0)
+    field(:shiny, :boolean, autogenerate: {__MODULE__, :autogenerate_shiny, []})
+    field(:nature, :string, autogenerate: {__MODULE__, :autogenerate_nature, []})
 
-    field :iv_hp, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []}
-    field :iv_atk, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []}
-    field :iv_def, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []}
-    field :iv_satk, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []}
-    field :iv_sdef, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []}
-    field :iv_spd, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []}
+    field(:iv_hp, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []})
+    field(:iv_atk, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []})
+    field(:iv_def, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []})
+    field(:iv_satk, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []})
+    field(:iv_sdef, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []})
+    field(:iv_spd, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []})
 
-    field :favorite, :boolean, default: false
-    field :nickname, :string
+    field(:favorite, :boolean, default: false)
+    field(:nickname, :string)
 
-    field :idx, :integer, virtual: true
-    field :iv_total, :integer, virtual: true
+    field(:idx, :integer, virtual: true)
+    field(:iv_total, :integer, virtual: true)
 
     timestamps(type: :utc_datetime)
 
@@ -262,8 +262,18 @@ defmodule Poketwo.Database.Models.Pokemon do
     end
   end
 
-  def with_filter(query, order_by: _order_by) do
-    query
+  def order_by(query, order_by) do
+    case order_by do
+      :DEFAULT -> query
+      :IDX_ASC -> query |> order_by([pokemon: p], asc: p.idx)
+      :IDX_DESC -> query |> order_by([pokemon: p], desc: p.idx)
+      :LEVEL_ASC -> query |> order_by([pokemon: p], asc: p.level)
+      :LEVEL_DESC -> query |> order_by([pokemon: p], desc: p.level)
+      :SPECIES_ASC -> query |> join_variant() |> order_by([variant: v], asc: v.species_id)
+      :SPECIES_DESC -> query |> join_variant() |> order_by([variant: v], desc: v.species_id)
+      :IV_TOTAL_ASC -> query |> order_by([pokemon: p], asc: iv_total(p))
+      :IV_TOTAL_DESC -> query |> order_by([pokemon: p], desc: iv_total(p))
+    end
   end
 
   def to_protobuf(%Models.Pokemon{} = pokemon) do

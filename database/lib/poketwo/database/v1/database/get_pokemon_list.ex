@@ -6,7 +6,6 @@ defmodule Poketwo.Database.V1.Database.GetPokemonList do
     query =
       Models.Pokemon.query(user_id: request.user_id)
       |> distinct([p], p.id)
-      |> Models.Pokemon.preload()
 
     query =
       request.pokemon_filter
@@ -26,6 +25,10 @@ defmodule Poketwo.Database.V1.Database.GetPokemonList do
 
     pokemon =
       query
+      |> subquery()
+      |> from(as: :pokemon)
+      |> Models.Pokemon.order_by(request.order_by)
+      |> Models.Pokemon.preload()
       |> Repo.all()
       |> Enum.map(&Models.Pokemon.to_protobuf/1)
 

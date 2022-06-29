@@ -81,6 +81,7 @@ message GetPokemonListRequest {
   uint64 user_id = 1;
   SharedFilter filter = 2;
   PokemonFilter pokemon_filter = 3;
+  PokemonFilter.OrderBy order_by = 4;
 }
 
 message GetPokemonListResponse {

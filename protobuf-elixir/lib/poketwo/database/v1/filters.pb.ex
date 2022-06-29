@@ -15,21 +15,21 @@ defmodule Poketwo.Database.V1.PokemonFilter.OrderBy do
           integer
           | :DEFAULT
           | :IDX_ASC
-          | :IDX_DES
+          | :IDX_DESC
           | :LEVEL_ASC
           | :LEVEL_DESC
-          | :POKEDEX_ASC
-          | :POKEDEX_DESC
+          | :SPECIES_ASC
+          | :SPECIES_DESC
           | :IV_TOTAL_ASC
           | :IV_TOTAL_DESC
 
   field :DEFAULT, 0
   field :IDX_ASC, 1
-  field :IDX_DES, 2
+  field :IDX_DESC, 2
   field :LEVEL_ASC, 3
   field :LEVEL_DESC, 4
-  field :POKEDEX_ASC, 5
-  field :POKEDEX_DESC, 6
+  field :SPECIES_ASC, 5
+  field :SPECIES_DESC, 6
   field :IV_TOTAL_ASC, 7
   field :IV_TOTAL_DESC, 8
 end
@@ -105,19 +105,12 @@ defmodule Poketwo.Database.V1.PokemonFilter do
 
   @type t :: %__MODULE__{
           favorite: Google.Protobuf.BoolValue.t() | nil,
-          nickname: Google.Protobuf.StringValue.t() | nil,
-          order_by: Poketwo.Database.V1.PokemonFilter.OrderBy.t()
+          nickname: Google.Protobuf.StringValue.t() | nil
         }
 
   defstruct favorite: nil,
-            nickname: nil,
-            order_by: :DEFAULT
+            nickname: nil
 
   field :favorite, 1, type: Google.Protobuf.BoolValue
   field :nickname, 2, type: Google.Protobuf.StringValue
-
-  field :order_by, 3,
-    type: Poketwo.Database.V1.PokemonFilter.OrderBy,
-    json_name: "orderBy",
-    enum: true
 end

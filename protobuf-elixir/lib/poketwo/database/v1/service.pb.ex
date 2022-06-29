@@ -211,16 +211,23 @@ defmodule Poketwo.Database.V1.GetPokemonListRequest do
   @type t :: %__MODULE__{
           user_id: non_neg_integer,
           filter: Poketwo.Database.V1.SharedFilter.t() | nil,
-          pokemon_filter: Poketwo.Database.V1.PokemonFilter.t() | nil
+          pokemon_filter: Poketwo.Database.V1.PokemonFilter.t() | nil,
+          order_by: Poketwo.Database.V1.PokemonFilter.OrderBy.t()
         }
 
   defstruct user_id: 0,
             filter: nil,
-            pokemon_filter: nil
+            pokemon_filter: nil,
+            order_by: :DEFAULT
 
   field :user_id, 1, type: :uint64, json_name: "userId"
   field :filter, 2, type: Poketwo.Database.V1.SharedFilter
   field :pokemon_filter, 3, type: Poketwo.Database.V1.PokemonFilter, json_name: "pokemonFilter"
+
+  field :order_by, 4,
+    type: Poketwo.Database.V1.PokemonFilter.OrderBy,
+    json_name: "orderBy",
+    enum: true
 end
 defmodule Poketwo.Database.V1.GetPokemonListResponse do
   @moduledoc false
