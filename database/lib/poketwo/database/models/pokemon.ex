@@ -34,29 +34,29 @@ defmodule Poketwo.Database.Models.Pokemon do
   ]
 
   schema "pokemon" do
-    field(:level, :integer, autogenerate: {__MODULE__, :autogenerate_level, []})
-    field(:xp, :integer, default: 0)
-    field(:shiny, :boolean, autogenerate: {__MODULE__, :autogenerate_shiny, []})
-    field(:nature, :string, autogenerate: {__MODULE__, :autogenerate_nature, []})
+    field :level, :integer, autogenerate: {__MODULE__, :autogenerate_level, []}
+    field :xp, :integer, default: 0
+    field :shiny, :boolean, autogenerate: {__MODULE__, :autogenerate_shiny, []}
+    field :nature, :string, autogenerate: {__MODULE__, :autogenerate_nature, []}
 
-    field(:iv_hp, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []})
-    field(:iv_atk, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []})
-    field(:iv_def, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []})
-    field(:iv_satk, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []})
-    field(:iv_sdef, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []})
-    field(:iv_spd, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []})
+    field :iv_hp, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []}
+    field :iv_atk, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []}
+    field :iv_def, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []}
+    field :iv_satk, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []}
+    field :iv_sdef, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []}
+    field :iv_spd, :integer, autogenerate: {__MODULE__, :autogenerate_iv, []}
 
-    field(:favorite, :boolean, default: false)
-    field(:nickname, :string)
+    field :favorite, :boolean, default: false
+    field :nickname, :string
 
-    field(:idx, :integer, virtual: true)
-    field(:iv_total, :integer, virtual: true)
+    field :idx, :integer, virtual: true
+    field :iv_total, :integer, virtual: true
 
     timestamps(type: :utc_datetime)
 
-    belongs_to(:user, Models.User)
-    belongs_to(:variant, Models.Variant)
-    belongs_to(:original_user, Models.User)
+    belongs_to :user, Models.User
+    belongs_to :variant, Models.Variant
+    belongs_to :original_user, Models.User
   end
 
   def autogenerate_level(), do: :rand.normal(30, 10) |> round() |> max(1) |> min(100)

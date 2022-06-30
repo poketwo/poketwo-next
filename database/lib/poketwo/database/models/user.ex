@@ -1,7 +1,8 @@
 defmodule Poketwo.Database.Models.User do
   use Ecto.Schema
   import Ecto.Query
-  alias Poketwo.Database.{Models, V1}
+  require Poketwo.Database.Utils
+  alias Poketwo.Database.{Models, Utils, V1}
 
   schema "users" do
     field :pokecoin_balance, :integer, default: 0
@@ -13,6 +14,10 @@ defmodule Poketwo.Database.Models.User do
     belongs_to :selected_pokemon, Models.Pokemon
     has_many :pokemon, Models.Pokemon
     has_many :pokedex_entries, Models.PokedexEntry
+  end
+
+  def preload_fields(user_id: user_id) do
+    [selected_pokemon: Models.Pokemon.query(user_id: user_id) |> Models.Pokemon.preload()]
   end
 
   def create_changeset(user, params \\ %{}) do
@@ -41,8 +46,10 @@ defmodule Poketwo.Database.Models.User do
       redeem_balance: user.redeem_balance,
       selected_pokemon_id: user.selected_pokemon_id,
       inserted_at: user.inserted_at,
-      updated_at: user.updated_at
+      updated_at: user.updated_at,
+      selected_pokemon: Utils.if_loaded(user.selected_pokemon, &Models.Pokemon.to_protobuf/1)
     )
+    |> IO.inspect()
   end
 
   def to_protobuf(_), do: nil

@@ -8,6 +8,9 @@ defmodule Poketwo.Database.V1.Database.UpdateUser do
     |> Ecto.Multi.update(:update_user, fn %{user: user} ->
       Models.User.update_changeset(user, %{selected_pokemon_id: id})
     end)
+    |> Ecto.Multi.run(:preload_user, fn repo, %{update_user: user} ->
+      {:ok, repo.preload(user, Models.User.preload_fields(user_id: user.id))}
+    end)
     |> Repo.transaction()
   end
 
@@ -22,12 +25,16 @@ defmodule Poketwo.Database.V1.Database.UpdateUser do
     |> Ecto.Multi.update(:update_user, fn %{user: user, pokemon: pokemon} ->
       Models.User.update_changeset(user, %{selected_pokemon_id: pokemon.id})
     end)
+    |> Ecto.Multi.run(:preload_user, fn repo, %{update_user: user} ->
+      {:ok, repo.preload(user, Models.User.preload_fields(user_id: user.id))}
+    end)
     |> Repo.transaction()
   end
 
   def handle(%V1.UpdateUserRequest{} = request, _stream) do
     case do_update(request) do
-      {:ok, %{update_user: user}} ->
+      {:ok, %{preload_user: user}} ->
+        IO.inspect(user)
         V1.UpdateUserResponse.new(user: Models.User.to_protobuf(user))
 
       {:error, _, changeset, _} ->

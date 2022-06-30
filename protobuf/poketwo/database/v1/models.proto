@@ -104,6 +104,8 @@ message User {
   uint64 selected_pokemon_id = 4;
   google.protobuf.Timestamp inserted_at = 2;
   google.protobuf.Timestamp updated_at = 3;
+
+  Pokemon selected_pokemon = 8;
 }
 
 message PokedexEntry {
