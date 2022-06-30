@@ -3,6 +3,40 @@ defmodule Poketwo.Database.V1.Database.CreatePokemon do
   import Ecto.Query
   alias Poketwo.Database.{Models, Utils, V1, Repo}
 
+  defp update_pokedex(multi) do
+    Ecto.Multi.insert_or_update(
+      multi,
+      :pokedex_entry,
+      fn
+        %{current_pokedex_entry: %Models.PokedexEntry{count: count} = entry} ->
+          Models.PokedexEntry.changeset(entry, %{count: count + 1})
+
+        %{pokemon: pokemon} ->
+          Models.PokedexEntry.changeset(%Models.PokedexEntry{}, %{
+            user_id: pokemon.user_id,
+            variant_id: pokemon.variant_id,
+            count: 1
+          })
+      end
+    )
+  end
+
+  defp reward_pokecoins(multi) do
+    Ecto.Multi.update_all(
+      multi,
+      :user,
+      fn %{pokedex_entry: entry} ->
+        reward = calculate_pokecoins(entry.count)
+
+        Models.User
+        |> Models.User.with(id: entry.user_id)
+        |> select(type(^reward, :integer))
+        |> update(inc: [pokecoin_balance: ^reward])
+      end,
+      []
+    )
+  end
+
   def handle(%V1.CreatePokemonRequest{} = request, _stream) do
     pokemon =
       request
@@ -13,47 +47,13 @@ defmodule Poketwo.Database.V1.Database.CreatePokemon do
       Ecto.Multi.new()
       |> Ecto.Multi.insert(:pokemon, Models.Pokemon.create_changeset(%Models.Pokemon{}, pokemon))
       |> Ecto.Multi.one(:current_pokedex_entry, fn %{pokemon: pokemon} ->
-        from e in Models.PokedexEntry,
-          where: e.user_id == ^pokemon.user_id and e.variant_id == ^pokemon.variant_id
+        Models.PokedexEntry
+        |> where([e], e.user_id == ^pokemon.user_id)
+        |> where([e], e.variant_id == ^pokemon.variant_id)
       end)
 
-    multi =
-      if request.update_pokedex do
-        Ecto.Multi.insert_or_update(
-          multi,
-          :pokedex_entry,
-          fn
-            %{current_pokedex_entry: %Models.PokedexEntry{count: count} = entry} ->
-              Models.PokedexEntry.changeset(entry, %{count: count + 1})
-
-            %{pokemon: pokemon} ->
-              Models.PokedexEntry.changeset(%Models.PokedexEntry{}, %{
-                user_id: pokemon.user_id,
-                variant_id: pokemon.variant_id,
-                count: 1
-              })
-          end
-        )
-      else
-        multi
-      end
-
-    multi =
-      if request.update_pokedex and request.reward_pokecoins do
-        Ecto.Multi.update_all(
-          multi,
-          :user,
-          fn %{pokedex_entry: entry} ->
-            reward = calculate_pokecoins(entry.count)
-
-            from u in Models.User,
-              where: u.id == ^entry.user_id,
-              select: type(^reward, :integer),
-              update: [inc: [pokecoin_balance: ^reward]]
-          end,
-          []
-        )
-      end
+    multi = if request.update_pokedex, do: update_pokedex(multi), else: multi
+    multi = if request.reward_pokecoins, do: reward_pokecoins(multi), else: multi
 
     result = Repo.transaction(multi) |> IO.inspect()
 
