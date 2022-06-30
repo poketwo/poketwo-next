@@ -48,7 +48,7 @@ impl Deref for IdentList {
 struct GroupOptions {
     name: Option<String>,
     desc: String,
-    default_permission: bool,
+    default_permissions: Option<String>,
     subcommands: IdentList,
 }
 
@@ -77,14 +77,16 @@ pub fn group(args: AttributeArgs, input: ItemFn) -> TokenStream {
 
     let name = options.name.unwrap_or_else(|| ident.unraw().to_string());
     let desc = options.desc;
-    let default_permission = options.default_permission;
+    let default_permissions = options.default_permissions.map(|ident| {
+        quote! { default_member_permissions = #ident, }
+    });
 
     let (enum_variants, variant_idents): (Vec<_>, Vec<_>) =
         options.subcommands.iter().map(subcommand).unzip();
 
     quote! {
         #[derive(Debug, ::twilight_interactions::command::CreateCommand, ::twilight_interactions::command::CommandModel)]
-        #[command(name = #name, desc = #desc, default_permission = #default_permission)]
+        #[command(name = #name, desc = #desc, #default_permissions)]
         #vis enum #model_ident {
             #(#enum_variants),*
         }

@@ -38,10 +38,13 @@ impl Gateway {
             status: config.status.unwrap_or(Status::Online),
         };
 
-        let (shard, events) = Shard::builder(config.token.clone(), config.intents)
-            .gateway_url(config.gateway_url.clone())
-            .presence(presence)
-            .build();
+        let mut builder = Shard::builder(config.token.clone(), config.intents).presence(presence);
+
+        if let Some(url) = &config.gateway_url {
+            builder = builder.gateway_url(url.clone());
+        };
+
+        let (shard, events) = builder.build().await?;
 
         let cache = InMemoryCache::builder().message_cache_size(0).build();
 

@@ -44,7 +44,7 @@ else
     return -1
 end";
 
-#[command(desc = "Catch a Pokémon.", default_permission = true, on_error = "handle_catch_error")]
+#[command(desc = "Catch a Pokémon.", on_error = "handle_catch_error")]
 pub async fn catch(
     ctx: Context<'_>, #[desc = "The Pokémon to catch"] guess: String
 ) -> Result<()> {

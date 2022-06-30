@@ -16,7 +16,7 @@ use twilight_model::http::interaction::{
 
 use crate::Context;
 
-#[command(desc = "Add a Pokémon to your favorites.", default_permission = true)]
+#[command(desc = "Add a Pokémon to your favorites.")]
 pub async fn add(
     ctx: Context<'_>,
     #[desc = "The index of the Pokémon in your inventory"] index: i64,
@@ -24,7 +24,7 @@ pub async fn add(
     update_favorite(ctx, index, true).await
 }
 
-#[command(desc = "Remove a Pokémon from your favorites.", default_permission = true)]
+#[command(desc = "Remove a Pokémon from your favorites.")]
 pub async fn remove(
     ctx: Context<'_>,
     #[desc = "The index of the Pokémon in your inventory"] index: i64,
@@ -81,5 +81,5 @@ async fn update_favorite(ctx: Context<'_>, index: i64, value: bool) -> Result<()
     Ok(())
 }
 
-#[group(desc = "Favorite commands", default_permission = true, subcommands(add, remove))]
+#[group(desc = "Favorite commands", subcommands(add, remove))]
 pub fn favorite(_ctx: Context<'_>) {}

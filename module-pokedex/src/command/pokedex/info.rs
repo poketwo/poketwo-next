@@ -130,7 +130,7 @@ fn format_variant_embed(ctx: &Context<'_>, variant: &Variant) -> Result<Embed> {
     Ok(embed.validate()?.build())
 }
 
-#[command(desc = "Search the Pokédex for a Pokémon", default_permission = true)]
+#[command(desc = "Search the Pokédex for a Pokémon")]
 pub async fn info(
     ctx: Context<'_>,
     #[desc = "The name to search for"] query: String,

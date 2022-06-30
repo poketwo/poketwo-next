@@ -68,7 +68,7 @@ fn format_pokemon_list_embed(ctx: &Context<'_>, pokemon: &[Pokemon]) -> Result<E
 }
 
 #[allow(clippy::too_many_arguments)]
-#[command(desc = "Show a list of the Pokémon you own.", default_permission = true)]
+#[command(desc = "Show a list of the Pokémon you own.")]
 pub async fn list(
     ctx: Context<'_>,
     #[desc = "Filter by species or variant"] name: Option<String>,

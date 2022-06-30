@@ -100,8 +100,8 @@ impl<'a, T> CommandClient<'a, T> {
                     .chat_input(&command.command.name, &command.command.description)?
                     .command_options(&command.command.options)?;
 
-                if let Some(value) = command.command.default_permission {
-                    action = action.default_permission(value);
+                if let Some(value) = command.command.default_member_permissions {
+                    action = action.default_member_permissions(value);
                 }
 
                 action.exec().await?;

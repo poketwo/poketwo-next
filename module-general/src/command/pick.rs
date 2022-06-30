@@ -24,11 +24,7 @@ static STARTER_IDS: &[i32] = &[
     728, 810, 813, 816,
 ];
 
-#[command(
-    desc = "Pick a starter Pokémon.",
-    default_permission = true,
-    on_error = "handle_pick_error"
-)]
+#[command(desc = "Pick a starter Pokémon.", on_error = "handle_pick_error")]
 pub async fn pick(
     ctx: Context<'_>,
     #[desc = "The starter Pokémon of your choice"] starter: String,

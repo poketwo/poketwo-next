@@ -19,7 +19,7 @@ use crate::util::AllLifetimesToStatic;
 struct CommandOptions {
     name: Option<String>,
     desc: String,
-    default_permission: bool,
+    default_permissions: Option<String>,
     on_error: Option<Ident>,
 }
 
@@ -51,7 +51,10 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
 
     let name = options.name.unwrap_or_else(|| ident.unraw().to_string());
     let desc = options.desc;
-    let default_permission = options.default_permission;
+
+    let default_permissions = options.default_permissions.map(|ident| {
+        quote! { default_member_permissions = #ident, }
+    });
 
     let (struct_fields, inner_args): (Vec<_>, Vec<_>) =
         input.sig.inputs.iter_mut().skip(1).map(command_argument).unzip();
@@ -67,7 +70,7 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
 
     quote! {
         #[derive(Debug, ::twilight_interactions::command::CreateCommand, ::twilight_interactions::command::CommandModel)]
-        #[command(name = #name, desc = #desc, default_permission = #default_permission)]
+        #[command(name = #name, desc = #desc, #default_permissions)]
         #vis struct #model_ident {
             #(#struct_fields),*
         }

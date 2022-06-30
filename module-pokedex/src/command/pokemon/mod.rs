@@ -19,9 +19,5 @@ use select::SelectCommand;
 
 use crate::Context;
 
-#[group(
-    desc = "Pokémon commands",
-    default_permission = true,
-    subcommands(info, list, select, nickname, favorite)
-)]
+#[group(desc = "Pokémon commands", subcommands(info, list, select, nickname, favorite))]
 pub fn pokemon(_ctx: Context<'_>) {}
