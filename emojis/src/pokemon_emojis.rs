@@ -1,3 +1,9 @@
+// Copyright (c) 2022 Oliver Ni
+//
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 pub(crate) const POKEMON_EMOJIS: [u64; 905] = [
     721473923262447686,
     721473923103064096,

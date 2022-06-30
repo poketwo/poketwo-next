@@ -13,6 +13,24 @@ repos:
       - id: cargo-check
       - id: clippy
 
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.2.0
+    hooks:
+      - id: insert-license
+        files: \.rs$
+        args:
+          - --license-filepath
+          - license-header.txt
+          - --comment-style
+          - //
+      - id: insert-license
+        files: \.ex$
+        args:
+          - --license-filepath
+          - license-header.txt
+          - --comment-style
+          - "#"
+
   - repo: local
     hooks:
       - id: mix-format-database
