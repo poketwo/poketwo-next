@@ -49,6 +49,8 @@ struct GroupOptions {
     name: Option<String>,
     desc: String,
     default_permissions: Option<String>,
+    name_localizations: Option<String>,
+    desc_localizations: Option<String>,
     subcommands: IdentList,
 }
 
@@ -77,8 +79,15 @@ pub fn group(args: AttributeArgs, input: ItemFn) -> TokenStream {
 
     let name = options.name.unwrap_or_else(|| ident.unraw().to_string());
     let desc = options.desc;
-    let default_permissions = options.default_permissions.map(|ident| {
-        quote! { default_member_permissions = #ident, }
+
+    let default_permissions = options.default_permissions.map(|value| {
+        quote! { default_member_permissions = #value, }
+    });
+    let name_localizations = options.name_localizations.map(|value| {
+        quote! { name_localizations = #value, }
+    });
+    let desc_localizations = options.desc_localizations.map(|value| {
+        quote! { desc_localizations = #value, }
     });
 
     let (enum_variants, variant_idents): (Vec<_>, Vec<_>) =
@@ -86,7 +95,13 @@ pub fn group(args: AttributeArgs, input: ItemFn) -> TokenStream {
 
     quote! {
         #[derive(Debug, ::twilight_interactions::command::CreateCommand, ::twilight_interactions::command::CommandModel)]
-        #[command(name = #name, desc = #desc, #default_permissions)]
+        #[command(
+            name = #name,
+            desc = #desc,
+            #default_permissions
+            #name_localizations
+            #desc_localizations
+        )]
         #vis enum #model_ident {
             #(#enum_variants),*
         }
