@@ -30,4 +30,6 @@ pokemon-list-embed-title = Your Pokémon
 
 # Select Pokémon (/pokemon select)
 
-pokemon-selected = You selected your Level {$level} {$pokemon} (#{$idx}).
+pokemon-select-response = You selected your {-pokemon-label} (#{$idx}).
+pokemon-nickname-response = Changed nickname to `{$nickname}` for your Level {$level} {$pokemon} (#{$idx}).
+pokemon-nickname-remove-response = Removed nickname for your Level {$level} {$pokemon} (#{$idx}).

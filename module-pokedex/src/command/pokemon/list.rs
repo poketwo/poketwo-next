@@ -26,14 +26,19 @@ fn format_pokemon_line(ctx: &Context<'_>, pokemon: &Pokemon, idx_len: usize) -> 
         .and_then(|x| x.pokemon_name.as_ref().or(x.variant_name.as_ref()))
         .unwrap_or(&info.name);
 
+    let nickname = match &pokemon.nickname {
+        Some(value) => format!(r#" "{}""#, value),
+        None => "".into(),
+    };
+
     Ok(format!(
-        "`{idx:idx_len$}` {emoji} **{name}** • {level_label} {level} • {iv_total:.2}%",
+        "`{idx:idx_len$}` {emoji} **{name}{nickname}** • {level_label} {level} • {iv_total:.2}%",
         level_label = ctx.locale_lookup_with_args("level", fluent_args!["length" => "short"])?,
         idx = pokemon.idx,
         emoji = EMOJIS.species(species.id)?,
         name = variant_name,
         level = pokemon.level,
-        iv_total = pokemon.iv_total() as f64 / 186.0 * 100.0
+        iv_total = pokemon.iv_total() as f64 / 186.0 * 100.0,
     ))
 }
 

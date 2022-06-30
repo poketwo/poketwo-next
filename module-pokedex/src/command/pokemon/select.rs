@@ -46,7 +46,7 @@ pub async fn select(
         kind: InteractionResponseType::ChannelMessageWithSource,
         data: Some(InteractionResponseData {
             content: Some(ctx.locale_lookup_with_args(
-                "pokemon-selected",
+                "pokemon-select-response",
                 fluent_args!["level" => pokemon.level,"pokemon" => variant_name, "idx" => pokemon.idx],
             )?),
             ..Default::default()
