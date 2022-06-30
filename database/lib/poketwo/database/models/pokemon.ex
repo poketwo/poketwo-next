@@ -213,9 +213,9 @@ defmodule Poketwo.Database.Models.Pokemon do
     |> Utils.split()
     |> Enum.map(&String.downcase/1)
     |> Enum.map(fn
-      "alolan" -> "%-alolan"
-      "galarian" -> "%-galarian"
-      "hisuian" -> "%-hisuian"
+      "alolan" -> "%-alola"
+      "galarian" -> "%-galar"
+      "hisuian" -> "%-hisui"
       "mega" -> "%-mega"
       _ -> nil
     end)
