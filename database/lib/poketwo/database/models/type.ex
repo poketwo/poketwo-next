@@ -27,6 +27,12 @@ defmodule Poketwo.Database.Models.Type do
     |> where([type: t, type_info: i], t.identifier == ^name or i.name == ^name)
   end
 
+  def or_with(query, name: name) do
+    query
+    |> join_info()
+    |> or_where([type: t, type_info: i], t.identifier == ^name or i.name == ^name)
+  end
+
   def to_protobuf(%Models.Type{} = type) do
     V1.Type.new(
       id: type.id,

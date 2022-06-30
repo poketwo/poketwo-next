@@ -26,6 +26,12 @@ defmodule Poketwo.Database.Models.Region do
     |> where([region: t, region_info: i], t.identifier == ^name or i.name == ^name)
   end
 
+  def or_with(query, name: name) do
+    query
+    |> join_info()
+    |> or_where([region: t, region_info: i], t.identifier == ^name or i.name == ^name)
+  end
+
   def to_protobuf(%Models.Region{} = region) do
     V1.Region.new(
       id: region.id,

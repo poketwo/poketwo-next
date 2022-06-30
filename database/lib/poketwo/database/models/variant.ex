@@ -86,6 +86,21 @@ defmodule Poketwo.Database.Models.Variant do
     )
   end
 
+  def or_with(query, name: name) do
+    query
+    |> join_info()
+    |> join_species()
+    |> Models.Species.join_info()
+    |> or_where(
+      [variant: v, variant_info: i, species: s, species_info: si],
+      v.identifier == ^name or
+        i.variant_name == ^name or
+        i.pokemon_name == ^name or
+        (v.is_default and s.identifier == ^name) or
+        (v.is_default and si.name == ^name)
+    )
+  end
+
   def to_protobuf(%Models.Variant{} = variant) do
     V1.Variant.new(
       id: variant.id,

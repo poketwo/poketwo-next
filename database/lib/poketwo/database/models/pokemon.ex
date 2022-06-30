@@ -156,35 +156,59 @@ defmodule Poketwo.Database.Models.Pokemon do
   def with(query, id: id), do: query |> where([pokemon: p], p.id == ^id)
   def with(query, idx: idx), do: query |> where([pokemon: p], p.idx == ^idx)
 
-  def with_filter(query, name: name) when name != nil do
-    query
-    |> join_variant()
-    |> Models.Variant.with(name: name)
+  def with_filter(query, [{_, nil}]), do: query
+
+  def with_filter(query, name: name) do
+    query = query |> join_variant()
+
+    name
+    |> Utils.split()
+    |> Enum.uniq()
+    |> Enum.reduce(nil, fn
+      item, nil -> query |> Models.Variant.with(name: item)
+      item, acc -> acc |> Models.Variant.or_with(name: item)
+    end)
   end
 
-  def with_filter(query, type: type) when type != nil do
-    query
-    |> join_variant()
-    |> Models.Variant.join_type()
-    |> Models.Type.with(name: type)
+  def with_filter(query, type: type) do
+    query = query |> join_variant() |> Models.Variant.join_type()
+
+    type
+    |> Utils.split()
+    |> Enum.uniq()
+    |> Enum.reduce(nil, fn
+      item, nil -> query |> Models.Type.with(name: item)
+      item, acc -> acc |> Models.Type.or_with(name: item)
+    end)
   end
 
-  def with_filter(query, region: region) when region != nil do
-    query
-    |> join_variant()
-    |> Models.Variant.join_species()
-    |> Models.Species.join_generation()
-    |> Models.Generation.join_region()
-    |> Models.Region.with(name: region)
+  def with_filter(query, region: region) do
+    query =
+      query
+      |> join_variant()
+      |> Models.Variant.join_species()
+      |> Models.Species.join_generation()
+      |> Models.Generation.join_region()
+
+    region
+    |> Utils.split()
+    |> Enum.uniq()
+    |> Enum.reduce(nil, fn
+      item, nil -> query |> Models.Region.with(name: item)
+      item, acc -> acc |> Models.Region.with(name: item)
+    end)
   end
 
-  def with_filter(query, [{key, value}])
-      when value != nil and key in [:shiny, :favorite, :nickname] do
-    query
-    |> where([pokemon: p], field(p, ^key) == ^value)
+  def with_filter(query, [{key, value}]) when key in [:shiny, :favorite, :nickname] do
+    where(query, [pokemon: p], field(p, ^key) == ^value)
   end
 
-  def with_filter(query, rarity: rarity) when rarity != nil do
+  def with_filter(query, rarity: rarity) do
+    query =
+      query
+      |> join_variant()
+      |> Models.Variant.join_species()
+
     rarity
     |> Utils.split()
     |> Enum.map(&String.downcase/1)
@@ -197,18 +221,12 @@ defmodule Poketwo.Database.Models.Pokemon do
     |> Enum.reject(&is_nil/1)
     |> Enum.uniq()
     |> Enum.reduce(nil, fn
-      item, nil ->
-        query
-        |> join_variant()
-        |> Models.Variant.join_species()
-        |> where([species: s], field(s, ^item))
-
-      item, acc ->
-        acc |> or_where([species: s], field(s, ^item))
+      item, nil -> query |> where([species: s], field(s, ^item))
+      item, acc -> acc |> or_where([species: s], field(s, ^item))
     end)
   end
 
-  def with_filter(query, form: form) when form != nil do
+  def with_filter(query, form: form) do
     form
     |> Utils.split()
     |> Enum.map(&String.downcase/1)
@@ -227,14 +245,14 @@ defmodule Poketwo.Database.Models.Pokemon do
     end)
   end
 
-  def with_filter(query, event: event) when event != nil do
+  def with_filter(query, event: event) do
     query
     |> join_variant()
-    |> where([variant: v], v.id >= 50000)
+    |> where([variant: v], v.id >= 50000 == ^event)
   end
 
   def with_filter(query, [{key, value}])
-      when value != nil and key in [:level, :iv_hp, :iv_atk, :iv_def, :iv_satk, :iv_sdef, :iv_spd] do
+      when key in [:level, :iv_hp, :iv_atk, :iv_def, :iv_satk, :iv_sdef, :iv_spd] do
     value
     |> String.split(",")
     |> Enum.map(&String.trim/1)
@@ -248,7 +266,7 @@ defmodule Poketwo.Database.Models.Pokemon do
     end)
   end
 
-  def with_filter(query, iv_total: iv_total) when iv_total != nil do
+  def with_filter(query, iv_total: iv_total) do
     iv_total
     |> String.split(",")
     |> Enum.map(&String.trim/1)
@@ -263,7 +281,7 @@ defmodule Poketwo.Database.Models.Pokemon do
   end
 
   def with_filter(query, [{key, value}])
-      when value != nil and key in [:iv_triple, :iv_quadruple, :iv_quintuple, :iv_sextuple] do
+      when key in [:iv_triple, :iv_quadruple, :iv_quintuple, :iv_sextuple] do
     target =
       case key do
         :iv_triple -> 3
