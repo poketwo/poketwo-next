@@ -31,8 +31,10 @@ fn format_pokemon_line(ctx: &Context<'_>, pokemon: &Pokemon, idx_len: usize) -> 
         None => "".into(),
     };
 
+    let favorite = if pokemon.favorite { " ❤️" } else { "" };
+
     Ok(format!(
-        "`{idx:idx_len$}` {emoji} **{name}{nickname}** • {level_label} {level} • {iv_total:.2}%",
+        "`{idx:idx_len$}` {emoji} **{name}{nickname}**{favorite} • {level_label} {level} • {iv_total:.2}%",
         level_label = ctx.locale_lookup_with_args("level", fluent_args!["length" => "short"])?,
         idx = pokemon.idx,
         emoji = EMOJIS.species(species.id)?,

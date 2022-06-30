@@ -33,3 +33,5 @@ pokemon-list-embed-title = Your Pokémon
 pokemon-select-response = You selected your {-pokemon-label} (#{$idx}).
 pokemon-nickname-response = Changed nickname to `{$nickname}` for your Level {$level} {$pokemon} (#{$idx}).
 pokemon-nickname-remove-response = Removed nickname for your Level {$level} {$pokemon} (#{$idx}).
+pokemon-favorite-add-response = Added your Level {$level} {$pokemon} (#{$idx}) to your favorites.
+pokemon-favorite-remove-response = Removed your Level {$level} {$pokemon} (#{$idx}) from your favorites.
