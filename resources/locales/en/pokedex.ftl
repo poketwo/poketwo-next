@@ -24,6 +24,10 @@ stats = Stats
 iv = IV
 total-iv = Total IV
 
-# Pokémon List Embed (/pokemon /list)
+# Pokémon List Embed (/pokemon list)
 
 pokemon-list-embed-title = Your Pokémon
+
+# Select Pokémon (/pokemon select)
+
+pokemon-selected = You selected your Level {$level} {$pokemon} (#{$idx}).
