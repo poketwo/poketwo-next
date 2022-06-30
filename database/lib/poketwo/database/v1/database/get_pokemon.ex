@@ -2,7 +2,7 @@ defmodule Poketwo.Database.V1.Database.GetPokemon do
   import Ecto.Query
   alias Poketwo.Database.{Models, V1, Repo}
 
-  def query(id: %{id: id}) do
+  def query({:id, %{id: id}}) do
     Ecto.Multi.new()
     |> Ecto.Multi.one(:pokemon_no_idx, Models.Pokemon |> where([p], p.id == ^id))
     |> Ecto.Multi.one(:pokemon, fn
@@ -14,10 +14,9 @@ defmodule Poketwo.Database.V1.Database.GetPokemon do
         |> Models.Pokemon.with(id: id)
         |> Models.Pokemon.preload()
     end)
-    |> Repo.transaction()
   end
 
-  def query(user_id: %{user_id: user_id}) do
+  def query({:user_id, %{user_id: user_id}}) do
     Ecto.Multi.new()
     |> Ecto.Multi.one(:user, Models.User |> Models.User.with(id: user_id))
     |> Ecto.Multi.one(:pokemon, fn
@@ -32,21 +31,20 @@ defmodule Poketwo.Database.V1.Database.GetPokemon do
         |> Models.Pokemon.with(id: id)
         |> Models.Pokemon.preload()
     end)
-    |> Repo.transaction()
   end
 
-  def query(user_id_and_idx: %{user_id: user_id, idx: idx}) do
-    pokemon =
+  def query({:user_id_and_idx, %{user_id: user_id, idx: idx}}) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.one(
+      :pokemon,
       Models.Pokemon.query(user_id: user_id)
       |> Models.Pokemon.with(idx: idx)
       |> Models.Pokemon.preload()
-      |> Repo.one()
-
-    {:ok, %{pokemon: pokemon}}
+    )
   end
 
   def handle(%V1.GetPokemonRequest{query: query}, _stream) do
-    case query([query]) do
+    case query(query) |> Repo.transaction() do
       {:ok, %{user: nil}} ->
         raise GRPC.RPCError, status: GRPC.Status.not_found(), message: "user not found"
 

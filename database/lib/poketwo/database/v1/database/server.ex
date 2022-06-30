@@ -11,4 +11,5 @@ defmodule Poketwo.Database.V1.Database.Server do
   defdelegate create_pokemon(request, stream), to: Database.CreatePokemon, as: :handle
   defdelegate get_pokemon_list(request, stream), to: Database.GetPokemonList, as: :handle
   defdelegate update_user(request, stream), to: Database.UpdateUser, as: :handle
+  defdelegate update_pokemon(request, stream), to: Database.UpdatePokemon, as: :handle
 end

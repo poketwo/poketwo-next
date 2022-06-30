@@ -18,6 +18,7 @@ service Database {
   rpc GetPokemon(GetPokemonRequest) returns (GetPokemonResponse);
   rpc GetPokemonList(GetPokemonListRequest) returns (GetPokemonListResponse);
   rpc CreatePokemon(CreatePokemonRequest) returns (CreatePokemonResponse);
+  rpc UpdatePokemon(UpdatePokemonRequest) returns (UpdatePokemonResponse);
 }
 
 // GetSpecies
@@ -132,3 +133,21 @@ message CreatePokemonResponse {
   PokedexEntry pokedex_entry = 2;
   int32 pokecoins_rewarded = 3;
 }
+
+// UpdatePokemon
+
+message UpdatePokemonRequest {
+  GetPokemonRequest pokemon = 1;
+
+  int32 inc_level = 2;
+  int32 inc_xp = 3;
+  UpdateNature nature = 4;
+  UpdateNickname nickname = 5;
+  UpdateFavorite favorite = 6;
+
+  message UpdateNature { string value = 1; }
+  message UpdateNickname { google.protobuf.StringValue value = 1; }
+  message UpdateFavorite { bool value = 1; }
+}
+
+message UpdatePokemonResponse { Pokemon pokemon = 1; }

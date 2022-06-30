@@ -11,7 +11,7 @@ defmodule Poketwo.Database.V1.Database.CreatePokemon do
 
     multi =
       Ecto.Multi.new()
-      |> Ecto.Multi.insert(:pokemon, Models.Pokemon.changeset(%Models.Pokemon{}, pokemon))
+      |> Ecto.Multi.insert(:pokemon, Models.Pokemon.create_changeset(%Models.Pokemon{}, pokemon))
       |> Ecto.Multi.one(:current_pokedex_entry, fn %{pokemon: pokemon} ->
         from e in Models.PokedexEntry,
           where: e.user_id == ^pokemon.user_id and e.variant_id == ^pokemon.variant_id

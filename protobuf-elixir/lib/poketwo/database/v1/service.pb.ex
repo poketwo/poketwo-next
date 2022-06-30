@@ -343,6 +343,81 @@ defmodule Poketwo.Database.V1.CreatePokemonResponse do
   field :pokedex_entry, 2, type: Poketwo.Database.V1.PokedexEntry, json_name: "pokedexEntry"
   field :pokecoins_rewarded, 3, type: :int32, json_name: "pokecoinsRewarded"
 end
+defmodule Poketwo.Database.V1.UpdatePokemonRequest.UpdateNature do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          value: String.t()
+        }
+
+  defstruct value: ""
+
+  field :value, 1, type: :string
+end
+defmodule Poketwo.Database.V1.UpdatePokemonRequest.UpdateNickname do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          value: Google.Protobuf.StringValue.t() | nil
+        }
+
+  defstruct value: nil
+
+  field :value, 1, type: Google.Protobuf.StringValue
+end
+defmodule Poketwo.Database.V1.UpdatePokemonRequest.UpdateFavorite do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          value: boolean
+        }
+
+  defstruct value: false
+
+  field :value, 1, type: :bool
+end
+defmodule Poketwo.Database.V1.UpdatePokemonRequest do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          pokemon: Poketwo.Database.V1.GetPokemonRequest.t() | nil,
+          inc_level: integer,
+          inc_xp: integer,
+          nature: Poketwo.Database.V1.UpdatePokemonRequest.UpdateNature.t() | nil,
+          nickname: Poketwo.Database.V1.UpdatePokemonRequest.UpdateNickname.t() | nil,
+          favorite: Poketwo.Database.V1.UpdatePokemonRequest.UpdateFavorite.t() | nil
+        }
+
+  defstruct pokemon: nil,
+            inc_level: 0,
+            inc_xp: 0,
+            nature: nil,
+            nickname: nil,
+            favorite: nil
+
+  field :pokemon, 1, type: Poketwo.Database.V1.GetPokemonRequest
+  field :inc_level, 2, type: :int32, json_name: "incLevel"
+  field :inc_xp, 3, type: :int32, json_name: "incXp"
+  field :nature, 4, type: Poketwo.Database.V1.UpdatePokemonRequest.UpdateNature
+  field :nickname, 5, type: Poketwo.Database.V1.UpdatePokemonRequest.UpdateNickname
+  field :favorite, 6, type: Poketwo.Database.V1.UpdatePokemonRequest.UpdateFavorite
+end
+defmodule Poketwo.Database.V1.UpdatePokemonResponse do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          pokemon: Poketwo.Database.V1.Pokemon.t() | nil
+        }
+
+  defstruct pokemon: nil
+
+  field :pokemon, 1, type: Poketwo.Database.V1.Pokemon
+end
 defmodule Poketwo.Database.V1.Database.Service do
   @moduledoc false
   use GRPC.Service, name: "poketwo.database.v1.Database"
@@ -370,6 +445,10 @@ defmodule Poketwo.Database.V1.Database.Service do
   rpc :CreatePokemon,
       Poketwo.Database.V1.CreatePokemonRequest,
       Poketwo.Database.V1.CreatePokemonResponse
+
+  rpc :UpdatePokemon,
+      Poketwo.Database.V1.UpdatePokemonRequest,
+      Poketwo.Database.V1.UpdatePokemonResponse
 end
 
 defmodule Poketwo.Database.V1.Database.Stub do

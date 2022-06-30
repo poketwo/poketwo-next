@@ -64,8 +64,8 @@ defmodule Poketwo.Database.Models.Pokemon do
   def autogenerate_nature(), do: Enum.random(@natures)
   def autogenerate_iv(), do: Enum.random(0..31)
 
-  def changeset(user, params \\ %{}) do
-    user
+  def create_changeset(pokemon, params \\ %{}) do
+    pokemon
     |> cast(params, [
       :user_id,
       :original_user_id,
@@ -97,21 +97,32 @@ defmodule Poketwo.Database.Models.Pokemon do
     |> validate_length(:nickname, max: 100)
   end
 
+  def update_changeset(pokemon, params \\ %{}) do
+    pokemon
+    |> cast(params, [:level, :xp, :nature, :favorite, :nickname])
+    |> validate_number(:level, greater_than_or_equal_to: 1, less_than_or_equal_to: 100)
+    |> validate_number(:xp, greater_than_or_equal_to: 0)
+    |> validate_length(:nickname, max: 100)
+  end
+
   def preload(query) do
-    query
-    |> preload(
+    preload(query, ^preload_fields())
+  end
+
+  def preload_fields() do
+    [
       variant: [
-        types: [info: ^Utils.from_info(Models.TypeInfo)],
-        info: ^Utils.from_info(Models.VariantInfo),
+        types: [info: Utils.from_info(Models.TypeInfo)],
+        info: Utils.from_info(Models.VariantInfo),
         species: [
           generation: [
-            info: ^Utils.from_info(Models.GenerationInfo),
-            main_region: [info: ^Utils.from_info(Models.RegionInfo)]
+            info: Utils.from_info(Models.GenerationInfo),
+            main_region: [info: Utils.from_info(Models.RegionInfo)]
           ],
-          info: ^Utils.from_info(Models.SpeciesInfo)
+          info: Utils.from_info(Models.SpeciesInfo)
         ]
       ]
-    )
+    ]
   end
 
   defmacrop iv_total(var) do
@@ -299,7 +310,7 @@ defmodule Poketwo.Database.Models.Pokemon do
       iv_sdef: pokemon.iv_sdef,
       iv_spd: pokemon.iv_spd,
       favorite: pokemon.favorite,
-      nickname: pokemon.nickname,
+      nickname: Utils.string_value(pokemon.nickname),
       inserted_at: pokemon.inserted_at,
       updated_at: pokemon.updated_at,
       idx: pokemon.idx
