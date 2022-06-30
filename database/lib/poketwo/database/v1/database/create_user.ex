@@ -11,10 +11,10 @@ defmodule Poketwo.Database.V1.Database.CreateUser do
 
     result =
       Ecto.Multi.new()
-      |> Ecto.Multi.insert(:user, Models.User.changeset(%Models.User{}, %{id: request.id}))
+      |> Ecto.Multi.insert(:user, Models.User.create_changeset(%Models.User{}, %{id: request.id}))
       |> Ecto.Multi.insert(:pokemon, Models.Pokemon.changeset(%Models.Pokemon{}, pokemon))
       |> Ecto.Multi.update(:update_user, fn %{user: user, pokemon: pokemon} ->
-        Models.User.changeset(user, %{selected_pokemon_id: pokemon.id})
+        Models.User.update_changeset(user, %{selected_pokemon_id: pokemon.id})
       end)
       |> Repo.transaction()
 

@@ -15,10 +15,16 @@ defmodule Poketwo.Database.Models.User do
     has_many :pokedex_entries, Models.PokedexEntry
   end
 
-  def changeset(user, params \\ %{}) do
+  def create_changeset(user, params \\ %{}) do
     user
     |> Ecto.Changeset.cast(params, [:id, :selected_pokemon_id])
     |> Ecto.Changeset.unique_constraint(:id, name: :users_pkey)
+    |> Ecto.Changeset.foreign_key_constraint(:selected_pokemon_id)
+  end
+
+  def update_changeset(user, params \\ %{}) do
+    user
+    |> Ecto.Changeset.cast(params, [:selected_pokemon_id])
     |> Ecto.Changeset.foreign_key_constraint(:selected_pokemon_id)
   end
 

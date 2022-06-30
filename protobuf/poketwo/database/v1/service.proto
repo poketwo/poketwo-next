@@ -9,11 +9,14 @@ import "poketwo/database/v1/models.proto";
 service Database {
   rpc GetSpecies(GetSpeciesRequest) returns (GetSpeciesResponse);
   rpc GetVariant(GetVariantRequest) returns (GetVariantResponse);
+  rpc GetRandomSpawn(GetRandomSpawnRequest) returns (GetRandomSpawnResponse);
+
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+
   rpc GetPokemon(GetPokemonRequest) returns (GetPokemonResponse);
   rpc GetPokemonList(GetPokemonListRequest) returns (GetPokemonListResponse);
-  rpc GetRandomSpawn(GetRandomSpawnRequest) returns (GetRandomSpawnResponse);
-  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc CreatePokemon(CreatePokemonRequest) returns (CreatePokemonResponse);
 }
 
@@ -55,6 +58,19 @@ message CreateUserRequest {
   CreatePokemonRequest starter_pokemon = 2;
 }
 message CreateUserResponse { User user = 1; }
+
+// UpdateUser
+
+message UpdateUserRequest {
+  uint64 id = 1;
+
+  oneof selected_pokemon {
+    uint64 pokemon_id = 2;
+    uint64 pokemon_idx = 3;
+  }
+}
+
+message UpdateUserResponse { User user = 1; }
 
 // GetPokemon
 

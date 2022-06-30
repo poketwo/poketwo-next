@@ -126,6 +126,36 @@ defmodule Poketwo.Database.V1.CreateUserResponse do
 
   field :user, 1, type: Poketwo.Database.V1.User
 end
+defmodule Poketwo.Database.V1.UpdateUserRequest do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          selected_pokemon: {:pokemon_id, non_neg_integer} | {:pokemon_idx, non_neg_integer},
+          id: non_neg_integer
+        }
+
+  defstruct selected_pokemon: nil,
+            id: 0
+
+  oneof :selected_pokemon, 0
+
+  field :id, 1, type: :uint64
+  field :pokemon_id, 2, type: :uint64, json_name: "pokemonId", oneof: 0
+  field :pokemon_idx, 3, type: :uint64, json_name: "pokemonIdx", oneof: 0
+end
+defmodule Poketwo.Database.V1.UpdateUserResponse do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          user: Poketwo.Database.V1.User.t() | nil
+        }
+
+  defstruct user: nil
+
+  field :user, 1, type: Poketwo.Database.V1.User
+end
 defmodule Poketwo.Database.V1.GetPokemonRequest.Id do
   @moduledoc false
   use Protobuf, syntax: :proto3
@@ -321,19 +351,21 @@ defmodule Poketwo.Database.V1.Database.Service do
 
   rpc :GetVariant, Poketwo.Database.V1.GetVariantRequest, Poketwo.Database.V1.GetVariantResponse
 
+  rpc :GetRandomSpawn,
+      Poketwo.Database.V1.GetRandomSpawnRequest,
+      Poketwo.Database.V1.GetRandomSpawnResponse
+
   rpc :GetUser, Poketwo.Database.V1.GetUserRequest, Poketwo.Database.V1.GetUserResponse
+
+  rpc :CreateUser, Poketwo.Database.V1.CreateUserRequest, Poketwo.Database.V1.CreateUserResponse
+
+  rpc :UpdateUser, Poketwo.Database.V1.UpdateUserRequest, Poketwo.Database.V1.UpdateUserResponse
 
   rpc :GetPokemon, Poketwo.Database.V1.GetPokemonRequest, Poketwo.Database.V1.GetPokemonResponse
 
   rpc :GetPokemonList,
       Poketwo.Database.V1.GetPokemonListRequest,
       Poketwo.Database.V1.GetPokemonListResponse
-
-  rpc :GetRandomSpawn,
-      Poketwo.Database.V1.GetRandomSpawnRequest,
-      Poketwo.Database.V1.GetRandomSpawnResponse
-
-  rpc :CreateUser, Poketwo.Database.V1.CreateUserRequest, Poketwo.Database.V1.CreateUserResponse
 
   rpc :CreatePokemon,
       Poketwo.Database.V1.CreatePokemonRequest,
