@@ -15,6 +15,7 @@ use syn::ext::IdentExt;
 use syn::fold::fold_type;
 use syn::{AttributeArgs, FnArg, Ident, ItemFn, NestedMeta};
 
+use crate::command::localization_fn;
 use crate::util::AllLifetimesToStatic;
 
 #[derive(Debug, Default)]
@@ -49,8 +50,8 @@ struct GroupOptions {
     name: Option<String>,
     desc: String,
     default_permissions: Option<String>,
-    name_localizations: Option<String>,
-    desc_localizations: Option<String>,
+    name_localization_key: Option<String>,
+    desc_localization_key: Option<String>,
     subcommands: IdentList,
 }
 
@@ -83,12 +84,26 @@ pub fn group(args: AttributeArgs, input: ItemFn) -> TokenStream {
     let default_permissions = options.default_permissions.map(|value| {
         quote! { default_member_permissions = #value, }
     });
-    let name_localizations = options.name_localizations.map(|value| {
-        quote! { name_localizations = #value, }
+
+    // name localizations
+
+    let name_localizations_ident_str = format!("{}_name_localizations", ident.unraw());
+    let name_localizations_ident = Ident::new(&name_localizations_ident_str, ident.span());
+    let name_localizations = options.name_localization_key.as_ref().map(|_| {
+        quote! { name_localizations = #name_localizations_ident_str, }
     });
-    let desc_localizations = options.desc_localizations.map(|value| {
-        quote! { desc_localizations = #value, }
+    let name_localization_fn =
+        options.name_localization_key.map(|key| localization_fn(name_localizations_ident, key));
+
+    // desc localizations
+
+    let desc_localizations_ident_str = format!("{}_desc_localizations", ident.unraw());
+    let desc_localizations_ident = Ident::new(&desc_localizations_ident_str, ident.span());
+    let desc_localizations = options.desc_localization_key.as_ref().map(|_| {
+        quote! { desc_localizations = #desc_localizations_ident_str, }
     });
+    let desc_localization_fn =
+        options.desc_localization_key.map(|key| localization_fn(desc_localizations_ident, key));
 
     let (enum_variants, variant_idents): (Vec<_>, Vec<_>) =
         options.subcommands.iter().map(subcommand).unzip();
@@ -127,6 +142,9 @@ pub fn group(args: AttributeArgs, input: ItemFn) -> TokenStream {
                 error_handler: None
             }
         }
+
+        #name_localization_fn
+        #desc_localization_fn
     }
 }
 

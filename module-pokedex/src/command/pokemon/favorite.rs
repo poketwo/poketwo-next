@@ -89,5 +89,10 @@ async fn update_favorite(ctx: Context<'_>, index: i64, value: bool) -> Result<()
     Ok(())
 }
 
-#[group(desc = "Favorite commands", subcommands(add, remove))]
+#[group(
+    name_localization_key = "favorite-command-name",
+    desc_localization_key = "favorite-command-desc",
+    desc = "Favorite commands",
+    subcommands(add, remove)
+)]
 pub fn favorite(_ctx: Context<'_>) {}

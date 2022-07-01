@@ -134,7 +134,7 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
     }
 }
 
-fn localization_fn(ident: Ident, key: String) -> TokenStream {
+pub fn localization_fn(ident: Ident, key: String) -> TokenStream {
     let static_ident = Ident::new(&ident.to_string().to_uppercase(), ident.span());
 
     quote! {
