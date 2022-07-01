@@ -20,8 +20,8 @@ struct CommandOptions {
     name: Option<String>,
     desc: String,
     default_permissions: Option<String>,
-    name_localizations: Option<String>,
-    desc_localizations: Option<String>,
+    name_localization_key: Option<String>,
+    desc_localization_key: Option<String>,
     on_error: Option<Ident>,
 }
 
@@ -57,15 +57,33 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
     let default_permissions = options.default_permissions.map(|value| {
         quote! { default_member_permissions = #value, }
     });
-    let name_localizations = options.name_localizations.map(|value| {
-        quote! { name_localizations = #value, }
+
+    // name localizations
+
+    let name_localizations_ident_str = format!("{}_name_localizations", ident.unraw());
+    let name_localizations_ident = Ident::new(&name_localizations_ident_str, ident.span());
+    let name_localizations = options.name_localization_key.as_ref().map(|_| {
+        quote! { name_localizations = #name_localizations_ident_str, }
     });
-    let desc_localizations = options.desc_localizations.map(|value| {
-        quote! { desc_localizations = #value, }
+    let name_localization_fn =
+        options.name_localization_key.map(|key| localization_fn(name_localizations_ident, key));
+
+    // desc localizations
+
+    let desc_localizations_ident_str = format!("{}_desc_localizations", ident.unraw());
+    let desc_localizations_ident = Ident::new(&desc_localizations_ident_str, ident.span());
+    let desc_localizations = options.desc_localization_key.as_ref().map(|_| {
+        quote! { desc_localizations = #desc_localizations_ident_str, }
     });
+    let desc_localization_fn =
+        options.desc_localization_key.map(|key| localization_fn(desc_localizations_ident, key));
+
+    // args
 
     let (struct_fields, inner_args): (Vec<_>, Vec<_>) =
         input.sig.inputs.iter_mut().skip(1).map(command_argument).unzip();
+
+    // error handler
 
     let error_handler = match options.on_error {
         Some(x) => quote! {
@@ -109,6 +127,34 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
                 }),
                 error_handler: #error_handler,
             }
+        }
+
+        #name_localization_fn
+        #desc_localization_fn
+    }
+}
+
+fn localization_fn(ident: Ident, key: String) -> TokenStream {
+    let static_ident = Ident::new(&ident.to_string().to_uppercase(), ident.span());
+
+    quote! {
+        ::poketwo_command_framework::lazy_static::lazy_static! {
+            static ref #static_ident: Vec<(String, String)> = ::poketwo_command_framework::poketwo_i18n::Loader
+                ::locales(&*::poketwo_command_framework::poketwo_i18n::LOCALES)
+                .filter_map(|lang| {
+                    ::poketwo_command_framework::poketwo_i18n::Loader
+                        ::lookup(
+                            &*::poketwo_command_framework::poketwo_i18n::LOCALES,
+                            lang,
+                            #key
+                        )
+                        .map(|value| (lang.to_string(), value))
+                })
+                .collect();
+        }
+
+        fn #ident() -> Vec<(&'static str, &'static str)> {
+            #static_ident.iter().map(|(a, b)| (&a[..], &b[..])).collect()
         }
     }
 }

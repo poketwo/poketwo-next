@@ -1851,6 +1851,7 @@ dependencies = [
  "async-trait",
  "futures-util",
  "lapin",
+ "lazy_static",
  "poketwo-command-framework-macros",
  "poketwo-gateway-client",
  "poketwo-i18n",

@@ -103,6 +103,12 @@ impl<'a, T> CommandClient<'a, T> {
                 if let Some(value) = command.command.default_member_permissions {
                     action = action.default_member_permissions(value);
                 }
+                if let Some(value) = &command.command.name_localizations {
+                    action = action.name_localizations(value)?;
+                }
+                if let Some(value) = &command.command.description_localizations {
+                    action = action.description_localizations(value)?;
+                }
 
                 action.exec().await?;
             }
