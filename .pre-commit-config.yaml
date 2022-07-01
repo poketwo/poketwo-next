@@ -25,6 +25,7 @@ repos:
           - //
       - id: insert-license
         files: \.ex$
+        exclude: \.pb.ex$
         args:
           - --license-filepath
           - license-header.txt
