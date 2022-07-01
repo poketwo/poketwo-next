@@ -15,7 +15,11 @@ use twilight_model::http::interaction::{
 
 use crate::Context;
 
-#[command(desc = "Change your selected Pokémon.")]
+#[command(
+    name_localization_key = "pokemon-select-command-name",
+    desc_localization_key = "pokemon-select-command-desc",
+    desc = "Change your selected Pokémon."
+)]
 pub async fn select(
     ctx: Context<'_>,
     #[desc = "The index of the Pokémon in your inventory"] index: i64,

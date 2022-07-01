@@ -100,7 +100,11 @@ fn format_pokemon_embed(ctx: &Context<'_>, pokemon: &Pokemon) -> Result<Embed> {
     Ok(embed.validate()?.build())
 }
 
-#[command(desc = "Show details about a Pokémon you own.")]
+#[command(
+    name_localization_key = "pokemon-info-command-name",
+    desc_localization_key = "pokemon-info-command-desc",
+    desc = "Show details about a Pokémon you own."
+)]
 pub async fn info(
     ctx: Context<'_>,
     #[desc = "The index of the Pokémon in your inventory"] index: Option<i64>,

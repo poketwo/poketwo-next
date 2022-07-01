@@ -13,7 +13,11 @@ use twilight_util::builder::embed::{EmbedBuilder, EmbedFieldBuilder};
 
 use crate::Context;
 
-#[command(desc = "Get started with Pokétwo.")]
+#[command(
+    name_localization_key = "start-command-name",
+    desc_localization_key = "start-command-desc",
+    desc = "Get started with Pokétwo."
+)]
 pub async fn start(ctx: Context<'_>) -> Result<()> {
     let mut embed = EmbedBuilder::new()
         .color(0x5865f2)

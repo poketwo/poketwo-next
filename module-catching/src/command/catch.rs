@@ -44,7 +44,12 @@ else
     return -1
 end";
 
-#[command(desc = "Catch a Pokémon.", on_error = "handle_catch_error")]
+#[command(
+    name_localization_key = "catch-command-name",
+    desc_localization_key = "catch-command-desc",
+    desc = "Catch a Pokémon.",
+    on_error = "handle_catch_error"
+)]
 pub async fn catch(
     ctx: Context<'_>, #[desc = "The Pokémon to catch"] guess: String
 ) -> Result<()> {

@@ -16,7 +16,11 @@ use twilight_model::http::interaction::{
 
 use crate::Context;
 
-#[command(desc = "Change a Pokémon's nickname.")]
+#[command(
+    name_localization_key = "pokemon-nickname-command-name",
+    desc_localization_key = "pokemon-nickname-command-desc",
+    desc = "Change a Pokémon's nickname."
+)]
 pub async fn nickname(
     ctx: Context<'_>,
     #[desc = "The index of the Pokémon in your inventory"] index: i64,
