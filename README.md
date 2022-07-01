@@ -1,6 +1,6 @@
 # poketwo-next
 
-[![build](https://github.com/poketwo/poketwo-next/actions/workflows/build.yml/badge.svg)](https://github.com/poketwo/poketwo-next/actions/workflows/build.yml)
+[![Build](https://github.com/poketwo/poketwo-next/actions/workflows/build.yml/badge.svg)](https://github.com/poketwo/poketwo-next/actions/workflows/build.yml) [![Crowdin](https://badges.crowdin.net/poketwo/localized.svg)](https://crowdin.com/project/poketwo) [![Dependencies](https://deps.rs/repo/github/poketwo/poketwo-next/status.svg)](https://deps.rs/repo/github/poketwo/poketwo-next)
 
 Pokétwo brings the Pokémon experience to Discord. Catch randomly-spawning pokémon in your servers, trade them to expand your collection, battle with your friends to win rewards, and more.
 
