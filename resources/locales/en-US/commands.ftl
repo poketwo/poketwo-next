@@ -7,8 +7,8 @@ catch-command-desc = Catch a Pokémon.
 start-command-name = start
 start-command-desc = Get started with Pokétwo.
 
-pokemon-command-name = pokedex
-pokemon-command-desc = Commands for viewing the Pokédex.
+pokedex-command-name = pokedex
+pokedex-command-desc = Commands for viewing the Pokédex.
 
 pokedex-info-command-name = info
 pokedex-info-command-desc = Search the Pokédex for a Pokémon.
@@ -16,7 +16,7 @@ pokedex-info-command-desc = Search the Pokédex for a Pokémon.
 pokemon-command-name = pokemon
 pokemon-command-desc = Commands for managing your Pokémon.
 
-pokemon-favorite-command-name = pokedex
+pokemon-favorite-command-name = favorite
 pokemon-favorite-command-desc = Commands for managing your favorite Pokémon.
 
 pokemon-favorite-add-command-name = add
