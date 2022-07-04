@@ -2,36 +2,22 @@ defmodule Poketwo.Database.V1.Order do
   @moduledoc false
   use Protobuf, enum: true, syntax: :proto3
 
-  @type t :: integer | :ASC | :DESC
+  @type t :: integer | :asc | :desc
 
-  field :ASC, 0
-  field :DESC, 1
+  field :asc, 0
+  field :desc, 1
 end
 defmodule Poketwo.Database.V1.PokemonFilter.OrderBy do
   @moduledoc false
   use Protobuf, enum: true, syntax: :proto3
 
-  @type t ::
-          integer
-          | :DEFAULT
-          | :IDX_ASC
-          | :IDX_DESC
-          | :LEVEL_ASC
-          | :LEVEL_DESC
-          | :SPECIES_ASC
-          | :SPECIES_DESC
-          | :IV_TOTAL_ASC
-          | :IV_TOTAL_DESC
+  @type t :: integer | :default | :idx | :level | :species | :iv_total
 
-  field :DEFAULT, 0
-  field :IDX_ASC, 1
-  field :IDX_DESC, 2
-  field :LEVEL_ASC, 3
-  field :LEVEL_DESC, 4
-  field :SPECIES_ASC, 5
-  field :SPECIES_DESC, 6
-  field :IV_TOTAL_ASC, 7
-  field :IV_TOTAL_DESC, 8
+  field :default, 0
+  field :idx, 1
+  field :level, 3
+  field :species, 5
+  field :iv_total, 7
 end
 defmodule Poketwo.Database.V1.SharedFilter do
   @moduledoc false

@@ -5,8 +5,8 @@ package poketwo.database.v1;
 import "google/protobuf/wrappers.proto";
 
 enum Order {
-  ASC = 0;
-  DESC = 1;
+  asc = 0;
+  desc = 1;
 }
 
 message SharedFilter {
@@ -40,14 +40,10 @@ message PokemonFilter {
   google.protobuf.StringValue nickname = 2;
 
   enum OrderBy {
-    DEFAULT = 0;
-    IDX_ASC = 1;
-    IDX_DESC = 2;
-    LEVEL_ASC = 3;
-    LEVEL_DESC = 4;
-    SPECIES_ASC = 5;
-    SPECIES_DESC = 6;
-    IV_TOTAL_ASC = 7;
-    IV_TOTAL_DESC = 8;
+    default = 0;
+    idx = 1;
+    level = 3;
+    species = 5;
+    iv_total = 7;
   }
 }

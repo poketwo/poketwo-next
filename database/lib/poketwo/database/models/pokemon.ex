@@ -305,20 +305,6 @@ defmodule Poketwo.Database.Models.Pokemon do
     end
   end
 
-  def order_by(query, order_by) do
-    case order_by do
-      :DEFAULT -> query
-      :IDX_ASC -> query |> order_by([pokemon: p], asc: p.idx)
-      :IDX_DESC -> query |> order_by([pokemon: p], desc: p.idx)
-      :LEVEL_ASC -> query |> order_by([pokemon: p], asc: p.level)
-      :LEVEL_DESC -> query |> order_by([pokemon: p], desc: p.level)
-      :SPECIES_ASC -> query |> join_variant() |> order_by([variant: v], asc: v.species_id)
-      :SPECIES_DESC -> query |> join_variant() |> order_by([variant: v], desc: v.species_id)
-      :IV_TOTAL_ASC -> query |> order_by([pokemon: p], asc: iv_total(p))
-      :IV_TOTAL_DESC -> query |> order_by([pokemon: p], desc: iv_total(p))
-    end
-  end
-
   def to_protobuf(%Models.Pokemon{} = pokemon) do
     V1.Pokemon.new(
       id: pokemon.id,

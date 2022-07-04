@@ -28,7 +28,8 @@ defmodule Poketwo.Database.MixProject do
       {:csv, "~> 2.4"},
       {:grpc, github: "elixir-grpc/grpc"},
       {:cowlib, "~> 2.9.0", override: true},
-      {:memoize, "~> 1.4"}
+      {:memoize, "~> 1.4"},
+      {:chunkr, "~> 0.2.1"}
     ]
   end
 end

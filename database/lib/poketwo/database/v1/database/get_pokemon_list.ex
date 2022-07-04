@@ -29,15 +29,27 @@ defmodule Poketwo.Database.V1.Database.GetPokemonList do
         query |> Models.Pokemon.with_filter([elem])
       end)
 
-    pokemon =
+    opts =
+      case request.cursor do
+        {:before, cursor} -> [before: cursor, last: 20]
+        {:after, cursor} -> [after: cursor, first: 20]
+        _ -> [first: 20]
+      end
+
+    {:ok, page} =
       query
       |> subquery()
       |> from(as: :pokemon)
-      |> Models.Pokemon.order_by(request.order_by)
+      |> Models.Pokemon.join_variant()
       |> Models.Pokemon.preload()
-      |> Repo.all()
-      |> Enum.map(&Models.Pokemon.to_protobuf/1)
+      |> Repo.paginate(request.order_by, request.order, opts)
+      |> IO.inspect()
 
-    V1.GetPokemonListResponse.new(pokemon: pokemon)
+    V1.GetPokemonListResponse.new(
+      pokemon: page |> Chunkr.Page.records() |> Enum.map(&Models.Pokemon.to_protobuf/1),
+      start_cursor: Utils.string_value(page.start_cursor),
+      end_cursor: Utils.string_value(page.end_cursor),
+      count: Chunkr.Page.total_count(page)
+    )
   end
 end

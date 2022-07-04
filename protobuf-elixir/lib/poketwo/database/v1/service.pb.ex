@@ -239,16 +239,22 @@ defmodule Poketwo.Database.V1.GetPokemonListRequest do
   use Protobuf, syntax: :proto3
 
   @type t :: %__MODULE__{
+          cursor: {:before, String.t()} | {:after, String.t()},
           user_id: non_neg_integer,
           filter: Poketwo.Database.V1.SharedFilter.t() | nil,
           pokemon_filter: Poketwo.Database.V1.PokemonFilter.t() | nil,
-          order_by: Poketwo.Database.V1.PokemonFilter.OrderBy.t()
+          order_by: Poketwo.Database.V1.PokemonFilter.OrderBy.t(),
+          order: Poketwo.Database.V1.Order.t()
         }
 
-  defstruct user_id: 0,
+  defstruct cursor: nil,
+            user_id: 0,
             filter: nil,
             pokemon_filter: nil,
-            order_by: :DEFAULT
+            order_by: :default,
+            order: :asc
+
+  oneof :cursor, 0
 
   field :user_id, 1, type: :uint64, json_name: "userId"
   field :filter, 2, type: Poketwo.Database.V1.SharedFilter
@@ -258,6 +264,10 @@ defmodule Poketwo.Database.V1.GetPokemonListRequest do
     type: Poketwo.Database.V1.PokemonFilter.OrderBy,
     json_name: "orderBy",
     enum: true
+
+  field :order, 5, type: Poketwo.Database.V1.Order, enum: true
+  field :before, 6, type: :string, oneof: 0
+  field :after, 7, type: :string, oneof: 0
 end
 defmodule Poketwo.Database.V1.GetPokemonListResponse do
   @moduledoc false
@@ -265,14 +275,20 @@ defmodule Poketwo.Database.V1.GetPokemonListResponse do
 
   @type t :: %__MODULE__{
           pokemon: [Poketwo.Database.V1.Pokemon.t()],
-          count: integer
+          total_count: integer,
+          start_cursor: Google.Protobuf.StringValue.t() | nil,
+          end_cursor: Google.Protobuf.StringValue.t() | nil
         }
 
   defstruct pokemon: [],
-            count: 0
+            total_count: 0,
+            start_cursor: nil,
+            end_cursor: nil
 
   field :pokemon, 1, repeated: true, type: Poketwo.Database.V1.Pokemon
-  field :count, 2, type: :int32
+  field :total_count, 2, type: :int32, json_name: "totalCount"
+  field :start_cursor, 3, type: Google.Protobuf.StringValue, json_name: "startCursor"
+  field :end_cursor, 4, type: Google.Protobuf.StringValue, json_name: "endCursor"
 end
 defmodule Poketwo.Database.V1.CreatePokemonRequest do
   @moduledoc false

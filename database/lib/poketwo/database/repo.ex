@@ -8,4 +8,6 @@ defmodule Poketwo.Database.Repo do
   use Ecto.Repo,
     otp_app: :poketwo_database,
     adapter: Ecto.Adapters.Postgres
+
+  use Chunkr, planner: Poketwo.Database.Pagination
 end

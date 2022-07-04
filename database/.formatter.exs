@@ -6,6 +6,7 @@
     add: 2,
     add: 3,
     create: 1,
-    create: 2
+    create: 2,
+    sort: 2
   ]
 ]

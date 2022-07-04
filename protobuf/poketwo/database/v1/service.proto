@@ -99,11 +99,19 @@ message GetPokemonListRequest {
   SharedFilter filter = 2;
   PokemonFilter pokemon_filter = 3;
   PokemonFilter.OrderBy order_by = 4;
+  Order order = 5;
+
+  oneof cursor {
+    string before = 6;
+    string after = 7;
+  }
 }
 
 message GetPokemonListResponse {
   repeated Pokemon pokemon = 1;
-  int32 count = 2;
+  int32 total_count = 2;
+  google.protobuf.StringValue start_cursor = 3;
+  google.protobuf.StringValue end_cursor = 4;
 }
 
 // CreatePokemon
