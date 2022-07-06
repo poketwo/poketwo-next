@@ -6,6 +6,7 @@
 
 use anyhow::{anyhow, Result};
 use poketwo_command_framework::command;
+use poketwo_command_framework::context::Context;
 use poketwo_command_framework::poketwo_i18n::fluent_args;
 use poketwo_protobuf::poketwo::database::v1::update_user_request::SelectedPokemon;
 use poketwo_protobuf::poketwo::database::v1::UpdateUserRequest;
@@ -13,7 +14,7 @@ use twilight_model::http::interaction::{
     InteractionResponse, InteractionResponseData, InteractionResponseType,
 };
 
-use crate::Context;
+use crate::CommandContext;
 
 #[command(
     name_localization_key = "pokemon-select-command-name",
@@ -21,7 +22,7 @@ use crate::Context;
     desc = "Change your selected Pokémon."
 )]
 pub async fn select(
-    ctx: Context<'_>,
+    ctx: CommandContext<'_>,
     #[desc = "The index of the Pokémon in your inventory"] index: i64,
 ) -> Result<()> {
     let mut state = ctx.client.state.lock().await;

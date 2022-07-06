@@ -5,6 +5,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use anyhow::{anyhow, Result};
+use poketwo_command_framework::context::Context;
 use poketwo_command_framework::poketwo_i18n::fluent_args;
 use poketwo_command_framework::{command, group};
 use poketwo_protobuf::poketwo::database::v1::get_pokemon_request::{Query, UserIdAndIdx};
@@ -14,7 +15,7 @@ use twilight_model::http::interaction::{
     InteractionResponse, InteractionResponseData, InteractionResponseType,
 };
 
-use crate::Context;
+use crate::CommandContext;
 
 #[command(
     name_localization_key = "pokemon-favorite-add-command-name",
@@ -22,7 +23,7 @@ use crate::Context;
     desc = "Add a Pokémon to your favorites."
 )]
 pub async fn add(
-    ctx: Context<'_>,
+    ctx: CommandContext<'_>,
     #[desc = "The index of the Pokémon in your inventory"] index: i64,
 ) -> Result<()> {
     update_favorite(ctx, index, true).await
@@ -34,13 +35,13 @@ pub async fn add(
     desc = "Remove a Pokémon from your favorites."
 )]
 pub async fn remove(
-    ctx: Context<'_>,
+    ctx: CommandContext<'_>,
     #[desc = "The index of the Pokémon in your inventory"] index: i64,
 ) -> Result<()> {
     update_favorite(ctx, index, false).await
 }
 
-async fn update_favorite(ctx: Context<'_>, index: i64, value: bool) -> Result<()> {
+async fn update_favorite(ctx: CommandContext<'_>, index: i64, value: bool) -> Result<()> {
     let mut state = ctx.client.state.lock().await;
 
     let user_id = ctx.interaction.author_id().ok_or_else(|| anyhow!("Missing author"))?.get();
@@ -95,4 +96,4 @@ async fn update_favorite(ctx: Context<'_>, index: i64, value: bool) -> Result<()
     desc = "Favorite commands",
     subcommands(add, remove)
 )]
-pub fn favorite(_ctx: Context<'_>) {}
+pub fn favorite(_ctx: CommandContext<'_>) {}

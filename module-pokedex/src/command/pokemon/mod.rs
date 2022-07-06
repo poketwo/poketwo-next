@@ -17,7 +17,7 @@ use nickname::NicknameCommand;
 use poketwo_command_framework::group;
 use select::SelectCommand;
 
-use crate::Context;
+use crate::CommandContext;
 
 #[group(
     name_localization_key = "pokemon-command-name",
@@ -25,4 +25,4 @@ use crate::Context;
     desc = "Pokémon commands",
     subcommands(info, list, select, nickname, favorite)
 )]
-pub fn pokemon(_ctx: Context<'_>) {}
+pub fn pokemon(_ctx: CommandContext<'_>) {}

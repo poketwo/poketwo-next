@@ -26,7 +26,7 @@ use twilight_model::id::marker::GuildMarker;
 use twilight_model::id::Id;
 
 use crate::command::Command;
-use crate::context::Context;
+use crate::context::{CommandContext, Context};
 
 #[derive(Debug, Clone)]
 pub struct CommandClientOptions<T> {
@@ -142,7 +142,7 @@ impl<'a, T> CommandClient<'a, T> {
 
         if let Interaction::ApplicationCommand(interaction) = event.0 {
             if let Some(command) = self.commands.get(&interaction.data.name) {
-                let ctx = Context { client: self, interaction: &*interaction };
+                let ctx = CommandContext { client: self, interaction: &*interaction };
 
                 if let Err(error) = (command.handler)(ctx.clone()).await {
                     self.handle_command_error(command, ctx, error).await?;
@@ -156,7 +156,7 @@ impl<'a, T> CommandClient<'a, T> {
     async fn handle_command_error(
         &self,
         command: &Command<T>,
-        ctx: Context<'a, T>,
+        ctx: CommandContext<'a, T>,
         error: Error,
     ) -> Result<()> {
         fn make_error_response(error: Error) -> InteractionResponse {

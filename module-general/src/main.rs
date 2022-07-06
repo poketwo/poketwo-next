@@ -18,7 +18,7 @@ use crate::command::{pick, start};
 use crate::config::CONFIG;
 use crate::state::State;
 
-pub type Context<'a> = poketwo_command_framework::context::Context<'a, State>;
+pub type CommandContext<'a> = poketwo_command_framework::context::CommandContext<'a, State>;
 
 #[tokio::main]
 async fn main() -> Result<()> {

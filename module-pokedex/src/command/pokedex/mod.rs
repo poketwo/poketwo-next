@@ -9,7 +9,7 @@ mod info;
 use info::InfoCommand;
 use poketwo_command_framework::group;
 
-use crate::Context;
+use crate::CommandContext;
 
 #[group(
     name_localization_key = "pokedex-command-name",
@@ -17,4 +17,4 @@ use crate::Context;
     desc = "Pokédex commands",
     subcommands(info)
 )]
-pub fn pokedex(_ctx: Context<'_>) {}
+pub fn pokedex(_ctx: CommandContext<'_>) {}

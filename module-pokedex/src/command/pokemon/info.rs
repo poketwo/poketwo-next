@@ -6,6 +6,7 @@
 
 use anyhow::{anyhow, Result};
 use poketwo_command_framework::command;
+use poketwo_command_framework::context::Context;
 use poketwo_command_framework::poketwo_i18n::fluent_args;
 use poketwo_protobuf::poketwo::database::v1::get_pokemon_request::{Query, UserId, UserIdAndIdx};
 use poketwo_protobuf::poketwo::database::v1::{GetPokemonRequest, Pokemon};
@@ -15,9 +16,9 @@ use twilight_model::http::interaction::{
 };
 use twilight_util::builder::embed::{EmbedBuilder, EmbedFieldBuilder, ImageSource};
 
-use crate::Context;
+use crate::CommandContext;
 
-fn format_details_field(ctx: &Context<'_>, pokemon: &Pokemon) -> Result<EmbedField> {
+fn format_details_field(ctx: &CommandContext<'_>, pokemon: &Pokemon) -> Result<EmbedField> {
     Ok(EmbedFieldBuilder::new(
         ctx.locale_lookup("details")?,
         format!(
@@ -33,7 +34,7 @@ fn format_details_field(ctx: &Context<'_>, pokemon: &Pokemon) -> Result<EmbedFie
     .build())
 }
 
-fn format_stats_field(ctx: &Context<'_>, pokemon: &Pokemon) -> Result<EmbedField> {
+fn format_stats_field(ctx: &CommandContext<'_>, pokemon: &Pokemon) -> Result<EmbedField> {
     let field = EmbedFieldBuilder::new(
         ctx.locale_lookup("stats")?,
         format!(
@@ -71,7 +72,7 @@ fn format_stats_field(ctx: &Context<'_>, pokemon: &Pokemon) -> Result<EmbedField
     Ok(field.build())
 }
 
-fn format_pokemon_embed(ctx: &Context<'_>, pokemon: &Pokemon) -> Result<Embed> {
+fn format_pokemon_embed(ctx: &CommandContext<'_>, pokemon: &Pokemon) -> Result<Embed> {
     let variant = pokemon.variant.as_ref().ok_or_else(|| anyhow!("Missing variant"))?;
     let species = variant.species.as_ref().ok_or_else(|| anyhow!("Missing species"))?;
     let info =
@@ -106,7 +107,7 @@ fn format_pokemon_embed(ctx: &Context<'_>, pokemon: &Pokemon) -> Result<Embed> {
     desc = "Show details about a Pokémon you own."
 )]
 pub async fn info(
-    ctx: Context<'_>,
+    ctx: CommandContext<'_>,
     #[desc = "The index of the Pokémon in your inventory"] index: Option<i64>,
 ) -> Result<()> {
     let mut state = ctx.client.state.lock().await;

@@ -6,6 +6,7 @@
 
 use anyhow::{anyhow, Result};
 use poketwo_command_framework::command;
+use poketwo_command_framework::context::Context;
 use poketwo_command_framework::poketwo_i18n::fluent_args;
 use poketwo_protobuf::poketwo::database::v1::get_pokemon_request::{Query, UserIdAndIdx};
 use poketwo_protobuf::poketwo::database::v1::update_pokemon_request::UpdateNickname;
@@ -14,7 +15,7 @@ use twilight_model::http::interaction::{
     InteractionResponse, InteractionResponseData, InteractionResponseType,
 };
 
-use crate::Context;
+use crate::CommandContext;
 
 #[command(
     name_localization_key = "pokemon-nickname-command-name",
@@ -22,7 +23,7 @@ use crate::Context;
     desc = "Change a Pokémon's nickname."
 )]
 pub async fn nickname(
-    ctx: Context<'_>,
+    ctx: CommandContext<'_>,
     #[desc = "The index of the Pokémon in your inventory"] index: i64,
     #[desc = "The new nickname"] new_nickname: Option<String>,
 ) -> Result<()> {

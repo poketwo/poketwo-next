@@ -6,6 +6,7 @@
 
 use anyhow::{anyhow, bail, Result};
 use poketwo_command_framework::command;
+use poketwo_command_framework::context::Context;
 use poketwo_command_framework::poketwo_i18n::fluent_args;
 use poketwo_emojis::EMOJIS;
 use poketwo_protobuf::poketwo::database::v1::pokemon_filter::OrderBy;
@@ -18,9 +19,13 @@ use twilight_model::http::interaction::{
 };
 use twilight_util::builder::embed::EmbedBuilder;
 
-use crate::Context;
+use crate::CommandContext;
 
-fn format_pokemon_line(ctx: &Context<'_>, pokemon: &Pokemon, idx_len: usize) -> Result<String> {
+fn format_pokemon_line(
+    ctx: &CommandContext<'_>,
+    pokemon: &Pokemon,
+    idx_len: usize,
+) -> Result<String> {
     let variant = pokemon.variant.as_ref().ok_or_else(|| anyhow!("Missing variant"))?;
     let species = variant.species.as_ref().ok_or_else(|| anyhow!("Missing species"))?;
 
@@ -50,7 +55,7 @@ fn format_pokemon_line(ctx: &Context<'_>, pokemon: &Pokemon, idx_len: usize) -> 
     ))
 }
 
-fn format_pokemon_list_embed(ctx: &Context<'_>, pokemon: &[Pokemon]) -> Result<Embed> {
+fn format_pokemon_list_embed(ctx: &CommandContext<'_>, pokemon: &[Pokemon]) -> Result<Embed> {
     let idx_len = pokemon.iter().map(|p| p.idx).max().unwrap_or(0).to_string().len();
 
     let mut description = String::new();
@@ -74,7 +79,7 @@ fn format_pokemon_list_embed(ctx: &Context<'_>, pokemon: &[Pokemon]) -> Result<E
     desc = "Show a list of the Pokémon you own."
 )]
 pub async fn list(
-    ctx: Context<'_>,
+    ctx: CommandContext<'_>,
     #[desc = "Filter by species or variant"] name: Option<String>,
     #[desc = "Filter by type"] r#type: Option<String>,
     #[desc = "Filter by region"] region: Option<String>,

@@ -6,19 +6,20 @@
 
 use anyhow::Result;
 use poketwo_command_framework::command;
+use poketwo_command_framework::context::Context;
 use twilight_model::http::interaction::{
     InteractionResponse, InteractionResponseData, InteractionResponseType,
 };
 use twilight_util::builder::embed::{EmbedBuilder, EmbedFieldBuilder};
 
-use crate::Context;
+use crate::CommandContext;
 
 #[command(
     name_localization_key = "start-command-name",
     desc_localization_key = "start-command-desc",
     desc = "Get started with Pokétwo."
 )]
-pub async fn start(ctx: Context<'_>) -> Result<()> {
+pub async fn start(ctx: CommandContext<'_>) -> Result<()> {
     let mut embed = EmbedBuilder::new()
         .color(0x5865f2)
         .title(ctx.locale_lookup("start-embed-title")?)

@@ -7,6 +7,7 @@
 use anyhow::{anyhow, Result};
 use inflector::Inflector;
 use poketwo_command_framework::command;
+use poketwo_command_framework::context::Context;
 use poketwo_command_framework::poketwo_i18n::fluent_args;
 use poketwo_protobuf::poketwo::database::v1::get_variant_request::Query;
 use poketwo_protobuf::poketwo::database::v1::{GetVariantRequest, Species, SpeciesInfo, Variant};
@@ -16,7 +17,7 @@ use twilight_model::http::interaction::{
 };
 use twilight_util::builder::embed::{EmbedBuilder, EmbedFieldBuilder, ImageSource};
 
-use crate::Context;
+use crate::CommandContext;
 
 const FLAG_OFFSET: u32 = 0x1F1E6;
 const ASCII_OFFSET: u32 = 0x41;
@@ -46,7 +47,7 @@ fn format_region(species: &Species) -> Result<String> {
     Ok(region.identifier.to_title_case())
 }
 
-fn format_base_stats(ctx: &Context<'_>, variant: &Variant) -> Result<String> {
+fn format_base_stats(ctx: &CommandContext<'_>, variant: &Variant) -> Result<String> {
     Ok(format!(
         "**{}:** {}\n**{}:** {}\n**{}:** {}\n**{}:** {}\n**{}:** {}\n**{}:** {}",
         ctx.locale_lookup("hp")?,
@@ -78,7 +79,7 @@ fn format_names(species: &Species) -> Result<String> {
     Ok(result)
 }
 
-fn format_appearance(ctx: &Context<'_>, variant: &Variant) -> Result<String> {
+fn format_appearance(ctx: &CommandContext<'_>, variant: &Variant) -> Result<String> {
     Ok(format!(
         "{}: {}\n{}: {}",
         ctx.locale_lookup("height")?,
@@ -88,7 +89,7 @@ fn format_appearance(ctx: &Context<'_>, variant: &Variant) -> Result<String> {
     ))
 }
 
-fn format_variant_embed(ctx: &Context<'_>, variant: &Variant) -> Result<Embed> {
+fn format_variant_embed(ctx: &CommandContext<'_>, variant: &Variant) -> Result<Embed> {
     let species = variant.species.as_ref().ok_or_else(|| anyhow!("Missing species"))?;
     let info =
         species.get_locale_info(&ctx.interaction.locale).ok_or_else(|| anyhow!("Missing info"))?;
@@ -136,7 +137,7 @@ fn format_variant_embed(ctx: &Context<'_>, variant: &Variant) -> Result<Embed> {
     desc = "Search the Pokédex for a Pokémon."
 )]
 pub async fn info(
-    ctx: Context<'_>,
+    ctx: CommandContext<'_>,
     #[desc = "The name to search for"] query: String,
 ) -> Result<()> {
     let mut state = ctx.client.state.lock().await;

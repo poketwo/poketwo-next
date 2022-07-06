@@ -10,10 +10,10 @@ use anyhow::{Error, Result};
 use futures_util::future::BoxFuture;
 use twilight_model::application::command::Command as TwilightCommand;
 
-use crate::context::Context;
+use crate::context::CommandContext;
 
-type CommandHandler<T> = fn(Context<T>) -> BoxFuture<Result<()>>;
-type CommandErrorHandler<T> = fn(Context<T>, Error) -> BoxFuture<Result<()>>;
+type CommandHandler<T> = fn(CommandContext<T>) -> BoxFuture<Result<()>>;
+type CommandErrorHandler<T> = fn(CommandContext<T>, Error) -> BoxFuture<Result<()>>;
 
 #[derive(Clone)]
 pub struct Command<T> {

@@ -8,6 +8,7 @@ use std::fmt::Display;
 
 use anyhow::{anyhow, bail, Error, Result};
 use poketwo_command_framework::command;
+use poketwo_command_framework::context::Context;
 use poketwo_i18n::fluent_args;
 use poketwo_i18n::fluent_bundle::types::{FluentNumber, FluentNumberKind, FluentNumberOptions};
 use poketwo_protobuf::poketwo::database::v1::get_variant_request::Query;
@@ -18,7 +19,7 @@ use twilight_model::http::interaction::{
     InteractionResponse, InteractionResponseData, InteractionResponseType,
 };
 
-use crate::Context;
+use crate::CommandContext;
 
 #[derive(Debug)]
 pub struct CatchError(String);
@@ -51,7 +52,8 @@ end";
     on_error = "handle_catch_error"
 )]
 pub async fn catch(
-    ctx: Context<'_>, #[desc = "The Pokémon to catch"] guess: String
+    ctx: CommandContext<'_>,
+    #[desc = "The Pokémon to catch"] guess: String,
 ) -> Result<()> {
     let state = &mut *ctx.client.state.lock().await;
 
@@ -162,7 +164,7 @@ pub async fn catch(
     Ok(())
 }
 
-pub async fn handle_catch_error(ctx: Context<'_>, error: Error) -> Result<()> {
+pub async fn handle_catch_error(ctx: CommandContext<'_>, error: Error) -> Result<()> {
     if let Some(x) = error.downcast_ref::<CatchError>() {
         ctx.create_response(&InteractionResponse {
             kind: InteractionResponseType::ChannelMessageWithSource,

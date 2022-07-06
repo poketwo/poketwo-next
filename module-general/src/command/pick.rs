@@ -6,6 +6,7 @@
 
 use anyhow::{anyhow, bail, Error, Result};
 use poketwo_command_framework::command;
+use poketwo_command_framework::context::Context;
 use poketwo_command_framework::poketwo_i18n::fluent_args;
 use poketwo_protobuf::poketwo::database::v1::get_variant_request::Query;
 use poketwo_protobuf::poketwo::database::v1::{
@@ -17,7 +18,7 @@ use twilight_model::http::interaction::{
     InteractionResponse, InteractionResponseData, InteractionResponseType,
 };
 
-use crate::Context;
+use crate::CommandContext;
 
 static STARTER_IDS: &[i32] = &[
     1, 4, 7, 152, 155, 158, 252, 255, 258, 387, 390, 393, 495, 498, 501, 650, 653, 656, 722, 725,
@@ -31,7 +32,7 @@ static STARTER_IDS: &[i32] = &[
     on_error = "handle_pick_error"
 )]
 pub async fn pick(
-    ctx: Context<'_>,
+    ctx: CommandContext<'_>,
     #[desc = "The starter Pokémon of your choice"] starter: String,
 ) -> Result<()> {
     let mut state = ctx.client.state.lock().await;
@@ -90,7 +91,7 @@ pub async fn pick(
     Ok(())
 }
 
-pub async fn handle_pick_error(ctx: Context<'_>, error: Error) -> Result<()> {
+pub async fn handle_pick_error(ctx: CommandContext<'_>, error: Error) -> Result<()> {
     if let Some(x) = error.downcast_ref::<Status>() {
         if let Code::AlreadyExists = x.code() {
             ctx.create_response(&InteractionResponse {
