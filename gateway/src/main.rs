@@ -55,9 +55,10 @@ fn get_payload(event: &Event) -> Option<(Vec<u8>, String)> {
                 serde_json::to_vec(data).ok()?,
                 format!("INTERACTION.APPLICATION_COMMAND.{}", interaction.data.name),
             )),
-            Interaction::MessageComponent(_) => {
-                Some((serde_json::to_vec(data).ok()?, "INTERACTION.MESSAGE_COMPONENT".into()))
-            }
+            Interaction::MessageComponent(interaction) => Some((
+                serde_json::to_vec(data).ok()?,
+                format!("INTERACTION.MESSAGE_COMPONENT.{}", interaction.data.custom_id),
+            )),
             _ => None,
         },
         _ => None,
