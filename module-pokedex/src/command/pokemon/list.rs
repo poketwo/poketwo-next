@@ -9,31 +9,37 @@ use poketwo_command_framework::command;
 use poketwo_command_framework::context::Context;
 use poketwo_command_framework::poketwo_i18n::fluent_args;
 use poketwo_emojis::EMOJIS;
+use poketwo_protobuf::poketwo::database::v1::get_pokemon_list_request::{New, Query};
 use poketwo_protobuf::poketwo::database::v1::pokemon_filter::OrderBy;
 use poketwo_protobuf::poketwo::database::v1::{
-    GetPokemonListRequest, Pokemon, PokemonFilter, SharedFilter,
+    GetPokemonListRequest, Order, Pokemon, PokemonFilter, SharedFilter,
 };
+use twilight_model::application::component::button::ButtonStyle;
+use twilight_model::application::component::{ActionRow, Button, Component};
+use twilight_model::application::interaction::InteractionType;
 use twilight_model::channel::embed::Embed;
+use twilight_model::channel::message::MessageFlags;
+use twilight_model::channel::ReactionType;
 use twilight_model::http::interaction::{
     InteractionResponse, InteractionResponseData, InteractionResponseType,
 };
 use twilight_util::builder::embed::EmbedBuilder;
 
+use crate::state::State;
 use crate::CommandContext;
 
 fn format_pokemon_line(
-    ctx: &CommandContext<'_>,
+    ctx: &impl Context<State>,
     pokemon: &Pokemon,
     idx_len: usize,
 ) -> Result<String> {
     let variant = pokemon.variant.as_ref().ok_or_else(|| anyhow!("Missing variant"))?;
     let species = variant.species.as_ref().ok_or_else(|| anyhow!("Missing species"))?;
 
-    let info =
-        species.get_locale_info(&ctx.interaction.locale).ok_or_else(|| anyhow!("Missing info"))?;
+    let info = species.get_locale_info(ctx.locale()).ok_or_else(|| anyhow!("Missing info"))?;
 
     let variant_name = variant
-        .get_locale_info(&ctx.interaction.locale)
+        .get_locale_info(ctx.locale())
         .and_then(|x| x.pokemon_name.as_ref().or(x.variant_name.as_ref()))
         .unwrap_or(&info.name);
 
@@ -55,7 +61,7 @@ fn format_pokemon_line(
     ))
 }
 
-fn format_pokemon_list_embed(ctx: &CommandContext<'_>, pokemon: &[Pokemon]) -> Result<Embed> {
+fn format_pokemon_list_embed(ctx: &impl Context<State>, pokemon: &[Pokemon]) -> Result<Embed> {
     let idx_len = pokemon.iter().map(|p| p.idx).max().unwrap_or(0).to_string().len();
 
     let mut description = String::new();
@@ -70,6 +76,66 @@ fn format_pokemon_list_embed(ctx: &CommandContext<'_>, pokemon: &[Pokemon]) -> R
         .description(description)
         .validate()?
         .build())
+}
+
+pub async fn send_pokemon_list(
+    ctx: &impl Context<State>,
+    request: GetPokemonListRequest,
+) -> Result<()> {
+    let mut state = ctx.client().state.lock().await;
+
+    let response = state.database.get_pokemon_list(request).await?.into_inner();
+
+    let response = if response.pokemon.is_empty() {
+        InteractionResponse {
+            kind: InteractionResponseType::ChannelMessageWithSource,
+            data: Some(InteractionResponseData {
+                content: Some(ctx.locale_lookup("pagination-end")?),
+                flags: Some(MessageFlags::EPHEMERAL),
+                ..Default::default()
+            }),
+        }
+    } else {
+        InteractionResponse {
+            kind: match ctx.interaction_type() {
+                InteractionType::MessageComponent => InteractionResponseType::UpdateMessage,
+                _ => InteractionResponseType::ChannelMessageWithSource,
+            },
+            data: Some(InteractionResponseData {
+                embeds: Some(vec![format_pokemon_list_embed(ctx, &response.pokemon)?]),
+                components: Some(vec![Component::ActionRow(ActionRow {
+                    components: vec![
+                        Component::Button(Button {
+                            custom_id: Some(format!(
+                                "pokedex.pokemon.list.before.{}.{}",
+                                response.key, response.start_cursor
+                            )),
+                            disabled: false,
+                            emoji: Some(ReactionType::Unicode { name: "◀️".into() }),
+                            label: None,
+                            style: ButtonStyle::Secondary,
+                            url: None,
+                        }),
+                        Component::Button(Button {
+                            custom_id: Some(format!(
+                                "pokedex.pokemon.list.after.{}.{}",
+                                response.key, response.end_cursor
+                            )),
+                            disabled: false,
+                            emoji: Some(ReactionType::Unicode { name: "▶️".into() }),
+                            label: None,
+                            style: ButtonStyle::Secondary,
+                            url: None,
+                        }),
+                    ],
+                })]),
+                ..Default::default()
+            }),
+        }
+    };
+
+    ctx.create_response(&response).exec().await?;
+    Ok(())
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -104,8 +170,6 @@ pub async fn list(
     #[desc = "Filter by nickname"] nickname: Option<String>,
     #[desc = "Order results"] order_by: Option<String>,
 ) -> Result<()> {
-    let mut state = ctx.client.state.lock().await;
-
     let user_id = ctx.interaction.author_id().ok_or_else(|| anyhow!("Missing author"))?.get();
 
     let filter = SharedFilter {
@@ -132,39 +196,36 @@ pub async fn list(
 
     let pokemon_filter = PokemonFilter { favorite, nickname };
 
-    let pokemon = state
-        .database
-        .get_pokemon_list(GetPokemonListRequest {
+    let (order_by, order) = match order_by.map(|s| s.to_lowercase()).as_deref() {
+        Some("index") => (OrderBy::Idx, Order::Asc),
+        Some("index+") => (OrderBy::Idx, Order::Asc),
+        Some("index-") => (OrderBy::Idx, Order::Desc),
+
+        Some("level") => (OrderBy::Level, Order::Asc),
+        Some("level+") => (OrderBy::Level, Order::Asc),
+        Some("level-") => (OrderBy::Level, Order::Desc),
+
+        Some("species") => (OrderBy::Species, Order::Asc),
+        Some("species+") => (OrderBy::Species, Order::Asc),
+        Some("species-") => (OrderBy::Species, Order::Desc),
+
+        Some("iv") => (OrderBy::IvTotal, Order::Desc),
+        Some("iv-") => (OrderBy::IvTotal, Order::Desc),
+        Some("iv+") => (OrderBy::IvTotal, Order::Asc),
+
+        None => (OrderBy::Default, Order::Asc),
+        _ => bail!(ctx.locale_lookup("invalid-order")?),
+    };
+
+    let request = GetPokemonListRequest {
+        query: Some(Query::New(New {
             user_id,
             filter: Some(filter),
             pokemon_filter: Some(pokemon_filter),
-            order_by: match order_by.map(|s| s.to_lowercase()).as_deref() {
-                Some("index+") | Some("index") => OrderBy::IdxAsc,
-                Some("index-") => OrderBy::IdxDesc,
-                Some("level+") | Some("level") => OrderBy::LevelAsc,
-                Some("level-") => OrderBy::LevelDesc,
-                Some("species+") | Some("species") => OrderBy::SpeciesAsc,
-                Some("species-") => OrderBy::SpeciesDesc,
-                Some("iv+") => OrderBy::IvTotalAsc,
-                Some("iv-") | Some("iv") => OrderBy::IvTotalDesc,
-                None => OrderBy::Default,
-                _ => bail!(ctx.locale_lookup("invalid-order")?),
-            }
-            .into(),
-        })
-        .await?
-        .into_inner()
-        .pokemon;
+            order_by: order_by.into(),
+            order: order.into(),
+        })),
+    };
 
-    ctx.create_response(&InteractionResponse {
-        kind: InteractionResponseType::ChannelMessageWithSource,
-        data: Some(InteractionResponseData {
-            embeds: Some(vec![format_pokemon_list_embed(&ctx, &pokemon)?]),
-            ..Default::default()
-        }),
-    })
-    .exec()
-    .await?;
-
-    Ok(())
+    send_pokemon_list(&ctx, request).await
 }

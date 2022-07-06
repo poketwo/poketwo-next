@@ -6,7 +6,7 @@
 
 mod favorite;
 mod info;
-mod list;
+pub mod list;
 mod nickname;
 mod select;
 

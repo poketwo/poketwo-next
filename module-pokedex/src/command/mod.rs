@@ -5,7 +5,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 mod pokedex;
-mod pokemon;
+pub mod pokemon;
 
 pub use pokedex::pokedex;
 pub use pokemon::pokemon;
