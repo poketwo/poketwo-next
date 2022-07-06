@@ -13,6 +13,7 @@ defmodule Poketwo.Database.Application do
   def start(_type, _args) do
     children = [
       Poketwo.Database.Repo,
+      Poketwo.Database.Pagination,
       {
         GRPC.Server.Supervisor,
         {Poketwo.Database.Endpoint, Application.get_env(:poketwo_database, :port, 50051)}

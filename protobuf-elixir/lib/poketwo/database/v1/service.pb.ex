@@ -234,12 +234,11 @@ defmodule Poketwo.Database.V1.GetPokemonResponse do
 
   field :pokemon, 1, type: Poketwo.Database.V1.Pokemon
 end
-defmodule Poketwo.Database.V1.GetPokemonListRequest do
+defmodule Poketwo.Database.V1.GetPokemonListRequest.New do
   @moduledoc false
   use Protobuf, syntax: :proto3
 
   @type t :: %__MODULE__{
-          cursor: {:before, String.t()} | {:after, String.t()},
           user_id: non_neg_integer,
           filter: Poketwo.Database.V1.SharedFilter.t() | nil,
           pokemon_filter: Poketwo.Database.V1.PokemonFilter.t() | nil,
@@ -247,14 +246,11 @@ defmodule Poketwo.Database.V1.GetPokemonListRequest do
           order: Poketwo.Database.V1.Order.t()
         }
 
-  defstruct cursor: nil,
-            user_id: 0,
+  defstruct user_id: 0,
             filter: nil,
             pokemon_filter: nil,
             order_by: :default,
             order: :asc
-
-  oneof :cursor, 0
 
   field :user_id, 1, type: :uint64, json_name: "userId"
   field :filter, 2, type: Poketwo.Database.V1.SharedFilter
@@ -266,8 +262,55 @@ defmodule Poketwo.Database.V1.GetPokemonListRequest do
     enum: true
 
   field :order, 5, type: Poketwo.Database.V1.Order, enum: true
-  field :before, 6, type: :string, oneof: 0
-  field :after, 7, type: :string, oneof: 0
+end
+defmodule Poketwo.Database.V1.GetPokemonListRequest.Before do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          key: non_neg_integer,
+          cursor: String.t()
+        }
+
+  defstruct key: 0,
+            cursor: ""
+
+  field :key, 1, type: :uint64
+  field :cursor, 2, type: :string
+end
+defmodule Poketwo.Database.V1.GetPokemonListRequest.After do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          key: non_neg_integer,
+          cursor: String.t()
+        }
+
+  defstruct key: 0,
+            cursor: ""
+
+  field :key, 1, type: :uint64
+  field :cursor, 2, type: :string
+end
+defmodule Poketwo.Database.V1.GetPokemonListRequest do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          query:
+            {:new, Poketwo.Database.V1.GetPokemonListRequest.New.t() | nil}
+            | {:before, Poketwo.Database.V1.GetPokemonListRequest.Before.t() | nil}
+            | {:after, Poketwo.Database.V1.GetPokemonListRequest.After.t() | nil}
+        }
+
+  defstruct query: nil
+
+  oneof :query, 0
+
+  field :new, 1, type: Poketwo.Database.V1.GetPokemonListRequest.New, oneof: 0
+  field :before, 2, type: Poketwo.Database.V1.GetPokemonListRequest.Before, oneof: 0
+  field :after, 3, type: Poketwo.Database.V1.GetPokemonListRequest.After, oneof: 0
 end
 defmodule Poketwo.Database.V1.GetPokemonListResponse do
   @moduledoc false
@@ -276,19 +319,22 @@ defmodule Poketwo.Database.V1.GetPokemonListResponse do
   @type t :: %__MODULE__{
           pokemon: [Poketwo.Database.V1.Pokemon.t()],
           total_count: integer,
-          start_cursor: Google.Protobuf.StringValue.t() | nil,
-          end_cursor: Google.Protobuf.StringValue.t() | nil
+          start_cursor: String.t(),
+          end_cursor: String.t(),
+          key: non_neg_integer
         }
 
   defstruct pokemon: [],
             total_count: 0,
-            start_cursor: nil,
-            end_cursor: nil
+            start_cursor: "",
+            end_cursor: "",
+            key: 0
 
   field :pokemon, 1, repeated: true, type: Poketwo.Database.V1.Pokemon
   field :total_count, 2, type: :int32, json_name: "totalCount"
-  field :start_cursor, 3, type: Google.Protobuf.StringValue, json_name: "startCursor"
-  field :end_cursor, 4, type: Google.Protobuf.StringValue, json_name: "endCursor"
+  field :start_cursor, 3, type: :string, json_name: "startCursor"
+  field :end_cursor, 4, type: :string, json_name: "endCursor"
+  field :key, 5, type: :uint64
 end
 defmodule Poketwo.Database.V1.CreatePokemonRequest do
   @moduledoc false
