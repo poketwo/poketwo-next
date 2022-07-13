@@ -9,5 +9,5 @@ defmodule Poketwo.Database.Repo do
     otp_app: :poketwo_database,
     adapter: Ecto.Adapters.Postgres
 
-  use Chunkr, planner: Poketwo.Database.Pagination
+  use Chunkr
 end

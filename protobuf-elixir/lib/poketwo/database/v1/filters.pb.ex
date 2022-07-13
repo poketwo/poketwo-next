@@ -19,6 +19,49 @@ defmodule Poketwo.Database.V1.PokemonFilter.OrderBy do
   field :species, 5
   field :iv_total, 7
 end
+defmodule Poketwo.Database.V1.MarketFilter.OrderBy do
+  @moduledoc false
+  use Protobuf, enum: true, syntax: :proto3
+
+  @type t :: integer | :default | :id | :level | :species | :iv_total | :listing_price
+
+  field :default, 0
+  field :id, 1
+  field :level, 3
+  field :species, 5
+  field :iv_total, 7
+  field :listing_price, 8
+end
+defmodule Poketwo.Database.V1.Before do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          key: non_neg_integer,
+          cursor: String.t()
+        }
+
+  defstruct key: 0,
+            cursor: ""
+
+  field :key, 1, type: :uint64
+  field :cursor, 2, type: :string
+end
+defmodule Poketwo.Database.V1.After do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          key: non_neg_integer,
+          cursor: String.t()
+        }
+
+  defstruct key: 0,
+            cursor: ""
+
+  field :key, 1, type: :uint64
+  field :cursor, 2, type: :string
+end
 defmodule Poketwo.Database.V1.SharedFilter do
   @moduledoc false
   use Protobuf, syntax: :proto3
@@ -99,4 +142,19 @@ defmodule Poketwo.Database.V1.PokemonFilter do
 
   field :favorite, 1, type: Google.Protobuf.BoolValue
   field :nickname, 2, type: Google.Protobuf.StringValue
+end
+defmodule Poketwo.Database.V1.MarketFilter do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          user_id: Google.Protobuf.UInt64Value.t() | nil,
+          price: Google.Protobuf.StringValue.t() | nil
+        }
+
+  defstruct user_id: nil,
+            price: nil
+
+  field :user_id, 1, type: Google.Protobuf.UInt64Value, json_name: "userId"
+  field :price, 2, type: Google.Protobuf.StringValue
 end

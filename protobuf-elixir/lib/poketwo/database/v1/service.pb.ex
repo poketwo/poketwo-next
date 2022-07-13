@@ -234,108 +234,6 @@ defmodule Poketwo.Database.V1.GetPokemonResponse do
 
   field :pokemon, 1, type: Poketwo.Database.V1.Pokemon
 end
-defmodule Poketwo.Database.V1.GetPokemonListRequest.New do
-  @moduledoc false
-  use Protobuf, syntax: :proto3
-
-  @type t :: %__MODULE__{
-          user_id: non_neg_integer,
-          filter: Poketwo.Database.V1.SharedFilter.t() | nil,
-          pokemon_filter: Poketwo.Database.V1.PokemonFilter.t() | nil,
-          order_by: Poketwo.Database.V1.PokemonFilter.OrderBy.t(),
-          order: Poketwo.Database.V1.Order.t()
-        }
-
-  defstruct user_id: 0,
-            filter: nil,
-            pokemon_filter: nil,
-            order_by: :default,
-            order: :asc
-
-  field :user_id, 1, type: :uint64, json_name: "userId"
-  field :filter, 2, type: Poketwo.Database.V1.SharedFilter
-  field :pokemon_filter, 3, type: Poketwo.Database.V1.PokemonFilter, json_name: "pokemonFilter"
-
-  field :order_by, 4,
-    type: Poketwo.Database.V1.PokemonFilter.OrderBy,
-    json_name: "orderBy",
-    enum: true
-
-  field :order, 5, type: Poketwo.Database.V1.Order, enum: true
-end
-defmodule Poketwo.Database.V1.GetPokemonListRequest.Before do
-  @moduledoc false
-  use Protobuf, syntax: :proto3
-
-  @type t :: %__MODULE__{
-          key: non_neg_integer,
-          cursor: String.t()
-        }
-
-  defstruct key: 0,
-            cursor: ""
-
-  field :key, 1, type: :uint64
-  field :cursor, 2, type: :string
-end
-defmodule Poketwo.Database.V1.GetPokemonListRequest.After do
-  @moduledoc false
-  use Protobuf, syntax: :proto3
-
-  @type t :: %__MODULE__{
-          key: non_neg_integer,
-          cursor: String.t()
-        }
-
-  defstruct key: 0,
-            cursor: ""
-
-  field :key, 1, type: :uint64
-  field :cursor, 2, type: :string
-end
-defmodule Poketwo.Database.V1.GetPokemonListRequest do
-  @moduledoc false
-  use Protobuf, syntax: :proto3
-
-  @type t :: %__MODULE__{
-          query:
-            {:new, Poketwo.Database.V1.GetPokemonListRequest.New.t() | nil}
-            | {:before, Poketwo.Database.V1.GetPokemonListRequest.Before.t() | nil}
-            | {:after, Poketwo.Database.V1.GetPokemonListRequest.After.t() | nil}
-        }
-
-  defstruct query: nil
-
-  oneof :query, 0
-
-  field :new, 1, type: Poketwo.Database.V1.GetPokemonListRequest.New, oneof: 0
-  field :before, 2, type: Poketwo.Database.V1.GetPokemonListRequest.Before, oneof: 0
-  field :after, 3, type: Poketwo.Database.V1.GetPokemonListRequest.After, oneof: 0
-end
-defmodule Poketwo.Database.V1.GetPokemonListResponse do
-  @moduledoc false
-  use Protobuf, syntax: :proto3
-
-  @type t :: %__MODULE__{
-          pokemon: [Poketwo.Database.V1.Pokemon.t()],
-          total_count: integer,
-          start_cursor: String.t(),
-          end_cursor: String.t(),
-          key: non_neg_integer
-        }
-
-  defstruct pokemon: [],
-            total_count: 0,
-            start_cursor: "",
-            end_cursor: "",
-            key: 0
-
-  field :pokemon, 1, repeated: true, type: Poketwo.Database.V1.Pokemon
-  field :total_count, 2, type: :int32, json_name: "totalCount"
-  field :start_cursor, 3, type: :string, json_name: "startCursor"
-  field :end_cursor, 4, type: :string, json_name: "endCursor"
-  field :key, 5, type: :uint64
-end
 defmodule Poketwo.Database.V1.CreatePokemonRequest do
   @moduledoc false
   use Protobuf, syntax: :proto3
@@ -480,6 +378,147 @@ defmodule Poketwo.Database.V1.UpdatePokemonResponse do
 
   field :pokemon, 1, type: Poketwo.Database.V1.Pokemon
 end
+defmodule Poketwo.Database.V1.GetPokemonListRequest.New do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          user_id: non_neg_integer,
+          filter: Poketwo.Database.V1.SharedFilter.t() | nil,
+          pokemon_filter: Poketwo.Database.V1.PokemonFilter.t() | nil,
+          order_by: Poketwo.Database.V1.PokemonFilter.OrderBy.t(),
+          order: Poketwo.Database.V1.Order.t()
+        }
+
+  defstruct user_id: 0,
+            filter: nil,
+            pokemon_filter: nil,
+            order_by: :default,
+            order: :asc
+
+  field :user_id, 1, type: :uint64, json_name: "userId"
+  field :filter, 2, type: Poketwo.Database.V1.SharedFilter
+  field :pokemon_filter, 3, type: Poketwo.Database.V1.PokemonFilter, json_name: "pokemonFilter"
+
+  field :order_by, 4,
+    type: Poketwo.Database.V1.PokemonFilter.OrderBy,
+    json_name: "orderBy",
+    enum: true
+
+  field :order, 5, type: Poketwo.Database.V1.Order, enum: true
+end
+defmodule Poketwo.Database.V1.GetPokemonListRequest do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          query:
+            {:new, Poketwo.Database.V1.GetPokemonListRequest.New.t() | nil}
+            | {:before, Poketwo.Database.V1.Before.t() | nil}
+            | {:after, Poketwo.Database.V1.After.t() | nil}
+        }
+
+  defstruct query: nil
+
+  oneof :query, 0
+
+  field :new, 1, type: Poketwo.Database.V1.GetPokemonListRequest.New, oneof: 0
+  field :before, 2, type: Poketwo.Database.V1.Before, oneof: 0
+  field :after, 3, type: Poketwo.Database.V1.After, oneof: 0
+end
+defmodule Poketwo.Database.V1.GetPokemonListResponse do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          pokemon: [Poketwo.Database.V1.Pokemon.t()],
+          total_count: integer,
+          start_cursor: String.t(),
+          end_cursor: String.t(),
+          key: non_neg_integer
+        }
+
+  defstruct pokemon: [],
+            total_count: 0,
+            start_cursor: "",
+            end_cursor: "",
+            key: 0
+
+  field :pokemon, 1, repeated: true, type: Poketwo.Database.V1.Pokemon
+  field :total_count, 2, type: :int32, json_name: "totalCount"
+  field :start_cursor, 3, type: :string, json_name: "startCursor"
+  field :end_cursor, 4, type: :string, json_name: "endCursor"
+  field :key, 5, type: :uint64
+end
+defmodule Poketwo.Database.V1.GetMarketListRequest.New do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          filter: Poketwo.Database.V1.SharedFilter.t() | nil,
+          market_filter: Poketwo.Database.V1.MarketFilter.t() | nil,
+          order_by: Poketwo.Database.V1.MarketFilter.OrderBy.t(),
+          order: Poketwo.Database.V1.Order.t()
+        }
+
+  defstruct filter: nil,
+            market_filter: nil,
+            order_by: :default,
+            order: :asc
+
+  field :filter, 1, type: Poketwo.Database.V1.SharedFilter
+  field :market_filter, 2, type: Poketwo.Database.V1.MarketFilter, json_name: "marketFilter"
+
+  field :order_by, 3,
+    type: Poketwo.Database.V1.MarketFilter.OrderBy,
+    json_name: "orderBy",
+    enum: true
+
+  field :order, 4, type: Poketwo.Database.V1.Order, enum: true
+end
+defmodule Poketwo.Database.V1.GetMarketListRequest do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          query:
+            {:new, Poketwo.Database.V1.GetMarketListRequest.New.t() | nil}
+            | {:before, Poketwo.Database.V1.Before.t() | nil}
+            | {:after, Poketwo.Database.V1.After.t() | nil}
+        }
+
+  defstruct query: nil
+
+  oneof :query, 0
+
+  field :new, 1, type: Poketwo.Database.V1.GetMarketListRequest.New, oneof: 0
+  field :before, 2, type: Poketwo.Database.V1.Before, oneof: 0
+  field :after, 3, type: Poketwo.Database.V1.After, oneof: 0
+end
+defmodule Poketwo.Database.V1.GetMarketListResponse do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          listings: [Poketwo.Database.V1.MarketListing.t()],
+          total_count: integer,
+          start_cursor: String.t(),
+          end_cursor: String.t(),
+          key: non_neg_integer
+        }
+
+  defstruct listings: [],
+            total_count: 0,
+            start_cursor: "",
+            end_cursor: "",
+            key: 0
+
+  field :listings, 1, repeated: true, type: Poketwo.Database.V1.MarketListing
+  field :total_count, 2, type: :int32, json_name: "totalCount"
+  field :start_cursor, 3, type: :string, json_name: "startCursor"
+  field :end_cursor, 4, type: :string, json_name: "endCursor"
+  field :key, 5, type: :uint64
+end
 defmodule Poketwo.Database.V1.Database.Service do
   @moduledoc false
   use GRPC.Service, name: "poketwo.database.v1.Database"
@@ -500,10 +539,6 @@ defmodule Poketwo.Database.V1.Database.Service do
 
   rpc :GetPokemon, Poketwo.Database.V1.GetPokemonRequest, Poketwo.Database.V1.GetPokemonResponse
 
-  rpc :GetPokemonList,
-      Poketwo.Database.V1.GetPokemonListRequest,
-      Poketwo.Database.V1.GetPokemonListResponse
-
   rpc :CreatePokemon,
       Poketwo.Database.V1.CreatePokemonRequest,
       Poketwo.Database.V1.CreatePokemonResponse
@@ -511,6 +546,14 @@ defmodule Poketwo.Database.V1.Database.Service do
   rpc :UpdatePokemon,
       Poketwo.Database.V1.UpdatePokemonRequest,
       Poketwo.Database.V1.UpdatePokemonResponse
+
+  rpc :GetPokemonList,
+      Poketwo.Database.V1.GetPokemonListRequest,
+      Poketwo.Database.V1.GetPokemonListResponse
+
+  rpc :GetMarketList,
+      Poketwo.Database.V1.GetMarketListRequest,
+      Poketwo.Database.V1.GetMarketListResponse
 end
 
 defmodule Poketwo.Database.V1.Database.Stub do

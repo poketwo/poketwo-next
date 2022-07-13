@@ -4,21 +4,22 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-defmodule Poketwo.Database.V1.Database.GetPokemonList do
+defmodule Poketwo.Database.V1.Database.GetMarketList do
   import Ecto.Query
   alias Poketwo.Database.{Models, Pagination, Utils, V1}
 
   def handle_query({:new, request}) do
     query =
-      Models.Pokemon.query(user_id: request.user_id)
+      Models.MarketListing.query()
+      |> Models.MarketListing.join_pokemon()
       |> distinct([pokemon: p], p.id)
 
     query =
-      request.pokemon_filter
-      |> Kernel.||(%V1.PokemonFilter{})
+      request.market_filter
+      |> Kernel.||(%V1.MarketFilter{})
       |> Utils.unwrap()
       |> Enum.reduce(query, fn elem, query ->
-        query |> Models.Pokemon.with_filter([elem])
+        query |> Models.MarketListing.with_filter([elem])
       end)
 
     query =
@@ -31,10 +32,14 @@ defmodule Poketwo.Database.V1.Database.GetPokemonList do
 
     query
     |> subquery()
-    |> from(as: :pokemon)
+    |> from(as: :listing)
+    |> Models.MarketListing.join_pokemon()
     |> Models.Pokemon.join_variant()
-    |> Models.Pokemon.preload()
-    |> Pagination.begin(request.order_by, request.order, first: 20, planner: Pagination.Pokemon)
+    |> Models.MarketListing.preload()
+    |> Pagination.begin(request.order_by, request.order,
+      first: 20,
+      planner: Pagination.MarketListing
+    )
   end
 
   def handle_query({:before, %{key: key, cursor: cursor}}) do
@@ -45,11 +50,11 @@ defmodule Poketwo.Database.V1.Database.GetPokemonList do
     Pagination.continue(key, after: cursor, first: 20)
   end
 
-  def handle(%V1.GetPokemonListRequest{query: query}, _stream) do
+  def handle(%V1.GetMarketListRequest{query: query}, _stream) do
     {:ok, key, page} = handle_query(query)
 
-    V1.GetPokemonListResponse.new(
-      pokemon: page |> Chunkr.Page.records() |> Enum.map(&Models.Pokemon.to_protobuf/1),
+    V1.GetMarketListResponse.new(
+      listings: page |> Chunkr.Page.records() |> Enum.map(&Models.MarketListing.to_protobuf/1),
       total_count: Chunkr.Page.total_count(page),
       start_cursor: page.start_cursor,
       end_cursor: page.end_cursor,

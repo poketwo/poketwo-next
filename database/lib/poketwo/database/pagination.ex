@@ -5,7 +5,6 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 defmodule Poketwo.Database.Pagination do
-  use Chunkr.PaginationPlanner
   use GenServer
   alias Poketwo.Database.Repo
 
@@ -47,34 +46,5 @@ defmodule Poketwo.Database.Pagination do
   def handle_info({:invalidate, key}, state) do
     :ets.delete(:pagination_queries, key)
     {:noreply, state}
-  end
-
-  # Pagination Planner
-
-  paginate_by :default do
-    sort :asc, as(:pokemon).id
-  end
-
-  paginate_by :idx do
-    sort :asc, as(:pokemon).id
-  end
-
-  paginate_by :level do
-    sort :asc, as(:pokemon).level
-    sort :asc, as(:pokemon).id
-  end
-
-  paginate_by :species do
-    sort :asc, as(:variant).species_id
-    sort :asc, as(:pokemon).id
-  end
-
-  paginate_by :iv_total do
-    sort :asc,
-         as(:pokemon).iv_hp + as(:pokemon).iv_atk +
-           as(:pokemon).iv_def + as(:pokemon).iv_satk +
-           as(:pokemon).iv_sdef + as(:pokemon).iv_spd
-
-    sort :asc, as(:pokemon).id
   end
 end

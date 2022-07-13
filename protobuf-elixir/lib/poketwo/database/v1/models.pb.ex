@@ -385,3 +385,21 @@ defmodule Poketwo.Database.V1.Pokemon do
   field :updated_at, 17, type: Google.Protobuf.Timestamp, json_name: "updatedAt"
   field :idx, 18, type: :uint64
 end
+defmodule Poketwo.Database.V1.MarketListing do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          id: non_neg_integer,
+          price: integer,
+          pokemon: Poketwo.Database.V1.Pokemon.t() | nil
+        }
+
+  defstruct id: 0,
+            price: 0,
+            pokemon: nil
+
+  field :id, 1, type: :uint64
+  field :price, 2, type: :int32
+  field :pokemon, 3, type: Poketwo.Database.V1.Pokemon
+end

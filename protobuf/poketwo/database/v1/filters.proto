@@ -4,6 +4,16 @@ package poketwo.database.v1;
 
 import "google/protobuf/wrappers.proto";
 
+message Before {
+  uint64 key = 1;
+  string cursor = 2;
+}
+
+message After {
+  uint64 key = 1;
+  string cursor = 2;
+}
+
 enum Order {
   asc = 0;
   desc = 1;
@@ -45,5 +55,19 @@ message PokemonFilter {
     level = 3;
     species = 5;
     iv_total = 7;
+  }
+}
+
+message MarketFilter {
+  google.protobuf.UInt64Value user_id = 1;
+  google.protobuf.StringValue price = 2;
+
+  enum OrderBy {
+    default = 0;
+    id = 1;
+    level = 3;
+    species = 5;
+    iv_total = 7;
+    listing_price = 8;
   }
 }

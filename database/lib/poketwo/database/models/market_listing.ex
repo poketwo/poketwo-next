@@ -8,7 +8,8 @@ defmodule Poketwo.Database.Models.MarketListing do
   use Ecto.Schema
   import Ecto.Query
   require Poketwo.Database.Utils
-  alias Poketwo.Database.{Models, Utils}
+  alias Poketwo.Database.Filter.Numeric
+  alias Poketwo.Database.{Models, Utils, V1}
 
   schema "market_listings" do
     field :price, :integer
@@ -50,4 +51,36 @@ defmodule Poketwo.Database.Models.MarketListing do
       ]
     ]
   end
+
+  def with_filter(query, [{_, nil}]), do: query
+
+  def with_filter(query, user_id: user_id) do
+    query
+    |> join_pokemon()
+    |> where([pokemon: p], p.user_id == ^user_id)
+  end
+
+  def with_filter(query, price: price) do
+    price
+    |> String.split(",")
+    |> Enum.map(&String.trim/1)
+    |> Enum.map(&Numeric.parse/1)
+    |> Enum.reduce(query, fn
+      {:<, value}, query -> query |> where([listing: l], l.price < ^value)
+      {:<=, value}, query -> query |> where([listing: l], l.price <= ^value)
+      {:>, value}, query -> query |> where([listing: l], l.price > ^value)
+      {:>=, value}, query -> query |> where([listing: l], l.price >= ^value)
+      {:==, value}, query -> query |> where([listing: l], l.price == ^value)
+    end)
+  end
+
+  def to_protobuf(%Models.MarketListing{} = listing) do
+    V1.MarketListing.new(
+      id: listing.id,
+      price: listing.price,
+      pokemon: Utils.if_loaded(listing.pokemon, &Models.Pokemon.to_protobuf/1)
+    )
+  end
+
+  def to_protobuf(_), do: nil
 end

@@ -16,9 +16,11 @@ service Database {
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
 
   rpc GetPokemon(GetPokemonRequest) returns (GetPokemonResponse);
-  rpc GetPokemonList(GetPokemonListRequest) returns (GetPokemonListResponse);
   rpc CreatePokemon(CreatePokemonRequest) returns (CreatePokemonResponse);
   rpc UpdatePokemon(UpdatePokemonRequest) returns (UpdatePokemonResponse);
+
+  rpc GetPokemonList(GetPokemonListRequest) returns (GetPokemonListResponse);
+  rpc GetMarketList(GetMarketListRequest) returns (GetMarketListResponse);
 }
 
 // GetSpecies
@@ -92,42 +94,6 @@ message GetPokemonRequest {
 
 message GetPokemonResponse { Pokemon pokemon = 1; }
 
-// GetPokemonList
-
-message GetPokemonListRequest {
-  oneof query {
-    New new = 1;
-    Before before = 2;
-    After after = 3;
-  }
-
-  message New {
-    uint64 user_id = 1;
-    SharedFilter filter = 2;
-    PokemonFilter pokemon_filter = 3;
-    PokemonFilter.OrderBy order_by = 4;
-    Order order = 5;
-  }
-
-  message Before {
-    uint64 key = 1;
-    string cursor = 2;
-  }
-
-  message After {
-    uint64 key = 1;
-    string cursor = 2;
-  }
-}
-
-message GetPokemonListResponse {
-  repeated Pokemon pokemon = 1;
-  int32 total_count = 2;
-  string start_cursor = 3;
-  string end_cursor = 4;
-  uint64 key = 5;
-}
-
 // CreatePokemon
 
 message CreatePokemonRequest {
@@ -173,3 +139,54 @@ message UpdatePokemonRequest {
 }
 
 message UpdatePokemonResponse { Pokemon pokemon = 1; }
+
+// GetPokemonList
+
+message GetPokemonListRequest {
+  oneof query {
+    New new = 1;
+    Before before = 2;
+    After after = 3;
+  }
+
+  message New {
+    uint64 user_id = 1;
+    SharedFilter filter = 2;
+    PokemonFilter pokemon_filter = 3;
+    PokemonFilter.OrderBy order_by = 4;
+    Order order = 5;
+  }
+}
+
+message GetPokemonListResponse {
+  repeated Pokemon pokemon = 1;
+  int32 total_count = 2;
+  string start_cursor = 3;
+  string end_cursor = 4;
+  uint64 key = 5;
+}
+
+// GetPokemonList
+
+message GetMarketListRequest {
+  oneof query {
+    New new = 1;
+    Before before = 2;
+    After after = 3;
+  }
+
+  message New {
+    SharedFilter filter = 1;
+    MarketFilter market_filter = 2;
+    MarketFilter.OrderBy order_by = 3;
+    Order order = 4;
+  }
+}
+
+message GetMarketListResponse {
+  repeated MarketListing listings = 1;
+  int32 total_count = 2;
+  string start_cursor = 3;
+  string end_cursor = 4;
+  uint64 key = 5;
+}

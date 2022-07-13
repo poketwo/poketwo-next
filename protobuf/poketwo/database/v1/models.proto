@@ -141,3 +141,9 @@ message Pokemon {
 
   uint64 idx = 18;
 }
+
+message MarketListing {
+  uint64 id = 1;
+  int32 price = 2;
+  Pokemon pokemon = 3;
+}
