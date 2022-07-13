@@ -40,6 +40,7 @@ defmodule Poketwo.Database.Models.Pokemon do
   ]
 
   schema "pokemon" do
+    field :status, Ecto.Enum, values: [:inventory, :market, :auction]
     field :level, :integer, autogenerate: {__MODULE__, :autogenerate_level, []}
     field :xp, :integer, default: 0
     field :shiny, :boolean, autogenerate: {__MODULE__, :autogenerate_shiny, []}
@@ -61,6 +62,8 @@ defmodule Poketwo.Database.Models.Pokemon do
     timestamps(type: :utc_datetime)
 
     belongs_to :user, Models.User
+    belongs_to :listing, Models.MarketListing
+    belongs_to :auction, Models.Auction
     belongs_to :variant, Models.Variant
     belongs_to :original_user, Models.User
   end
@@ -147,7 +150,7 @@ defmodule Poketwo.Database.Models.Pokemon do
 
   def query(user_id: user_id) do
     Models.Pokemon
-    |> where([p], p.user_id == ^user_id)
+    |> where([p], p.user_id == ^user_id and p.status == :inventory)
     |> select([p], %{p | idx: row_number() |> over(order_by: p.id)})
     |> subquery()
     |> from(as: :pokemon)
