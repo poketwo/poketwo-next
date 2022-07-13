@@ -9,6 +9,8 @@ defmodule Poketwo.Database.Repo.Migrations.AddMarketAndAuctions do
 
     create table(:market_listings) do
       add :price, :integer, null: false
+
+      timestamps(type: :utc_datetime)
     end
 
     create table(:auctions) do
@@ -16,6 +18,8 @@ defmodule Poketwo.Database.Repo.Migrations.AddMarketAndAuctions do
       add :bid_increment, :integer, null: false
       add :bid, :integer
       add :bidder_id, references(:users, on_delete: :nilify_all)
+
+      timestamps(type: :utc_datetime)
     end
 
     alter table(:pokemon) do

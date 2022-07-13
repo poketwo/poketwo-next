@@ -13,6 +13,8 @@ defmodule Poketwo.Database.Models.MarketListing do
   schema "market_listings" do
     field :price, :integer
 
+    timestamps(type: :utc_datetime)
+
     has_one :pokemon, Models.Pokemon, foreign_key: :listing_id
   end
 

@@ -15,6 +15,8 @@ defmodule Poketwo.Database.Models.Auction do
     field :bid_increment, :integer
     field :bid, :integer
 
+    timestamps(type: :utc_datetime)
+
     has_one :pokemon, Models.Pokemon
     belongs_to :bidder, Models.User
   end
