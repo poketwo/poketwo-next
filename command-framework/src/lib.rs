@@ -6,6 +6,7 @@
 
 pub mod client;
 pub mod command;
+pub mod component_listener;
 pub mod context;
 
 pub use anyhow::{Error, Result};

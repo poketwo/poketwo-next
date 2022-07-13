@@ -29,8 +29,9 @@ async fn main() -> Result<()> {
         amqp_exchange: CONFIG.amqp_exchange.clone(),
         amqp_queue: CONFIG.amqp_queue.clone(),
         amqp_routing_keys_extra: vec![],
-        commands: vec![start(), pick()],
         guild_ids: vec![Id::new(967272023845929010), Id::new(787517653211938877)],
+        commands: vec![start(), pick()],
+        views: vec![],
     };
 
     let http = Client::new(CONFIG.token.clone());

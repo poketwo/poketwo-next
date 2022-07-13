@@ -11,12 +11,13 @@ use anyhow::{bail, Error, Result};
 use futures_util::lock::Mutex;
 use futures_util::StreamExt;
 use lapin::message::Delivery;
-use lapin::options::BasicAckOptions;
 use poketwo_gateway_client::{GatewayClient, GatewayClientOptions};
 use tracing::{error, info};
 use twilight_http::client::InteractionClient;
 use twilight_http::Client;
-use twilight_model::application::interaction::Interaction;
+use twilight_model::application::interaction::{
+    ApplicationCommand, Interaction, MessageComponentInteraction,
+};
 use twilight_model::channel::message::MessageFlags;
 use twilight_model::gateway::payload::incoming::InteractionCreate;
 use twilight_model::http::interaction::{
@@ -26,7 +27,8 @@ use twilight_model::id::marker::GuildMarker;
 use twilight_model::id::Id;
 
 use crate::command::Command;
-use crate::context::{CommandContext, Context};
+use crate::component_listener::ComponentListener;
+use crate::context::{CommandContext, ComponentContext, Context};
 
 #[derive(Debug, Clone)]
 pub struct CommandClientOptions<T> {
@@ -36,6 +38,7 @@ pub struct CommandClientOptions<T> {
     pub amqp_routing_keys_extra: Vec<String>,
     pub guild_ids: Vec<Id<GuildMarker>>,
     pub commands: Vec<Command<T>>,
+    pub views: Vec<ComponentListener<T>>,
 }
 
 #[derive(Debug)]
@@ -47,6 +50,7 @@ pub struct CommandClient<'a, T> {
     pub guild_ids: Vec<Id<GuildMarker>>,
 
     commands: HashMap<String, Command<T>>,
+    views: Vec<ComponentListener<T>>,
 }
 
 impl<'a, T> CommandClient<'a, T> {
@@ -55,7 +59,10 @@ impl<'a, T> CommandClient<'a, T> {
         state: T,
         options: CommandClientOptions<T>,
     ) -> Result<CommandClient<'a, T>> {
-        let mut amqp_routing_keys = vec!["INTERACTION.APPLICATION_COMMAND.*".into()];
+        let mut amqp_routing_keys = vec![
+            "INTERACTION.APPLICATION_COMMAND.#".into(),
+            "INTERACTION.MESSAGE_COMPONENT.#".into(),
+        ];
         amqp_routing_keys.extend_from_slice(&options.amqp_routing_keys_extra);
 
         let gateway_options = GatewayClientOptions {
@@ -84,6 +91,7 @@ impl<'a, T> CommandClient<'a, T> {
             interaction,
             gateway,
             commands,
+            views: options.views,
             guild_ids: options.guild_ids,
             state: Arc::new(Mutex::new(state)),
         })
@@ -119,8 +127,10 @@ impl<'a, T> CommandClient<'a, T> {
 
     pub async fn run(&mut self) -> Result<()> {
         while let Some(delivery) = self.gateway.consumer.next().await {
-            if let Err(error) = self._handle_delivery(delivery?).await {
-                error!("{:?}", error);
+            match self.handle_delivery(delivery?).await {
+                Ok(Ok(())) => {}
+                Ok(Err(error)) => error!("{:?}", error),
+                Err(delivery) => error!("Ignored delivery {:?}", delivery.routing_key),
             }
         }
 
@@ -128,29 +138,50 @@ impl<'a, T> CommandClient<'a, T> {
     }
 
     pub async fn handle_delivery(&self, delivery: Delivery) -> Result<Result<()>, Delivery> {
-        if delivery.routing_key.as_str().starts_with("INTERACTION.APPLICATION_COMMAND") {
-            Ok(self._handle_delivery(delivery).await)
-        } else {
-            Err(delivery)
+        match serde_json::from_slice(&delivery.data) {
+            Ok(InteractionCreate(Interaction::ApplicationCommand(interaction))) => {
+                self.handle_application_command(delivery, *interaction).await
+            }
+            Ok(InteractionCreate(Interaction::MessageComponent(interaction))) => {
+                self.handle_message_component(delivery, *interaction).await
+            }
+            _ => Err(delivery),
         }
     }
 
-    async fn _handle_delivery(&self, delivery: Delivery) -> Result<()> {
-        delivery.ack(BasicAckOptions::default()).await?;
+    async fn handle_application_command(
+        &self,
+        delivery: Delivery,
+        interaction: ApplicationCommand,
+    ) -> Result<Result<()>, Delivery> {
+        if let Some(command) = self.commands.get(&interaction.data.name) {
+            let ctx = CommandContext { client: self, interaction: &interaction };
 
-        let event: InteractionCreate = serde_json::from_slice(&delivery.data)?;
+            if let Err(error) = (command.handler)(ctx.clone()).await {
+                return Ok(self.handle_command_error(command, ctx, error).await);
+            }
 
-        if let Interaction::ApplicationCommand(interaction) = event.0 {
-            if let Some(command) = self.commands.get(&interaction.data.name) {
-                let ctx = CommandContext { client: self, interaction: &*interaction };
+            return Ok(Ok(()));
+        }
 
-                if let Err(error) = (command.handler)(ctx.clone()).await {
-                    self.handle_command_error(command, ctx, error).await?;
-                };
+        Err(delivery)
+    }
+
+    async fn handle_message_component(
+        &self,
+        delivery: Delivery,
+        interaction: MessageComponentInteraction,
+    ) -> Result<Result<()>, Delivery> {
+        for view in &self.views {
+            if interaction.data.custom_id.starts_with(&view.custom_id_prefix) {
+                let ctx = ComponentContext { client: self, interaction: &interaction };
+                return Ok((view.handler)(ctx.clone()).await);
             }
         }
 
-        Ok(())
+        dbg!(&interaction);
+
+        Err(delivery)
     }
 
     async fn handle_command_error(

@@ -6,20 +6,20 @@
 
 use anyhow::{anyhow, bail, Result};
 use poketwo_command_framework::command;
+use poketwo_command_framework::component_listener::pagination::{
+    pagination_end_response, pagination_row, parse_query, PaginationQuery,
+};
+use poketwo_command_framework::component_listener::ComponentListener;
 use poketwo_command_framework::context::Context;
 use poketwo_command_framework::poketwo_i18n::fluent_args;
 use poketwo_emojis::EMOJIS;
 use poketwo_protobuf::poketwo::database::v1::get_pokemon_list_request::{New, Query};
 use poketwo_protobuf::poketwo::database::v1::pokemon_filter::OrderBy;
 use poketwo_protobuf::poketwo::database::v1::{
-    GetPokemonListRequest, Order, Pokemon, PokemonFilter, SharedFilter,
+    After, Before, GetPokemonListRequest, Order, Pokemon, PokemonFilter, SharedFilter,
 };
-use twilight_model::application::component::button::ButtonStyle;
-use twilight_model::application::component::{ActionRow, Button, Component};
 use twilight_model::application::interaction::InteractionType;
 use twilight_model::channel::embed::Embed;
-use twilight_model::channel::message::MessageFlags;
-use twilight_model::channel::ReactionType;
 use twilight_model::http::interaction::{
     InteractionResponse, InteractionResponseData, InteractionResponseType,
 };
@@ -27,6 +27,27 @@ use twilight_util::builder::embed::EmbedBuilder;
 
 use crate::state::State;
 use crate::CommandContext;
+
+pub fn pokemon_list_listener() -> ComponentListener<State> {
+    ComponentListener {
+        custom_id_prefix: "pokemon.list".into(),
+        handler: |ctx| {
+            Box::pin(async move {
+                let query = match parse_query(&ctx, "pokemon.list") {
+                    Some(x) => x,
+                    None => return Ok(()),
+                };
+
+                let query = match query {
+                    PaginationQuery::Before(key, cursor) => Query::Before(Before { key, cursor }),
+                    PaginationQuery::After(key, cursor) => Query::After(After { key, cursor }),
+                };
+
+                send_pokemon_list(&ctx, GetPokemonListRequest { query: Some(query) }).await
+            })
+        },
+    }
+}
 
 fn format_pokemon_line(
     ctx: &impl Context<State>,
@@ -86,15 +107,8 @@ pub async fn send_pokemon_list(
 
     let response = state.database.get_pokemon_list(request).await?.into_inner();
 
-    let response = if response.pokemon.is_empty() {
-        InteractionResponse {
-            kind: InteractionResponseType::ChannelMessageWithSource,
-            data: Some(InteractionResponseData {
-                content: Some(ctx.locale_lookup("pagination-end")?),
-                flags: Some(MessageFlags::EPHEMERAL),
-                ..Default::default()
-            }),
-        }
+    ctx.create_response(&if response.pokemon.is_empty() {
+        pagination_end_response(ctx)?
     } else {
         InteractionResponse {
             kind: match ctx.interaction_type() {
@@ -103,38 +117,19 @@ pub async fn send_pokemon_list(
             },
             data: Some(InteractionResponseData {
                 embeds: Some(vec![format_pokemon_list_embed(ctx, &response.pokemon)?]),
-                components: Some(vec![Component::ActionRow(ActionRow {
-                    components: vec![
-                        Component::Button(Button {
-                            custom_id: Some(format!(
-                                "pokedex.pokemon.list.before.{}.{}",
-                                response.key, response.start_cursor
-                            )),
-                            disabled: false,
-                            emoji: Some(ReactionType::Unicode { name: "◀️".into() }),
-                            label: None,
-                            style: ButtonStyle::Secondary,
-                            url: None,
-                        }),
-                        Component::Button(Button {
-                            custom_id: Some(format!(
-                                "pokedex.pokemon.list.after.{}.{}",
-                                response.key, response.end_cursor
-                            )),
-                            disabled: false,
-                            emoji: Some(ReactionType::Unicode { name: "▶️".into() }),
-                            label: None,
-                            style: ButtonStyle::Secondary,
-                            url: None,
-                        }),
-                    ],
-                })]),
+                components: Some(pagination_row(
+                    "pokemon.list",
+                    response.key,
+                    &response.start_cursor,
+                    &response.end_cursor,
+                )),
                 ..Default::default()
             }),
         }
-    };
+    })
+    .exec()
+    .await?;
 
-    ctx.create_response(&response).exec().await?;
     Ok(())
 }
 

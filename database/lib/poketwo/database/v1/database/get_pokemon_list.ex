@@ -38,11 +38,11 @@ defmodule Poketwo.Database.V1.Database.GetPokemonList do
   end
 
   def handle_query({:before, %{key: key, cursor: cursor}}) do
-    Pagination.continue(key, before: cursor, last: 20)
+    Pagination.continue(key, before: cursor, last: 20, planner: Pagination.Pokemon)
   end
 
   def handle_query({:after, %{key: key, cursor: cursor}}) do
-    Pagination.continue(key, after: cursor, first: 20)
+    Pagination.continue(key, after: cursor, first: 20, planner: Pagination.Pokemon)
   end
 
   def handle(%V1.GetPokemonListRequest{query: query}, _stream) do
