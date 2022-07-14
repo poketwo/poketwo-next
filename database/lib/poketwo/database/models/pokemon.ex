@@ -225,6 +225,7 @@ defmodule Poketwo.Database.Models.Pokemon do
       "mythical" -> :is_mythical
       "legendary" -> :is_legendary
       "ultra_beast" -> :is_ultra_beast
+      "ub" -> :is_ultra_beast
       _ -> nil
     end)
     |> Enum.reject(&is_nil/1)
