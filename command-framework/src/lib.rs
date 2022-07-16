@@ -11,4 +11,4 @@ pub mod context;
 
 pub use anyhow::{Error, Result};
 pub use poketwo_command_framework_macros::{command, group};
-pub use {lazy_static, poketwo_i18n};
+pub use poketwo_i18n;

@@ -6,6 +6,7 @@
 
 use darling::FromMeta;
 use inflector::Inflector;
+use poketwo_i18n::{Loader, LOCALES, US_ENGLISH};
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;
 use quote::quote;
@@ -17,11 +18,8 @@ use crate::util::AllLifetimesToStatic;
 
 #[derive(Default, Debug, FromMeta)]
 struct CommandOptions {
-    name: Option<String>,
-    desc: String,
+    localization_key: String,
     default_permissions: Option<String>,
-    name_localization_key: Option<String>,
-    desc_localization_key: Option<String>,
     on_error: Option<Ident>,
 }
 
@@ -51,37 +49,44 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
     let vis = input.vis.clone();
     input.vis = Visibility::Inherited;
 
-    let name = options.name.unwrap_or_else(|| ident.unraw().to_string());
-    let desc = options.desc;
-
     let default_permissions = options.default_permissions.map(|value| {
         quote! { default_member_permissions = #value, }
     });
 
     // name localizations
 
-    let name_localizations_ident_str = format!("{}_name_localizations", ident.unraw());
-    let name_localizations_ident = Ident::new(&name_localizations_ident_str, ident.span());
-    let name_localizations = options.name_localization_key.as_ref().map(|_| {
-        quote! { name_localizations = #name_localizations_ident_str, }
-    });
-    let name_localization_fn =
-        options.name_localization_key.map(|key| localization_fn(name_localizations_ident, key));
+    let name_l10n_key = format!("{}-command-name", options.localization_key);
+    let name_l10n_ident_str = format!("{}_name_localizations", ident.unraw());
+    let name_l10n_ident = Ident::new(&name_l10n_ident_str, ident.span());
+    let name_l10n = quote! { name_localizations = #name_l10n_ident_str, };
+    let name_l10n_fn = l10n_fn(name_l10n_ident, &name_l10n_key);
+    let name = LOCALES
+        .lookup(&US_ENGLISH, &name_l10n_key)
+        .unwrap_or_else(|| panic!("Missing localization {}", name_l10n_key));
 
     // desc localizations
 
-    let desc_localizations_ident_str = format!("{}_desc_localizations", ident.unraw());
-    let desc_localizations_ident = Ident::new(&desc_localizations_ident_str, ident.span());
-    let desc_localizations = options.desc_localization_key.as_ref().map(|_| {
-        quote! { desc_localizations = #desc_localizations_ident_str, }
-    });
-    let desc_localization_fn =
-        options.desc_localization_key.map(|key| localization_fn(desc_localizations_ident, key));
+    let desc_l10n_key = format!("{}-command-desc", options.localization_key);
+    let desc_l10n_ident_str = format!("{}_desc_localizations", ident.unraw());
+    let desc_l10n_ident = Ident::new(&desc_l10n_ident_str, ident.span());
+    let desc_l10n = quote! { desc_localizations = #desc_l10n_ident_str, };
+    let desc_l10n_fn = l10n_fn(desc_l10n_ident, &desc_l10n_key);
+    let desc = LOCALES
+        .lookup(&US_ENGLISH, &desc_l10n_key)
+        .unwrap_or_else(|| panic!("Missing localization {}", desc_l10n_key));
 
     // args
 
-    let (struct_fields, inner_args): (Vec<_>, Vec<_>) =
-        input.sig.inputs.iter_mut().skip(1).map(command_argument).unzip();
+    let mut struct_fields = vec![];
+    let mut inner_args = vec![];
+    let mut l10n_fns = vec![];
+
+    for arg in input.sig.inputs.iter_mut().skip(1) {
+        let (a, b, c) = command_argument(&ident, &options.localization_key, arg);
+        struct_fields.push(a);
+        inner_args.push(b);
+        l10n_fns.push(c);
+    }
 
     // error handler
 
@@ -100,8 +105,8 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
             name = #name,
             desc = #desc,
             #default_permissions
-            #name_localizations
-            #desc_localizations
+            #name_l10n
+            #desc_l10n
         )]
         #vis struct #model_ident {
             #(#struct_fields),*
@@ -129,40 +134,29 @@ pub fn command(args: AttributeArgs, mut input: ItemFn) -> TokenStream {
             }
         }
 
-        #name_localization_fn
-        #desc_localization_fn
+        #name_l10n_fn
+        #desc_l10n_fn
+        #(#l10n_fns)*
     }
 }
 
-pub fn localization_fn(ident: Ident, key: String) -> TokenStream {
-    let static_ident = Ident::new(&ident.to_string().to_uppercase(), ident.span());
+pub fn l10n_fn(ident: Ident, key: &str) -> TokenStream {
+    let localizations = LOCALES.locales().filter_map(|lang| {
+        let text = LOCALES.lookup(lang, key)?;
+        let lang = lang.to_string();
+        Some(quote! { (#lang, #text) })
+    });
 
     quote! {
-        ::poketwo_command_framework::lazy_static::lazy_static! {
-            static ref #static_ident: Vec<(String, String)> = ::poketwo_command_framework::poketwo_i18n::Loader
-                ::locales(&*::poketwo_command_framework::poketwo_i18n::LOCALES)
-                .filter_map(|lang| {
-                    ::poketwo_command_framework::poketwo_i18n::Loader
-                        ::lookup(
-                            &*::poketwo_command_framework::poketwo_i18n::LOCALES,
-                            lang,
-                            #key
-                        )
-                        .map(|value| (lang.to_string(), value))
-                })
-                .collect();
-        }
-
         fn #ident() -> Vec<(&'static str, &'static str)> {
-            #static_ident.iter().map(|(a, b)| (&a[..], &b[..])).collect()
+            vec![#(#localizations)*,]
         }
     }
 }
 
 #[derive(Default, Debug, FromMeta)]
 struct CommandArgumentOptions {
-    name: Option<String>,
-    desc: String,
+    localization_key: Option<String>,
     #[darling(default)]
     autocomplete: bool,
     #[darling(default)]
@@ -171,14 +165,18 @@ struct CommandArgumentOptions {
     max_value: Option<i64>,
 }
 
-pub fn command_argument(arg: &mut FnArg) -> (TokenStream, TokenStream) {
+pub fn command_argument(
+    command_ident: &Ident,
+    command_localization_key: &str,
+    arg: &mut FnArg,
+) -> (TokenStream, TokenStream, TokenStream) {
     let pattern = match arg {
         FnArg::Typed(ref mut pat) => pat,
         _ => abort!(arg, "Expected typed parameter"),
     };
 
     let ident = match *pattern.pat {
-        Pat::Ident(ref ident) => ident,
+        Pat::Ident(ref ident) => &ident.ident,
         _ => abort!(pattern.pat, "Expected identifier"),
     };
 
@@ -193,17 +191,39 @@ pub fn command_argument(arg: &mut FnArg) -> (TokenStream, TokenStream) {
         })
         .collect::<Vec<_>>();
 
-    if args.is_empty() {
-        abort!(arg, "Expected attributes");
-    }
-
     let options = match CommandArgumentOptions::from_list(&args) {
         Ok(x) => x,
-        Err(e) => return (e.write_errors(), TokenStream::new()),
+        Err(e) => return (e.write_errors(), TokenStream::new(), TokenStream::new()),
     };
 
-    let name = options.name.unwrap_or_else(|| ident.ident.unraw().to_string());
-    let desc = options.desc;
+    // name localizations
+
+    let name_l10n_key = options.localization_key.clone().unwrap_or_else(|| {
+        format!("{}-command-{}-option-name", command_localization_key, ident.unraw())
+    });
+    let name_l10n_ident_str =
+        format!("{}_{}_name_localizations", command_ident.unraw(), ident.unraw());
+    let name_l10n_ident = Ident::new(&name_l10n_ident_str, ident.span());
+    let name_l10n = quote! { name_localizations = #name_l10n_ident_str, };
+    let name_l10n_fn = l10n_fn(name_l10n_ident, &name_l10n_key);
+    let name = LOCALES
+        .lookup(&US_ENGLISH, &name_l10n_key)
+        .unwrap_or_else(|| panic!("Missing localization {}", name_l10n_key));
+
+    // desc localizations
+
+    let desc_l10n_key = options.localization_key.unwrap_or_else(|| {
+        format!("{}-command-{}-option-desc", command_localization_key, ident.unraw())
+    });
+    let desc_l10n_ident_str =
+        format!("{}_{}_desc_localizations", command_ident.unraw(), ident.unraw());
+    let desc_l10n_ident = Ident::new(&desc_l10n_ident_str, ident.span());
+    let desc_l10n = quote! { desc_localizations = #desc_l10n_ident_str, };
+    let desc_l10n_fn = l10n_fn(desc_l10n_ident, &desc_l10n_key);
+    let desc = LOCALES
+        .lookup(&US_ENGLISH, &desc_l10n_key)
+        .unwrap_or_else(|| panic!("Missing localization {}", desc_l10n_key));
+
     let autocomplete = options.autocomplete;
     let channel_types = options.channel_types;
     let min_value_item = options.min_value.map(|min_value| quote! { min_value = #min_value, });
@@ -217,9 +237,11 @@ pub fn command_argument(arg: &mut FnArg) -> (TokenStream, TokenStream) {
             channel_types = #channel_types,
             #min_value_item
             #max_value_item
+            #name_l10n
+            #desc_l10n
         )]
         pub #ident: #ty
     };
 
-    (struct_field, quote! { #ident })
+    (struct_field, quote! { #ident }, quote! { #name_l10n_fn #desc_l10n_fn })
 }

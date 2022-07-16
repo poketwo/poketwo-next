@@ -179,8 +179,6 @@ impl<'a, T> CommandClient<'a, T> {
             }
         }
 
-        dbg!(&interaction);
-
         Err(delivery)
     }
 

@@ -8,6 +8,7 @@ use std::ops::Deref;
 
 use darling::FromMeta;
 use inflector::Inflector;
+use poketwo_i18n::{Loader, LOCALES, US_ENGLISH};
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;
 use quote::quote;
@@ -15,7 +16,7 @@ use syn::ext::IdentExt;
 use syn::fold::fold_type;
 use syn::{AttributeArgs, FnArg, Ident, ItemFn, NestedMeta};
 
-use crate::command::localization_fn;
+use crate::command::l10n_fn;
 use crate::util::AllLifetimesToStatic;
 
 #[derive(Debug, Default)]
@@ -47,11 +48,8 @@ impl Deref for IdentList {
 
 #[derive(Default, Debug, FromMeta)]
 struct GroupOptions {
-    name: Option<String>,
-    desc: String,
+    localization_key: String,
     default_permissions: Option<String>,
-    name_localization_key: Option<String>,
-    desc_localization_key: Option<String>,
     subcommands: IdentList,
 }
 
@@ -78,32 +76,31 @@ pub fn group(args: AttributeArgs, input: ItemFn) -> TokenStream {
     let model_ident =
         Ident::new(&format!("{}Command", ident.unraw().to_string().to_pascal_case()), ident.span());
 
-    let name = options.name.unwrap_or_else(|| ident.unraw().to_string());
-    let desc = options.desc;
-
     let default_permissions = options.default_permissions.map(|value| {
         quote! { default_member_permissions = #value, }
     });
 
     // name localizations
 
-    let name_localizations_ident_str = format!("{}_name_localizations", ident.unraw());
-    let name_localizations_ident = Ident::new(&name_localizations_ident_str, ident.span());
-    let name_localizations = options.name_localization_key.as_ref().map(|_| {
-        quote! { name_localizations = #name_localizations_ident_str, }
-    });
-    let name_localization_fn =
-        options.name_localization_key.map(|key| localization_fn(name_localizations_ident, key));
+    let name_l10n_key = format!("{}-command-name", options.localization_key);
+    let name_l10n_ident_str = format!("{}_name_localizations", ident.unraw());
+    let name_l10n_ident = Ident::new(&name_l10n_ident_str, ident.span());
+    let name_l10n = quote! { name_localizations = #name_l10n_ident_str, };
+    let name_l10n_fn = l10n_fn(name_l10n_ident, &name_l10n_key);
+    let name = LOCALES
+        .lookup(&US_ENGLISH, &name_l10n_key)
+        .unwrap_or_else(|| panic!("Missing localization {}", name_l10n_key));
 
     // desc localizations
 
-    let desc_localizations_ident_str = format!("{}_desc_localizations", ident.unraw());
-    let desc_localizations_ident = Ident::new(&desc_localizations_ident_str, ident.span());
-    let desc_localizations = options.desc_localization_key.as_ref().map(|_| {
-        quote! { desc_localizations = #desc_localizations_ident_str, }
-    });
-    let desc_localization_fn =
-        options.desc_localization_key.map(|key| localization_fn(desc_localizations_ident, key));
+    let desc_l10n_key = format!("{}-command-desc", options.localization_key);
+    let desc_l10n_ident_str = format!("{}_desc_localizations", ident.unraw());
+    let desc_l10n_ident = Ident::new(&desc_l10n_ident_str, ident.span());
+    let desc_l10n = quote! { desc_localizations = #desc_l10n_ident_str, };
+    let desc_l10n_fn = l10n_fn(desc_l10n_ident, &desc_l10n_key);
+    let desc = LOCALES
+        .lookup(&US_ENGLISH, &desc_l10n_key)
+        .unwrap_or_else(|| panic!("Missing localization {}", desc_l10n_key));
 
     let (enum_variants, variant_idents): (Vec<_>, Vec<_>) =
         options.subcommands.iter().map(subcommand).unzip();
@@ -114,8 +111,8 @@ pub fn group(args: AttributeArgs, input: ItemFn) -> TokenStream {
             name = #name,
             desc = #desc,
             #default_permissions
-            #name_localizations
-            #desc_localizations
+            #name_l10n
+            #desc_l10n
         )]
         #vis enum #model_ident {
             #(#enum_variants),*
@@ -143,8 +140,8 @@ pub fn group(args: AttributeArgs, input: ItemFn) -> TokenStream {
             }
         }
 
-        #name_localization_fn
-        #desc_localization_fn
+        #name_l10n_fn
+        #desc_l10n_fn
     }
 }
 

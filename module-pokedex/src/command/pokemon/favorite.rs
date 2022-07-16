@@ -17,27 +17,13 @@ use twilight_model::http::interaction::{
 
 use crate::CommandContext;
 
-#[command(
-    name_localization_key = "pokemon-favorite-add-command-name",
-    desc_localization_key = "pokemon-favorite-add-command-desc",
-    desc = "Add a Pokémon to your favorites."
-)]
-pub async fn add(
-    ctx: CommandContext<'_>,
-    #[desc = "The index of the Pokémon in your inventory"] index: i64,
-) -> Result<()> {
+#[command(localization_key = "pokemon-favorite-add")]
+pub async fn add(ctx: CommandContext<'_>, index: i64) -> Result<()> {
     update_favorite(ctx, index, true).await
 }
 
-#[command(
-    name_localization_key = "favorite-remove-command-name",
-    desc_localization_key = "favorite-remove-command-desc",
-    desc = "Remove a Pokémon from your favorites."
-)]
-pub async fn remove(
-    ctx: CommandContext<'_>,
-    #[desc = "The index of the Pokémon in your inventory"] index: i64,
-) -> Result<()> {
+#[command(localization_key = "pokemon-favorite-remove")]
+pub async fn remove(ctx: CommandContext<'_>, index: i64) -> Result<()> {
     update_favorite(ctx, index, false).await
 }
 
@@ -90,10 +76,5 @@ async fn update_favorite(ctx: CommandContext<'_>, index: i64, value: bool) -> Re
     Ok(())
 }
 
-#[group(
-    name_localization_key = "favorite-command-name",
-    desc_localization_key = "favorite-command-desc",
-    desc = "Favorite commands",
-    subcommands(add, remove)
-)]
+#[group(localization_key = "pokemon-favorite", subcommands(add, remove))]
 pub fn favorite(_ctx: CommandContext<'_>) {}

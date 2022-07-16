@@ -25,16 +25,8 @@ static STARTER_IDS: &[i32] = &[
     728, 810, 813, 816,
 ];
 
-#[command(
-    name_localization_key = "pick-command-name",
-    desc_localization_key = "pick-command-desc",
-    desc = "Pick a starter Pokémon.",
-    on_error = "handle_pick_error"
-)]
-pub async fn pick(
-    ctx: CommandContext<'_>,
-    #[desc = "The starter Pokémon of your choice"] starter: String,
-) -> Result<()> {
+#[command(localization_key = "pick", on_error = "handle_pick_error")]
+pub async fn pick(ctx: CommandContext<'_>, starter: String) -> Result<()> {
     let mut state = ctx.client.state.lock().await;
 
     let variant = state

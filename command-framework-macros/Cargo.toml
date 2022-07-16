@@ -11,6 +11,7 @@ proc-macro = true
 [dependencies]
 Inflector = "0.11.4"
 darling = "0.14.1"
+poketwo-i18n = { version = "0.1.0", path = "../i18n-rust" }
 proc-macro-error = "1.0.4"
 proc-macro2 = "1.0.38"
 quote = "1.0.18"

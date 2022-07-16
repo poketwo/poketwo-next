@@ -23,6 +23,7 @@ fluent-syntax = { git = 'https://github.com/oliver-ni/fluent-rs' }
 # fluent-testing = { git = 'https://github.com/oliver-ni/fluent-rs' }
 fluent = { git = 'https://github.com/oliver-ni/fluent-rs' }
 intl-memoizer = { git = 'https://github.com/oliver-ni/fluent-rs' }
+twilight-interactions = { git = 'https://github.com/oliver-ni/twilight-interactions' }
 
 [profile.dev.package.adler]
 opt-level = 3

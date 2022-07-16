@@ -11,10 +11,5 @@ use poketwo_command_framework::group;
 
 use crate::CommandContext;
 
-#[group(
-    name_localization_key = "pokedex-command-name",
-    desc_localization_key = "pokedex-command-desc",
-    desc = "Pokédex commands",
-    subcommands(info)
-)]
+#[group(localization_key = "pokedex", subcommands(info))]
 pub fn pokedex(_ctx: CommandContext<'_>) {}

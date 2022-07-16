@@ -17,15 +17,11 @@ use twilight_model::http::interaction::{
 
 use crate::CommandContext;
 
-#[command(
-    name_localization_key = "pokemon-nickname-command-name",
-    desc_localization_key = "pokemon-nickname-command-desc",
-    desc = "Change a Pokémon's nickname."
-)]
+#[command(localization_key = "pokemon-nickname")]
 pub async fn nickname(
     ctx: CommandContext<'_>,
-    #[desc = "The index of the Pokémon in your inventory"] index: i64,
-    #[desc = "The new nickname"] new_nickname: Option<String>,
+    index: i64,
+    new_nickname: Option<String>,
 ) -> Result<()> {
     let mut state = ctx.client.state.lock().await;
 

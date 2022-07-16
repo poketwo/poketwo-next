@@ -15,4 +15,4 @@ static_loader! {
     };
 }
 
-pub const US_ENGLISH: LanguageIdentifier = langid!("en");
+pub const US_ENGLISH: LanguageIdentifier = langid!("en-US");

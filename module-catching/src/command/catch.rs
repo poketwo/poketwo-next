@@ -45,16 +45,8 @@ else
     return -1
 end";
 
-#[command(
-    name_localization_key = "catch-command-name",
-    desc_localization_key = "catch-command-desc",
-    desc = "Catch a Pokémon.",
-    on_error = "handle_catch_error"
-)]
-pub async fn catch(
-    ctx: CommandContext<'_>,
-    #[desc = "The Pokémon to catch"] guess: String,
-) -> Result<()> {
+#[command(localization_key = "catch", on_error = "handle_catch_error")]
+pub async fn catch(ctx: CommandContext<'_>, guess: String) -> Result<()> {
     let state = &mut *ctx.client.state.lock().await;
 
     let variant = state

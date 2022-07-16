@@ -134,37 +134,33 @@ pub async fn send_pokemon_list(
 }
 
 #[allow(clippy::too_many_arguments)]
-#[command(
-    name_localization_key = "pokemon-list-command-name",
-    desc_localization_key = "pokemon-list-command-desc",
-    desc = "Show a list of the Pokémon you own."
-)]
+#[command(localization_key = "pokemon-list")]
 pub async fn list(
     ctx: CommandContext<'_>,
 
-    #[desc = "Filter by name"] name: Option<String>,
-    #[desc = "Filter by type"] r#type: Option<String>,
-    #[desc = "Filter by region"] region: Option<String>,
-    #[desc = "Filter by shiny status"] shiny: Option<bool>,
-    #[desc = "Filter by rarity (mythical, legendary, UB)"] rarity: Option<String>,
-    #[desc = "Filter by form (alolan, galarian, hisuian, mega)"] form: Option<String>,
-    #[desc = "Filter by event status"] event: Option<bool>,
-    #[desc = "Filter by level"] level: Option<String>,
-    #[desc = "Filter by total IV"] iv_total: Option<String>,
-    #[desc = "Filter by HP IV"] iv_hp: Option<String>,
-    #[desc = "Filter by Attack IV"] iv_atk: Option<String>,
-    #[desc = "Filter by Defense IV"] iv_def: Option<String>,
-    #[desc = "Filter by Sp. Atk IV"] iv_satk: Option<String>,
-    #[desc = "Filter by Sp. Def IV"] iv_sdef: Option<String>,
-    #[desc = "Filter by Speed IV"] iv_spd: Option<String>,
-    #[desc = "Filter by three matching IV stats"] iv_triple: Option<String>,
-    #[desc = "Filter by four matching IV stats"] iv_quadruple: Option<String>,
-    #[desc = "Filter by five matching IV stats"] iv_quintuple: Option<String>,
-    #[desc = "Filter by six matching IV stats"] iv_sextuple: Option<String>,
+    name: Option<String>,
+    r#type: Option<String>,
+    region: Option<String>,
+    shiny: Option<bool>,
+    rarity: Option<String>,
+    form: Option<String>,
+    event: Option<bool>,
+    level: Option<String>,
+    iv_total: Option<String>,
+    iv_hp: Option<String>,
+    iv_atk: Option<String>,
+    iv_def: Option<String>,
+    iv_satk: Option<String>,
+    iv_sdef: Option<String>,
+    iv_spd: Option<String>,
+    iv_triple: Option<String>,
+    iv_quadruple: Option<String>,
+    iv_quintuple: Option<String>,
+    iv_sextuple: Option<String>,
 
-    #[desc = "Filter by favorite"] favorite: Option<bool>,
-    #[desc = "Filter by nickname"] nickname: Option<String>,
-    #[desc = "Order results"] order_by: Option<String>,
+    favorite: Option<bool>,
+    nickname: Option<String>,
+    order_by: Option<String>,
 ) -> Result<()> {
     let user_id = ctx.interaction.author_id().ok_or_else(|| anyhow!("Missing author"))?.get();
 

@@ -101,15 +101,8 @@ fn format_pokemon_embed(ctx: &CommandContext<'_>, pokemon: &Pokemon) -> Result<E
     Ok(embed.validate()?.build())
 }
 
-#[command(
-    name_localization_key = "pokemon-info-command-name",
-    desc_localization_key = "pokemon-info-command-desc",
-    desc = "Show details about a Pokémon you own."
-)]
-pub async fn info(
-    ctx: CommandContext<'_>,
-    #[desc = "The index of the Pokémon in your inventory"] index: Option<i64>,
-) -> Result<()> {
+#[command(localization_key = "pokemon-info")]
+pub async fn info(ctx: CommandContext<'_>, index: Option<i64>) -> Result<()> {
     let mut state = ctx.client.state.lock().await;
 
     let user_id = ctx.interaction.author_id().ok_or_else(|| anyhow!("Missing author"))?.get();

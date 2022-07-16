@@ -19,10 +19,5 @@ use select::SelectCommand;
 
 use crate::CommandContext;
 
-#[group(
-    name_localization_key = "pokemon-command-name",
-    desc_localization_key = "pokemon-command-desc",
-    desc = "Pokémon commands",
-    subcommands(info, list, select, nickname, favorite)
-)]
+#[group(localization_key = "pokemon", subcommands(info, list, select, nickname, favorite))]
 pub fn pokemon(_ctx: CommandContext<'_>) {}

@@ -131,15 +131,8 @@ fn format_variant_embed(ctx: &CommandContext<'_>, variant: &Variant) -> Result<E
     Ok(embed.validate()?.build())
 }
 
-#[command(
-    name_localization_key = "pokedex-info-command-name",
-    desc_localization_key = "pokedex-info-command-desc",
-    desc = "Search the Pokédex for a Pokémon."
-)]
-pub async fn info(
-    ctx: CommandContext<'_>,
-    #[desc = "The name to search for"] query: String,
-) -> Result<()> {
+#[command(localization_key = "pokedex-info")]
+pub async fn info(ctx: CommandContext<'_>, query: String) -> Result<()> {
     let mut state = ctx.client.state.lock().await;
 
     let variant = state

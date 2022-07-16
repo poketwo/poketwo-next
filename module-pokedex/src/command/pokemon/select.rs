@@ -16,15 +16,8 @@ use twilight_model::http::interaction::{
 
 use crate::CommandContext;
 
-#[command(
-    name_localization_key = "pokemon-select-command-name",
-    desc_localization_key = "pokemon-select-command-desc",
-    desc = "Change your selected Pokémon."
-)]
-pub async fn select(
-    ctx: CommandContext<'_>,
-    #[desc = "The index of the Pokémon in your inventory"] index: i64,
-) -> Result<()> {
+#[command(localization_key = "pokemon-select")]
+pub async fn select(ctx: CommandContext<'_>, index: i64) -> Result<()> {
     let mut state = ctx.client.state.lock().await;
 
     let user_id = ctx.interaction.author_id().ok_or_else(|| anyhow!("Missing author"))?.get();
