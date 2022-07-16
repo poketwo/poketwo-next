@@ -6,9 +6,6 @@
 
 use anyhow::{anyhow, bail, Result};
 use poketwo_command_framework::command;
-use poketwo_command_framework::component_listener::pagination::{
-    pagination_end_response, pagination_row, parse_query, PaginationQuery,
-};
 use poketwo_command_framework::component_listener::ComponentListener;
 use poketwo_command_framework::context::Context;
 use poketwo_command_framework::poketwo_i18n::fluent_args;
@@ -17,6 +14,9 @@ use poketwo_protobuf::poketwo::database::v1::get_pokemon_list_request::{New, Que
 use poketwo_protobuf::poketwo::database::v1::pokemon_filter::OrderBy;
 use poketwo_protobuf::poketwo::database::v1::{
     After, Before, GetPokemonListRequest, Order, Pokemon, PokemonFilter, SharedFilter,
+};
+use poketwo_utils::pagination::{
+    pagination_end_response, pagination_row, parse_query, PaginationQuery,
 };
 use twilight_model::application::interaction::InteractionType;
 use twilight_model::channel::embed::Embed;

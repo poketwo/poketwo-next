@@ -5,6 +5,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use anyhow::Result;
+use poketwo_command_framework::context::{ComponentContext, Context};
 use twilight_model::application::component::button::ButtonStyle;
 use twilight_model::application::component::{ActionRow, Button, Component};
 use twilight_model::channel::message::MessageFlags;
@@ -12,8 +13,6 @@ use twilight_model::channel::ReactionType;
 use twilight_model::http::interaction::{
     InteractionResponse, InteractionResponseData, InteractionResponseType,
 };
-
-use crate::context::{ComponentContext, Context};
 
 pub enum PaginationQuery {
     Before(u64, String),

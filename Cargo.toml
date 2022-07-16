@@ -11,6 +11,7 @@ members = [
   "module-general",
   "module-pokedex",
   "protobuf-rust",
+  "utils",
 ]
 
 [patch.crates-io]

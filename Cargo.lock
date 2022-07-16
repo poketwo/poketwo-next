@@ -1997,6 +1997,7 @@ dependencies = [
  "poketwo-command-framework",
  "poketwo-emojis",
  "poketwo-protobuf",
+ "poketwo-utils",
  "serde",
  "serde_json",
  "tokio",
@@ -2019,6 +2020,15 @@ dependencies = [
  "prost-types",
  "tonic",
  "tonic-build",
+]
+
+[[package]]
+name = "poketwo-utils"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "poketwo-command-framework",
+ "twilight-model",
 ]
 
 [[package]]
