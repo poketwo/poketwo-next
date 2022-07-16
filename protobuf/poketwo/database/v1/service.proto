@@ -19,12 +19,9 @@ service Database {
   rpc CreatePokemon(CreatePokemonRequest) returns (CreatePokemonResponse);
   rpc UpdatePokemon(UpdatePokemonRequest) returns (UpdatePokemonResponse);
 
-  rpc GetMarketListing(GetMarketListingRequest)
-      returns (GetMarketListingResponse);
-  rpc CreateMarketListing(CreateMarketListingRequest)
-      returns (CreateMarketListingResponse);
-  rpc DeleteMarketListing(DeleteMarketListingRequest)
-      returns (DeleteMarketListingResponse);
+  rpc GetMarketListing(GetMarketListingRequest) returns (GetMarketListingResponse);
+  rpc CreateMarketListing(CreateMarketListingRequest) returns (CreateMarketListingResponse);
+  rpc DeleteMarketListing(DeleteMarketListingRequest) returns (DeleteMarketListingResponse);
 
   rpc GetPokemonList(GetPokemonListRequest) returns (GetPokemonListResponse);
   rpc GetMarketList(GetMarketListRequest) returns (GetMarketListResponse);
@@ -39,7 +36,9 @@ message GetSpeciesRequest {
   }
 }
 
-message GetSpeciesResponse { Species species = 1; }
+message GetSpeciesResponse {
+  Species species = 1;
+}
 
 // GetVariant
 
@@ -50,17 +49,25 @@ message GetVariantRequest {
   }
 }
 
-message GetVariantResponse { Variant variant = 1; }
+message GetVariantResponse {
+  Variant variant = 1;
+}
 
 // GetRandomSpawn
 
 message GetRandomSpawnRequest {}
-message GetRandomSpawnResponse { Variant variant = 1; }
+message GetRandomSpawnResponse {
+  Variant variant = 1;
+}
 
 // GetUser
 
-message GetUserRequest { uint64 id = 1; }
-message GetUserResponse { User user = 1; }
+message GetUserRequest {
+  uint64 id = 1;
+}
+message GetUserResponse {
+  User user = 1;
+}
 
 // CreateUser
 
@@ -68,7 +75,9 @@ message CreateUserRequest {
   uint64 id = 1;
   CreatePokemonRequest starter_pokemon = 2;
 }
-message CreateUserResponse { User user = 1; }
+message CreateUserResponse {
+  User user = 1;
+}
 
 // UpdateUser
 
@@ -81,7 +90,9 @@ message UpdateUserRequest {
   }
 }
 
-message UpdateUserResponse { User user = 1; }
+message UpdateUserResponse {
+  User user = 1;
+}
 
 // GetPokemon
 
@@ -92,15 +103,21 @@ message GetPokemonRequest {
     UserIdAndIdx user_id_and_idx = 6;
   }
 
-  message Id { uint64 id = 1; }
-  message UserId { uint64 user_id = 1; }
+  message Id {
+    uint64 id = 1;
+  }
+  message UserId {
+    uint64 user_id = 1;
+  }
   message UserIdAndIdx {
     uint64 user_id = 1;
     uint64 idx = 2;
   }
 }
 
-message GetPokemonResponse { Pokemon pokemon = 1; }
+message GetPokemonResponse {
+  Pokemon pokemon = 1;
+}
 
 // CreatePokemon
 
@@ -141,12 +158,20 @@ message UpdatePokemonRequest {
   UpdateNickname nickname = 5;
   UpdateFavorite favorite = 6;
 
-  message UpdateNature { string value = 1; }
-  message UpdateNickname { google.protobuf.StringValue value = 1; }
-  message UpdateFavorite { bool value = 1; }
+  message UpdateNature {
+    string value = 1;
+  }
+  message UpdateNickname {
+    google.protobuf.StringValue value = 1;
+  }
+  message UpdateFavorite {
+    bool value = 1;
+  }
 }
 
-message UpdatePokemonResponse { Pokemon pokemon = 1; }
+message UpdatePokemonResponse {
+  Pokemon pokemon = 1;
+}
 
 // GetPokemonList
 
@@ -176,8 +201,12 @@ message GetPokemonListResponse {
 
 // GetMarketListing
 
-message GetMarketListingRequest { uint64 id = 1; }
-message GetMarketListingResponse { MarketListing listing = 1; }
+message GetMarketListingRequest {
+  uint64 id = 1;
+}
+message GetMarketListingResponse {
+  MarketListing listing = 1;
+}
 
 // CreateMarketListing
 
@@ -186,7 +215,9 @@ message CreateMarketListingRequest {
   int32 price = 2;
 }
 
-message CreateMarketListingResponse { MarketListing listing = 1; }
+message CreateMarketListingResponse {
+  MarketListing listing = 1;
+}
 
 // DeleteMarketListing
 
@@ -194,7 +225,9 @@ message DeleteMarketListingRequest {
   uint64 id = 1;
   uint64 user_id = 2;
 }
-message DeleteMarketListingResponse { Pokemon pokemon = 1; }
+message DeleteMarketListingResponse {
+  Pokemon pokemon = 1;
+}
 
 // GetPokemonList
 

@@ -1,3 +1,7 @@
 {
-  "elixirLS.projectDir": "database"
+  "elixirLS.projectDir": "database",
+  "protoc": {
+    "options": ["--proto_path=${workspaceRoot}/protobuf"]
+  },
+  "clang-format.style": "{ BasedOnStyle: google, ColumnLimit: 0 }"
 }
