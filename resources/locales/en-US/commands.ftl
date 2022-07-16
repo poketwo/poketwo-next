@@ -172,3 +172,14 @@ market-search-command-mine-option-desc = Show only your listings
 
 market-search-command-price-option-name = price
 market-search-command-price-option-desc = Filter by price
+
+# /market add
+
+market-add-command-name = add
+market-add-command-desc = Search the global marketplace for Pokémon.
+
+market-add-command-index-option-name = index
+market-add-command-index-option-desc = The index of the Pokémon in your inventory
+
+market-add-command-price-option-name = price
+market-add-command-price-option-desc = The price to list the Pokémon for

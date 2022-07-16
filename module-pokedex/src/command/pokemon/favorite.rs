@@ -63,7 +63,7 @@ async fn update_favorite(ctx: CommandContext<'_>, index: i64, value: bool) -> Re
         } else {
             "pokemon-favorite-remove-response"
         },
-        fluent_args!["level" => pokemon.level,"pokemon" => variant_name, "idx" => pokemon.idx],
+        fluent_args!["level" => pokemon.level, "pokemon" => variant_name, "idx" => pokemon.idx],
     )?;
 
     ctx.create_response(&InteractionResponse {

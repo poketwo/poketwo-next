@@ -16,7 +16,6 @@ defmodule Poketwo.Database.V1.Database.CreateMarketListing do
       )
       |> Ecto.Multi.update(:update_pokemon, fn %{pokemon: pokemon, listing: listing} ->
         Models.Pokemon.update_changeset(pokemon, %{status: :market, listing_id: listing.id})
-        |> IO.inspect()
       end)
       |> Ecto.Multi.run(:preload_listing, fn repo, %{listing: listing} ->
         {:ok, repo.preload(listing, Models.MarketListing.preload_fields())}
