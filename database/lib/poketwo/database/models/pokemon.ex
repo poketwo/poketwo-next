@@ -149,6 +149,11 @@ defmodule Poketwo.Database.Models.Pokemon do
     |> Enum.reduce(fn item, acc -> {:+, [], [item, acc]} end)
   end
 
+  def query() do
+    Models.Pokemon
+    |> from(as: :pokemon)
+  end
+
   def query(user_id: user_id) do
     Models.Pokemon
     |> where([p], p.user_id == ^user_id and p.status == :inventory)
@@ -163,8 +168,12 @@ defmodule Poketwo.Database.Models.Pokemon do
       else: join(query, :left, [pokemon: p], v in assoc(p, :variant), as: :variant)
   end
 
+  def with(query, user_id: user_id), do: query |> where([pokemon: p], p.user_id == ^user_id)
   def with(query, id: id), do: query |> where([pokemon: p], p.id == ^id)
   def with(query, idx: idx), do: query |> where([pokemon: p], p.idx == ^idx)
+
+  def with(query, listing_id: listing_id),
+    do: query |> where([pokemon: p], p.listing_id == ^listing_id)
 
   def with_filter(query, [{_, nil}]), do: query
 

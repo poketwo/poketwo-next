@@ -501,6 +501,33 @@ defmodule Poketwo.Database.V1.CreateMarketListingResponse do
 
   field :listing, 1, type: Poketwo.Database.V1.MarketListing
 end
+defmodule Poketwo.Database.V1.DeleteMarketListingRequest do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          id: non_neg_integer,
+          user_id: non_neg_integer
+        }
+
+  defstruct id: 0,
+            user_id: 0
+
+  field :id, 1, type: :uint64
+  field :user_id, 2, type: :uint64, json_name: "userId"
+end
+defmodule Poketwo.Database.V1.DeleteMarketListingResponse do
+  @moduledoc false
+  use Protobuf, syntax: :proto3
+
+  @type t :: %__MODULE__{
+          pokemon: Poketwo.Database.V1.Pokemon.t() | nil
+        }
+
+  defstruct pokemon: nil
+
+  field :pokemon, 1, type: Poketwo.Database.V1.Pokemon
+end
 defmodule Poketwo.Database.V1.GetMarketListRequest.New do
   @moduledoc false
   use Protobuf, syntax: :proto3
@@ -605,6 +632,10 @@ defmodule Poketwo.Database.V1.Database.Service do
   rpc :CreateMarketListing,
       Poketwo.Database.V1.CreateMarketListingRequest,
       Poketwo.Database.V1.CreateMarketListingResponse
+
+  rpc :DeleteMarketListing,
+      Poketwo.Database.V1.DeleteMarketListingRequest,
+      Poketwo.Database.V1.DeleteMarketListingResponse
 
   rpc :GetPokemonList,
       Poketwo.Database.V1.GetPokemonListRequest,
