@@ -6,7 +6,7 @@
 
 defmodule Poketwo.Database.Models.MarketListing do
   use Ecto.Schema
-  import Ecto.Query
+  import Ecto.{Changeset, Query}
   require Poketwo.Database.Utils
   alias Poketwo.Database.Filter.Numeric
   alias Poketwo.Database.{Models, Utils, V1}
@@ -19,10 +19,19 @@ defmodule Poketwo.Database.Models.MarketListing do
     has_one :pokemon, Models.Pokemon, foreign_key: :listing_id
   end
 
+  def create_changeset(listing, params \\ %{}) do
+    listing
+    |> cast(params, [:price])
+    |> validate_number(:price, greater_than_or_equal_to: 0)
+  end
+
   def query() do
     Models.MarketListing
     |> from(as: :listing)
   end
+
+  def with(query, id: id), do: query |> where([listing: p], p.id == ^id)
+  def with(query, user_id: user_id), do: query |> where([pokemon: p], p.user_id == ^user_id)
 
   def join_pokemon(query) do
     if has_named_binding?(query, :pokemon),

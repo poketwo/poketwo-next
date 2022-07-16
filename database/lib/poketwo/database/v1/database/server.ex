@@ -20,6 +20,12 @@ defmodule Poketwo.Database.V1.Database.Server do
   defdelegate create_pokemon(request, stream), to: Database.CreatePokemon, as: :handle
   defdelegate update_pokemon(request, stream), to: Database.UpdatePokemon, as: :handle
 
+  defdelegate get_market_listing(request, stream), to: Database.GetMarketListing, as: :handle
+
+  defdelegate create_market_listing(request, stream),
+    to: Database.CreateMarketListing,
+    as: :handle
+
   defdelegate get_pokemon_list(request, stream), to: Database.GetPokemonList, as: :handle
   defdelegate get_market_list(request, stream), to: Database.GetMarketList, as: :handle
 end

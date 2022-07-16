@@ -19,6 +19,11 @@ service Database {
   rpc CreatePokemon(CreatePokemonRequest) returns (CreatePokemonResponse);
   rpc UpdatePokemon(UpdatePokemonRequest) returns (UpdatePokemonResponse);
 
+  rpc GetMarketListing(GetMarketListingRequest)
+      returns (GetMarketListingResponse);
+  rpc CreateMarketListing(CreateMarketListingRequest)
+      returns (CreateMarketListingResponse);
+
   rpc GetPokemonList(GetPokemonListRequest) returns (GetPokemonListResponse);
   rpc GetMarketList(GetMarketListRequest) returns (GetMarketListResponse);
 }
@@ -51,6 +56,7 @@ message GetRandomSpawnRequest {}
 message GetRandomSpawnResponse { Variant variant = 1; }
 
 // GetUser
+
 message GetUserRequest { uint64 id = 1; }
 message GetUserResponse { User user = 1; }
 
@@ -165,6 +171,20 @@ message GetPokemonListResponse {
   string end_cursor = 4;
   uint64 key = 5;
 }
+
+// GetMarketListing
+
+message GetMarketListingRequest { uint64 id = 1; }
+message GetMarketListingResponse { MarketListing listing = 1; }
+
+// CreateMarketListing
+
+message CreateMarketListingRequest {
+  GetPokemonRequest pokemon = 1;
+  int32 price = 2;
+}
+
+message CreateMarketListingResponse { MarketListing listing = 1; }
 
 // GetPokemonList
 
