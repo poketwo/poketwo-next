@@ -1985,6 +1985,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "poketwo-module-market"
+version = "0.1.0"
+dependencies = [
+ "Inflector",
+ "anyhow",
+ "figment",
+ "futures-util",
+ "lapin",
+ "lazy_static",
+ "poketwo-command-framework",
+ "poketwo-emojis",
+ "poketwo-protobuf",
+ "poketwo-utils",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tonic",
+ "tracing",
+ "tracing-subscriber",
+ "twilight-http",
+ "twilight-interactions",
+ "twilight-model",
+ "twilight-util",
+]
+
+[[package]]
 name = "poketwo-module-pokedex"
 version = "0.1.0"
 dependencies = [

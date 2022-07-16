@@ -199,8 +199,8 @@ pub fn command_argument(
     // name localizations
 
     let name_l10n_key = options.localization_key.clone().unwrap_or_else(|| {
-        format!("{}-command-{}-option-name", command_localization_key, ident.unraw())
-    });
+        format!("{}-command-{}-option", command_localization_key, ident.unraw())
+    }) + "-name";
     let name_l10n_ident_str =
         format!("{}_{}_name_localizations", command_ident.unraw(), ident.unraw());
     let name_l10n_ident = Ident::new(&name_l10n_ident_str, ident.span());
@@ -213,8 +213,8 @@ pub fn command_argument(
     // desc localizations
 
     let desc_l10n_key = options.localization_key.unwrap_or_else(|| {
-        format!("{}-command-{}-option-desc", command_localization_key, ident.unraw())
-    });
+        format!("{}-command-{}-option", command_localization_key, ident.unraw())
+    }) + "-desc";
     let desc_l10n_ident_str =
         format!("{}_{}_desc_localizations", command_ident.unraw(), ident.unraw());
     let desc_l10n_ident = Ident::new(&desc_l10n_ident_str, ident.span());

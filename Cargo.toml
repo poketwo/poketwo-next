@@ -9,6 +9,7 @@ members = [
   "imgen",
   "module-catching",
   "module-general",
+  "module-market",
   "module-pokedex",
   "protobuf-rust",
   "utils",

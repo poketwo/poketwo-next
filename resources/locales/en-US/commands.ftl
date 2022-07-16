@@ -156,3 +156,19 @@ pokemon-select-command-desc = Change your selected Pokémon.
 
 pokemon-select-command-index-option-name = index
 pokemon-select-command-index-option-desc = The index of the Pokémon in your inventory
+
+# /market
+
+market-command-name = market
+market-command-desc = Commands for the global Pokétwo marketplace.
+
+# /market list
+
+market-search-command-name = search
+market-search-command-desc = Search the global marketplace for Pokémon.
+
+market-search-command-mine-option-name = mine
+market-search-command-mine-option-desc = Show only your listings
+
+market-search-command-price-option-name = price
+market-search-command-price-option-desc = Filter by price
