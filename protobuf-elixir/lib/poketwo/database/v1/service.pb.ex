@@ -548,12 +548,15 @@ defmodule Poketwo.Database.V1.PurchaseMarketListingResponse do
   use Protobuf, syntax: :proto3
 
   @type t :: %__MODULE__{
-          pokemon: Poketwo.Database.V1.Pokemon.t() | nil
+          pokemon: Poketwo.Database.V1.Pokemon.t() | nil,
+          listing: Poketwo.Database.V1.MarketListing.t() | nil
         }
 
-  defstruct pokemon: nil
+  defstruct pokemon: nil,
+            listing: nil
 
   field :pokemon, 1, type: Poketwo.Database.V1.Pokemon
+  field :listing, 2, type: Poketwo.Database.V1.MarketListing
 end
 defmodule Poketwo.Database.V1.GetMarketListRequest.New do
   @moduledoc false

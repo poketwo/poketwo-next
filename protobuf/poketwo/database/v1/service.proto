@@ -240,6 +240,7 @@ message PurchaseMarketListingRequest {
 
 message PurchaseMarketListingResponse {
   Pokemon pokemon = 1;
+  MarketListing listing = 2;
 }
 
 // GetPokemonList

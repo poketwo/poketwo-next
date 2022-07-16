@@ -191,3 +191,11 @@ market-remove-command-desc = Search the global marketplace for Pokémon.
 
 market-remove-command-listing_id-option-name = listing_id
 market-remove-command-listing_id-option-desc = The ID of the market listing
+
+# /market buy
+
+market-buy-command-name = buy
+market-buy-command-desc = Purchase a Pokémon from the global marketplace.
+
+market-buy-command-listing_id-option-name = listing_id
+market-buy-command-listing_id-option-desc = The ID of the market listing
