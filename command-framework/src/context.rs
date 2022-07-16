@@ -25,13 +25,15 @@ pub trait Context<T> {
     }
 
     fn locale_lookup(&self, text_id: &str) -> Result<String> {
-        LOCALES.lookup(&self.langid(), text_id).ok_or_else(|| anyhow!("Missing localization"))
+        LOCALES
+            .lookup(&self.langid(), text_id)
+            .ok_or_else(|| anyhow!("Missing localization {}", text_id))
     }
 
     fn locale_lookup_with_args(&self, text_id: &str, args: FluentArgs) -> Result<String> {
         LOCALES
             .lookup_with_args(&self.langid(), text_id, &args.into_iter().collect())
-            .ok_or_else(|| anyhow!("Missing localization"))
+            .ok_or_else(|| anyhow!("Missing localization {}", text_id))
     }
 
     fn create_response<'a>(&'a self, response: &'a InteractionResponse) -> CreateResponse<'a>;

@@ -10,3 +10,8 @@ pokecoins = {$length ->
     [short] pc
 }
 pokecoins-received = You have received {$pokecoins} Pokécoins!
+
+shards = {$first ->
+   *[uppercase] Shards
+    [lowercase] shards
+}

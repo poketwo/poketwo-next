@@ -8,3 +8,5 @@ no-wild-pokemon = There is no wild Pokémon in this channel!
 invalid-order = That is not a valid sort order!
 
 pagination-end = There are no more pages to show!
+
+balance-embed-title = {$user}'s Balance

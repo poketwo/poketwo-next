@@ -19,6 +19,11 @@ catch-command-guess-option-desc = The Pokémon to catch
 start-command-name = start
 start-command-desc = Get started with Pokétwo.
 
+# /balance
+
+balance-command-name = balance
+balance-command-desc = View your balance.
+
 # /pokedex
 
 pokedex-command-name = pokedex

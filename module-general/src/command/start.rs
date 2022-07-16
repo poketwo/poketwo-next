@@ -17,7 +17,6 @@ use crate::CommandContext;
 #[command(localization_key = "start")]
 pub async fn start(ctx: CommandContext<'_>) -> Result<()> {
     let mut embed = EmbedBuilder::new()
-        .color(0x5865f2)
         .title(ctx.locale_lookup("start-embed-title")?)
         .description(ctx.locale_lookup("start-embed-description")?);
 

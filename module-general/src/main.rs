@@ -14,7 +14,7 @@ use poketwo_protobuf::poketwo::database::v1::database_client::DatabaseClient;
 use twilight_http::Client;
 use twilight_model::id::Id;
 
-use crate::command::{pick, start};
+use crate::command::{balance, pick, start};
 use crate::config::CONFIG;
 use crate::state::State;
 
@@ -30,7 +30,7 @@ async fn main() -> Result<()> {
         amqp_queue: CONFIG.amqp_queue.clone(),
         amqp_routing_keys_extra: vec![],
         guild_ids: vec![Id::new(967272023845929010), Id::new(787517653211938877)],
-        commands: vec![start(), pick()],
+        commands: vec![balance(), start(), pick()],
         views: vec![],
     };
 
