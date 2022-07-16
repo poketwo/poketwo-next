@@ -4,7 +4,7 @@ pick-command-name = pick
 pick-command-desc = Pick a starter Pokémon.
 
 pick-command-starter-option-name = starter
-pick-command-starter-option-desc = The starter Pokémon of your choice.
+pick-command-starter-option-desc = The starter Pokémon of your choice
 
 # /catch
 
@@ -12,7 +12,7 @@ catch-command-name = catch
 catch-command-desc = Catch a Pokémon.
 
 catch-command-guess-option-name = guess
-catch-command-guess-option-desc = The Pokémon to catch.
+catch-command-guess-option-desc = The Pokémon to catch
 
 # /start
 
@@ -30,7 +30,7 @@ pokedex-info-command-name = info
 pokedex-info-command-desc = Search the Pokédex for a Pokémon.
 
 pokedex-info-command-query-option-name = query
-pokedex-info-command-query-option-desc = The name to search for.
+pokedex-info-command-query-option-desc = The name to search for
 
 # /pokemon
 
@@ -48,7 +48,7 @@ pokemon-favorite-add-command-name = add
 pokemon-favorite-add-command-desc = Add a Pokémon to your favorites.
 
 pokemon-favorite-add-command-index-option-name = index
-pokemon-favorite-add-command-index-option-desc = The index of the Pokémon in your inventory.
+pokemon-favorite-add-command-index-option-desc = The index of the Pokémon in your inventory
 
 # /pokemon favorite remove
 
@@ -56,7 +56,7 @@ pokemon-favorite-remove-command-name = remove
 pokemon-favorite-remove-command-desc = Remove a Pokémon from your favorites.
 
 pokemon-favorite-remove-command-index-option-name = index
-pokemon-favorite-remove-command-index-option-desc = The index of the Pokémon in your inventory.
+pokemon-favorite-remove-command-index-option-desc = The index of the Pokémon in your inventory
 
 # /pokemon info
 
@@ -64,7 +64,7 @@ pokemon-info-command-name = info
 pokemon-info-command-desc = Show details about a Pokémon you own.
 
 pokemon-info-command-index-option-name = index
-pokemon-info-command-index-option-desc = The index of the Pokémon in your inventory.
+pokemon-info-command-index-option-desc = The index of the Pokémon in your inventory
 
 # /pokemon list
 
@@ -144,10 +144,10 @@ pokemon-nickname-command-name = nickname
 pokemon-nickname-command-desc = Change a Pokémon's nickname.
 
 pokemon-nickname-command-index-option-name = index
-pokemon-nickname-command-index-option-desc = The index of the Pokémon in your inventory.
+pokemon-nickname-command-index-option-desc = The index of the Pokémon in your inventory
 
 pokemon-nickname-command-new_nickname-option-name = new_nickname
-pokemon-nickname-command-new_nickname-option-desc = The new nickname.
+pokemon-nickname-command-new_nickname-option-desc = The new nickname
 
 # /pokemon select
 
@@ -155,4 +155,4 @@ pokemon-select-command-name = select
 pokemon-select-command-desc = Change your selected Pokémon.
 
 pokemon-select-command-index-option-name = index
-pokemon-select-command-index-option-desc = The index of the Pokémon in your inventory.
+pokemon-select-command-index-option-desc = The index of the Pokémon in your inventory
