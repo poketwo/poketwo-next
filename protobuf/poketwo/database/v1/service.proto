@@ -22,6 +22,7 @@ service Database {
   rpc GetMarketListing(GetMarketListingRequest) returns (GetMarketListingResponse);
   rpc CreateMarketListing(CreateMarketListingRequest) returns (CreateMarketListingResponse);
   rpc DeleteMarketListing(DeleteMarketListingRequest) returns (DeleteMarketListingResponse);
+  rpc PurchaseMarketListing(PurchaseMarketListingRequest) returns (PurchaseMarketListingResponse);
 
   rpc GetPokemonList(GetPokemonListRequest) returns (GetPokemonListResponse);
   rpc GetMarketList(GetMarketListRequest) returns (GetMarketListResponse);
@@ -225,7 +226,19 @@ message DeleteMarketListingRequest {
   uint64 id = 1;
   uint64 user_id = 2;
 }
+
 message DeleteMarketListingResponse {
+  Pokemon pokemon = 1;
+}
+
+// PurchaseMarketListing
+
+message PurchaseMarketListingRequest {
+  uint64 id = 1;
+  uint64 user_id = 2;
+}
+
+message PurchaseMarketListingResponse {
   Pokemon pokemon = 1;
 }
 

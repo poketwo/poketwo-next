@@ -108,10 +108,11 @@ defmodule Poketwo.Database.Models.Pokemon do
 
   def update_changeset(pokemon, params \\ %{}) do
     pokemon
-    |> cast(params, [:level, :xp, :nature, :favorite, :nickname, :status, :listing_id])
+    |> cast(params, [:user_id, :level, :xp, :nature, :favorite, :nickname, :status, :listing_id])
     |> validate_number(:level, greater_than_or_equal_to: 1, less_than_or_equal_to: 100)
     |> validate_number(:xp, greater_than_or_equal_to: 0)
     |> validate_length(:nickname, max: 100)
+    |> foreign_key_constraint(:user_id)
     |> foreign_key_constraint(:listing_id)
   end
 

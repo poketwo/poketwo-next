@@ -6,7 +6,7 @@
 
 defmodule Poketwo.Database.Models.User do
   use Ecto.Schema
-  import Ecto.Query
+  import Ecto.{Changeset, Query}
   require Poketwo.Database.Utils
   alias Poketwo.Database.{Models, Utils, V1}
 
@@ -28,15 +28,23 @@ defmodule Poketwo.Database.Models.User do
 
   def create_changeset(user, params \\ %{}) do
     user
-    |> Ecto.Changeset.cast(params, [:id, :selected_pokemon_id])
-    |> Ecto.Changeset.unique_constraint(:id, name: :users_pkey)
-    |> Ecto.Changeset.foreign_key_constraint(:selected_pokemon_id)
+    |> cast(params, [:id, :selected_pokemon_id])
+    |> unique_constraint(:id, name: :users_pkey)
+    |> foreign_key_constraint(:selected_pokemon_id)
   end
 
   def update_changeset(user, params \\ %{}) do
     user
-    |> Ecto.Changeset.cast(params, [:selected_pokemon_id])
-    |> Ecto.Changeset.foreign_key_constraint(:selected_pokemon_id)
+    |> cast(params, [
+      :selected_pokemon_id,
+      :pokecoin_balance,
+      :shard_balance,
+      :redeem_balance
+    ])
+    |> validate_number(:pokecoin_balance, greater_than_or_equal_to: 0)
+    |> validate_number(:shard_balance, greater_than_or_equal_to: 0)
+    |> validate_number(:redeem_balance, greater_than_or_equal_to: 0)
+    |> foreign_key_constraint(:selected_pokemon_id)
   end
 
   def with(query, id: id) do

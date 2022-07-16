@@ -23,6 +23,7 @@ defmodule Poketwo.Database.V1.Database.Server do
   defdelegate get_market_listing(r, s), to: Database.GetMarketListing, as: :handle
   defdelegate create_market_listing(r, s), to: Database.CreateMarketListing, as: :handle
   defdelegate delete_market_listing(r, s), to: Database.DeleteMarketListing, as: :handle
+  defdelegate purchase_market_listing(r, s), to: Database.PurchaseMarketListing, as: :handle
 
   defdelegate get_pokemon_list(r, s), to: Database.GetPokemonList, as: :handle
   defdelegate get_market_list(r, s), to: Database.GetMarketList, as: :handle
