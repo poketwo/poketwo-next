@@ -183,3 +183,11 @@ market-add-command-index-option-desc = The index of the Pokémon in your invento
 
 market-add-command-price-option-name = price
 market-add-command-price-option-desc = The price to list the Pokémon for
+
+# /market remove
+
+market-remove-command-name = remove
+market-remove-command-desc = Search the global marketplace for Pokémon.
+
+market-remove-command-listing_id-option-name = listing_id
+market-remove-command-listing_id-option-desc = The ID of the market listing

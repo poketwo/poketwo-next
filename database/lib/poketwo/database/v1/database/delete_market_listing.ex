@@ -16,12 +16,18 @@ defmodule Poketwo.Database.V1.Database.DeleteMarketListing do
         Models.Pokemon.query()
         |> Models.Pokemon.with(user_id: request.user_id)
         |> Models.Pokemon.with(listing_id: request.id)
-        |> IO.inspect()
       )
       |> Ecto.Multi.update(:update_pokemon, fn %{pokemon: pokemon} ->
         Models.Pokemon.update_changeset(pokemon, %{status: :inventory, listing_id: nil})
       end)
-      |> Ecto.Multi.run(:preload_pokemon, fn repo, %{update_pokemon: pokemon} ->
+      |> Ecto.Multi.one(
+        :pokemon_with_idx,
+        fn %{pokemon: pokemon} ->
+          Models.Pokemon.query(user_id: request.user_id)
+          |> Models.Pokemon.with(id: pokemon.id)
+        end
+      )
+      |> Ecto.Multi.run(:preload_pokemon, fn repo, %{pokemon_with_idx: pokemon} ->
         {:ok, repo.preload(pokemon, Models.Pokemon.preload_fields())}
       end)
 
