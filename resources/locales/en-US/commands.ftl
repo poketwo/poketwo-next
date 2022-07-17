@@ -19,6 +19,11 @@ catch-command-guess-option-desc = The Pokémon to catch
 start-command-name = start
 start-command-desc = Get started with Pokétwo.
 
+# /balance
+
+balance-command-name = balance
+balance-command-desc = View your balance.
+
 # /pokedex
 
 pokedex-command-name = pokedex
@@ -156,3 +161,46 @@ pokemon-select-command-desc = Change your selected Pokémon.
 
 pokemon-select-command-index-option-name = index
 pokemon-select-command-index-option-desc = The index of the Pokémon in your inventory
+
+# /market
+
+market-command-name = market
+market-command-desc = Commands for the global Pokétwo marketplace.
+
+# /market list
+
+market-search-command-name = search
+market-search-command-desc = Search the global marketplace for Pokémon.
+
+market-search-command-mine-option-name = mine
+market-search-command-mine-option-desc = Show only your listings
+
+market-search-command-price-option-name = price
+market-search-command-price-option-desc = Filter by price
+
+# /market add
+
+market-add-command-name = add
+market-add-command-desc = Search the global marketplace for Pokémon.
+
+market-add-command-index-option-name = index
+market-add-command-index-option-desc = The index of the Pokémon in your inventory
+
+market-add-command-price-option-name = price
+market-add-command-price-option-desc = The price to list the Pokémon for
+
+# /market remove
+
+market-remove-command-name = remove
+market-remove-command-desc = Search the global marketplace for Pokémon.
+
+market-remove-command-listing_id-option-name = listing_id
+market-remove-command-listing_id-option-desc = The ID of the market listing
+
+# /market buy
+
+market-buy-command-name = buy
+market-buy-command-desc = Purchase a Pokémon from the global marketplace.
+
+market-buy-command-listing_id-option-name = listing_id
+market-buy-command-listing_id-option-desc = The ID of the market listing
