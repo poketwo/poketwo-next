@@ -99,6 +99,16 @@ FROM rust-application AS module-general
 COPY --from=module-general-build /app/target/release/poketwo-module-general ./poketwo-module-general
 CMD ["./poketwo-module-general"]
 
+# --- Market Module ---
+
+FROM rust-build AS module-market-build
+COPY . .
+RUN cargo build --release --bin poketwo-module-market
+
+FROM rust-application AS module-market
+COPY --from=module-market-build /app/target/release/poketwo-module-market ./poketwo-module-market
+CMD ["./poketwo-module-market"]
+
 # --- Pokédex Module ---
 
 FROM rust-build AS module-pokedex-build

@@ -17,6 +17,7 @@ jobs:
           - message-center
           - module-catching
           - module-general
+          - module-market
           - module-pokedex
 
     steps:
