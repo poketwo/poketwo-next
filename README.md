@@ -25,7 +25,7 @@ These services consume Discord events from RabbitMQ, including commands and mess
 - [`module-pokedex`](module-pokedex) — Pokédex and Pokémon inventory-related commands
 - [`module-catching`](module-catching) — spawning and catching of Pokémon
 - [`module-general`](module-general) — miscellaneous commands not belonging to any other category
-- `module-market` — (not yet implemented) the global Pokémon marketplace
+- [`module-market`](module-market) — the global Pokémon marketplace
 - `module-auctions` — (not yet implemented) Pokémon auction functionality
 - `module-battling` — (not yet implemented) battles between trainers
 - `module-shop` — (not yet implemented) the in-game item shop
