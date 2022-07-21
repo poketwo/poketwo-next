@@ -7,6 +7,7 @@ members = [
   "gateway-client",
   "i18n-rust",
   "imgen",
+  "message-center",
   "module-catching",
   "module-general",
   "module-market",
