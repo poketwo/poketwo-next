@@ -69,6 +69,16 @@ FROM rust-application AS imgen
 COPY --from=imgen-build /app/target/release/poketwo-imgen ./poketwo-imgen
 CMD ["./poketwo-imgen"]
 
+# --- Message Center ---
+
+FROM rust-build AS message-center-build
+COPY . .
+RUN cargo build --release --bin poketwo-message-center
+
+FROM rust-application AS message-center
+COPY --from=message-center-build /app/target/release/poketwo-message-center ./poketwo-message-center
+CMD ["./poketwo-message-center"]
+
 # --- Catching Module ---
 
 FROM rust-build AS module-catching-build
