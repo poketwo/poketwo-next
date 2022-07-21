@@ -549,14 +549,17 @@ defmodule Poketwo.Database.V1.PurchaseMarketListingResponse do
 
   @type t :: %__MODULE__{
           pokemon: Poketwo.Database.V1.Pokemon.t() | nil,
-          listing: Poketwo.Database.V1.MarketListing.t() | nil
+          listing: Poketwo.Database.V1.MarketListing.t() | nil,
+          seller_id: non_neg_integer
         }
 
   defstruct pokemon: nil,
-            listing: nil
+            listing: nil,
+            seller_id: 0
 
   field :pokemon, 1, type: Poketwo.Database.V1.Pokemon
   field :listing, 2, type: Poketwo.Database.V1.MarketListing
+  field :seller_id, 3, type: :uint64, json_name: "sellerId"
 end
 defmodule Poketwo.Database.V1.GetMarketListRequest.New do
   @moduledoc false

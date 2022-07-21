@@ -71,10 +71,11 @@ defmodule Poketwo.Database.V1.Database.PurchaseMarketListing do
       |> refetch_pokemon(request)
 
     case Repo.transaction(multi) do
-      {:ok, %{listing: listing, preload_pokemon: pokemon}} ->
+      {:ok, %{seller: seller, listing: listing, preload_pokemon: pokemon}} ->
         V1.PurchaseMarketListingResponse.new(
           pokemon: Models.Pokemon.to_protobuf(pokemon),
-          listing: Models.MarketListing.to_protobuf(listing)
+          listing: Models.MarketListing.to_protobuf(listing),
+          seller_id: seller.id
         )
 
       {:error, _, changeset, _} ->

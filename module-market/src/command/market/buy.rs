@@ -8,11 +8,13 @@ use anyhow::{anyhow, Result};
 use poketwo_command_framework::command;
 use poketwo_command_framework::context::Context;
 use poketwo_command_framework::poketwo_i18n::fluent_args;
+use poketwo_message_center::send_message;
 use poketwo_protobuf::poketwo::database::v1::PurchaseMarketListingRequest;
 use twilight_model::http::interaction::{
     InteractionResponse, InteractionResponseData, InteractionResponseType,
 };
 
+use crate::config::CONFIG;
 use crate::CommandContext;
 
 #[command(localization_key = "market-buy")]
@@ -52,6 +54,18 @@ pub async fn buy(ctx: CommandContext<'_>, listing_id: i64) -> Result<()> {
         }),
     })
     .exec()
+    .await?;
+
+    send_message(
+        &ctx.client.gateway.channel,
+        &CONFIG.message_center_amqp_queue,
+        response.seller_id,
+        ctx.locale_lookup_with_args("market-buy-notification", fluent_args![
+            "level" => pokemon.level,
+            "pokemon" => variant_name,
+            "pokecoins" => listing.price
+        ])?,
+    )
     .await?;
 
     Ok(())

@@ -17,6 +17,7 @@ pub struct Config {
     pub amqp_exchange: String,
     pub amqp_queue: String,
 
+    pub message_center_amqp_queue: String,
     pub database_service_url: String,
 }
 

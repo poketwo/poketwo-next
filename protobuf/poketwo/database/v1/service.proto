@@ -241,6 +241,7 @@ message PurchaseMarketListingRequest {
 message PurchaseMarketListingResponse {
   Pokemon pokemon = 1;
   MarketListing listing = 2;
+  uint64 seller_id = 3;
 }
 
 // GetPokemonList
