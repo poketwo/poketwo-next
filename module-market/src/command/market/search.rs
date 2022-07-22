@@ -182,8 +182,10 @@ pub async fn search(
         iv_sextuple,
     };
 
-    let market_filter =
-        MarketFilter { user_id: mine.and_then(|value| value.then_some(user_id)), price };
+    let market_filter = MarketFilter {
+        user_id: mine.and_then(|value| if value { Some(user_id) } else { None }),
+        price,
+    };
 
     let (order_by, order) = match order_by.map(|s| s.to_lowercase()).as_deref() {
         Some("id") => (OrderBy::Id, Order::Desc),
