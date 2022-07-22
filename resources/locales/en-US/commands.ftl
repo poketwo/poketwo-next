@@ -181,7 +181,7 @@ market-search-command-price-option-desc = Filter by price
 # /market add
 
 market-add-command-name = add
-market-add-command-desc = Search the global marketplace for Pokémon.
+market-add-command-desc = List a Pokémon on the global marketplace.
 
 market-add-command-index-option-name = index
 market-add-command-index-option-desc = The index of the Pokémon in your inventory
@@ -192,7 +192,7 @@ market-add-command-price-option-desc = The price to list the Pokémon for
 # /market remove
 
 market-remove-command-name = remove
-market-remove-command-desc = Search the global marketplace for Pokémon.
+market-remove-command-desc = Remove one of your listings from the global marketplace.
 
 market-remove-command-listing_id-option-name = listing_id
 market-remove-command-listing_id-option-desc = The ID of the market listing
